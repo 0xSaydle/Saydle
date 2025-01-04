@@ -5,10 +5,11 @@ import {
   ColorModeProvider,
   type ColorModeProviderProps,
 } from "./color-mode"
+import SaydleTheme from "../../theme"
 
 export function Provider(props: ColorModeProviderProps) {
   return (
-    <ChakraProvider value={defaultSystem}>
+    <ChakraProvider value={SaydleTheme}>
       <ColorModeProvider {...props} />
     </ChakraProvider>
   )
