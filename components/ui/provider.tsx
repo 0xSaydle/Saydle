@@ -10,7 +10,7 @@ import SaydleTheme from "../../theme"
 export function Provider(props: ColorModeProviderProps) {
   return (
     <ChakraProvider value={SaydleTheme}>
-      <ColorModeProvider {...props} />
+      <ColorModeProvider {...props} themes={["SaydleTheme"]} />
     </ChakraProvider>
   )
 }

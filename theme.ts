@@ -4,7 +4,7 @@ import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react";
 const config = defineConfig({
   theme: {
     breakpoints: {
-      sm: "343pt",
+      sm: "431px",
       md: "768px",
       lg: "960px",
       xl: "1240px",
@@ -13,6 +13,7 @@ const config = defineConfig({
       colors: {
         primary: {
           // value: "#EE0F0F",
+          "20": { value: "#FF6F61" },
           "50": { value: "#FFE7E5" },
           "100": { value: "#FFCFCA" },
           "200": { value: "#FFB7B0" },
@@ -37,31 +38,31 @@ const config = defineConfig({
           "800": { value: "#392334" },
           "900": { value: "#1d111a" },
         },
-        dark_bg: {
+        dark: {
           // value:  "#1E252B" ,
-          "50": { value: "#FFE7E5" },
-          "100": { value: "#FFCFCA" },
-          "200": { value: "#FFB7B0" },
-          "300": { value: "#FF9F96" },
-          "400": { value: "#FF877B" },
-          "500": { value: "#FF3A26" },
-          "600": { value: "#EB1500" },
-          "700": { value: "#B01000" },
-          "800": { value: "#750A00" },
-          "900": { value: "#3B0500" },
+          "50": { value: "#e6e6e6" },
+          "100": { value: "#b3b3b3" },
+          "200": { value: "#bebebe" },
+          "300": { value: "#5a5a5a" },
+          "400": { value: "#3a3a3a" },
+          "500": { value: "#090909" },
+          "600": { value: "#080808" },
+          "700": { value: "#060606" },
+          "800": { value: "#050505" },
+          "900": { value: "#040404" },
         },
-        light_bg: {
+        light: {
           // value: "#EEEFF2",
           "50": { value: "#FFE7E5" },
-          "100": { value: "#FFCFCA" },
-          "200": { value: "#FFB7B0" },
-          "300": { value: "#FF9F96" },
-          "400": { value: "#FF877B" },
-          "500": { value: "#FF3A26" },
-          "600": { value: "#EB1500" },
-          "700": { value: "#B01000" },
-          "800": { value: "#750A00" },
-          "900": { value: "#3B0500" },
+          "100": { value: "#fcfdfd" },
+          "200": { value: "#fafbfc" },
+          "300": { value: "#f8fafb" },
+          "400": { value: "#f7f9fa" },
+          "500": { value: "#f5f7f9" },
+          "600": { value: "#dfe1e3" },
+          "700": { value: "#aeafb1" },
+          "800": { value: "#878889" },
+          "900": { value: "#676869" },
         },
         white: {
           value: "#FFFFFF",
@@ -70,6 +71,7 @@ const config = defineConfig({
           value: "#000000",
         },
       },
+    
     },
     semanticTokens: {
       colors: {
@@ -86,8 +88,7 @@ const config = defineConfig({
           value: "0px 32px 48px -20px rgba(100, 112, 122, 0.15)",
         },
         lg: {
-          value: "0px 48px 56px -25px rgba(100, 112, 122, 0.1)"
-        ,
+          value: "0px 48px 56px -25px rgba(100, 112, 122, 0.1)",
         },
       },
       blurs: {
@@ -216,13 +217,23 @@ const config = defineConfig({
       },
     },
   },
-
   conditions: {
     cqSm: "@container(min-width: 320px)",
     child: "& > *",
     off: "&:is([data-state=off])",
     on: "&:is([data-state=on])",
   },
+  globalCss: {
+    "*": {
+      p: 0,
+      m: 0,
+      listStyleType: "none",
+      textDecoration: "none",
+      boxSizing: "border-box",
+  
+    }
+  }
+
 });
 const SaydleTheme = createSystem(defaultConfig, config);
 export default SaydleTheme;
