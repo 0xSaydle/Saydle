@@ -13,15 +13,17 @@ const Tag = ({ icon, text }: TagProps) => {
       alignItems={"center"}
       gap={"4px"}
       borderRadius={"24px"}
-      border={"1px solid var"}
+      border={"1px solid"}
+      borderColor={"dark.50"}
       width={"max-content"}
       asChild
-      ml={"-10px"}
       textStyle={"caption"}
       backdropBlur={"lg"}
     >
       <div>
-        <Icon asChild>
+        <Icon
+        
+          asChild>
           <Image src={icon} alt="icon"></Image>
         </Icon>
         <Text>{text}</Text>

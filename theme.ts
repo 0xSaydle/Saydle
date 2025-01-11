@@ -26,7 +26,7 @@ const config = defineConfig({
           "900": { value: "#3B0500" },
         },
         secondary: {
-          // value: "#A76D99",
+          "20": { value: "#a76d99" },
           "50": { value: "#F0E7EE" },
           "100": { value: "#E2CEDD" },
           "200": { value: "#d3b6cc" },
@@ -39,7 +39,7 @@ const config = defineConfig({
           "900": { value: "#1d111a" },
         },
         dark: {
-          // value:  "#1E252B" ,
+          // "20":  "#1E252B" ,
           "50": { value: "#e6e6e6" },
           "100": { value: "#b3b3b3" },
           "200": { value: "#bebebe" },
@@ -53,6 +53,7 @@ const config = defineConfig({
         },
         light: {
           // value: "#EEEFF2",
+          bg: { value: "#F5F7F9" },
           "50": { value: "#FFE7E5" },
           "100": { value: "#fcfdfd" },
           "200": { value: "#fafbfc" },
@@ -71,7 +72,6 @@ const config = defineConfig({
           value: "#000000",
         },
       },
-    
     },
     semanticTokens: {
       colors: {
@@ -230,10 +230,11 @@ const config = defineConfig({
       listStyleType: "none",
       textDecoration: "none",
       boxSizing: "border-box",
-  
-    }
-  }
-
+    },
+    "html, body": {
+      background: "#F5F7F9",
+    },
+  },
 });
 const SaydleTheme = createSystem(defaultConfig, config);
 export default SaydleTheme;

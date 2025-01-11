@@ -22,7 +22,7 @@ const Navbar = () => {
       asChild
     >
       <div>
-       <Logo />
+        <Logo />
         <Flex hideBelow={"sm"} asChild gap={"80px"}>
           {/* Nav Items */}
           <div>
@@ -37,7 +37,7 @@ const Navbar = () => {
             </Text>
           </div>
         </Flex>
-          {/* Loigin & Signup */}
+        {/* Loigin & Signup */}
         <Flex
           asChild
           hideBelow={"sm"}
@@ -75,8 +75,8 @@ const Navbar = () => {
         </Icon>
         {/* Menu List */}
         <Flex
-          padding={"50px"}
-          position={"absolute"}
+          padding={"40px"}
+          position={"fixed"}
           right={"0px"}
           top={"0px"}
           data-state={menu}
@@ -103,31 +103,31 @@ const Navbar = () => {
               alignItems={"center"}
               position={"relative"}
               width={"100%"}
-              mb={'40px'}
+              mb={"40px"}
               css={{
-                justifyContent:"space-between"
+                justifyContent: "space-between",
               }}
               asChild
-              
             >
               <div>
-              <Logo css={{
-                  "&:hover": {
-                  color:"red.400"
-                }
-            }}/>
-            <Icon 
-              onClick={toggleMenu}
-              cursor={"pointer"}
+                <Logo
+                  css={{
+                    "&:hover": {
+                      color: "red.400",
+                    },
+                  }}
+                />
+                <Icon
+                  onClick={toggleMenu}
+                  cursor={"pointer"}
                   fontSize={"23px"}
                   _hover={{
-                    color:"red.400"
+                    color: "red.400",
                   }}
-
-              asChild
-            >
-              <IoClose />
-            </Icon>
+                  asChild
+                >
+                  <IoClose />
+                </Icon>
               </div>
             </Flex>
 
