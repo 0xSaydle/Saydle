@@ -12,9 +12,10 @@ import icon from "../../public/icons/receive-square.svg";
 import WhySadle from "./(sections)/WhySadle";
 import { Poppins } from "../fonts";
 import HowItWorks from "./(sections)/HowItWorks";
+import Subscriptions from "./(sections)/Subscriptions";
 const Home = () => {
   return (
-    <Box padding={"40px"} position={"relative"} asChild>
+    <Box padding={{base:"15px",sm:"40px"}} position={"relative"} asChild>
       <div>
         <Navbar />
         <Flex pt={"24px"} asChild>
@@ -91,6 +92,7 @@ const Home = () => {
 
         <WhySadle />
         <HowItWorks />
+        <Subscriptions/>
       </div>
     </Box>
   );

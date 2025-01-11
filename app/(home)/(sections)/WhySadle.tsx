@@ -61,17 +61,16 @@ const WhySadle = () => {
             </Text>
           </h2>
         </Text>
-        <Box asChild>
+        <Flex flexDirection={"column"} gap={"10px"} asChild>
           <div>
             {WhySadleReasons.map((Reason, index) => (
               <WhySadleReason
                 key={index}
-                title={Reason.title}
-                text={Reason.text}
+                {...Reason}
               />
             ))}
           </div>
-        </Box>
+        </Flex>
       </div>
     </Flex>
   );

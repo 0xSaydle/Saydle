@@ -6,7 +6,6 @@ import {
   SystemStyleObject,
 } from "@chakra-ui/react";
 import Image, { StaticImageData } from "next/image";
-import React from "react";
 import one from "../../../public/images/unsplash_girl-book1.png";
 import two from "../../../public/images/girl_phone.png";
 import three from "../../../public/images/hand_phone.png";
@@ -102,13 +101,7 @@ const HowItWorks = () => {
       <Flex>
         <div>
           {HowItWorksItems.map((item, index) => (
-            <HowItWorksItem
-              key={index}
-              image={item.image}
-              title={item.title}
-              text={item.text}
-              style={item.style}
-            />
+            <HowItWorksItem key={index} {...item} />
           ))}
         </div>
       </Flex>
