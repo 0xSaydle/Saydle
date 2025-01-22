@@ -60,6 +60,8 @@ const HowItWorksItem = ({
       p={"20px"}
       bg={"white"}
       borderRadius={"24px"}
+      minWidth={{md: "300px" }}
+      maxWidth={{ base: "100%", md: "33%" }}
       asChild
     >
       <div>
@@ -98,7 +100,13 @@ const HowItWorks = () => {
       <Text textAlign={"center"} textStyle={{ base: "h5", sm: "h3" }}>
         How It Works
       </Text>
-      <Flex>
+      <Flex
+        flexDirection={{ base: "column", md: "row" }}
+        flexWrap={"wrap"} 
+        justifyContent={"center"}
+        gap={"5px"}
+        asChild
+      >
         <div>
           {HowItWorksItems.map((item, index) => (
             <HowItWorksItem key={index} {...item} />

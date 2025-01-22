@@ -5,9 +5,9 @@ const config = defineConfig({
   theme: {
     breakpoints: {
       sm: "431px",
-      md: "768px",
-      lg: "960px",
-      xl: "1240px",
+      md: "790px",
+      lg: "1032px",
+      // xl: "1240px",
     },
     tokens: {
       colors: {
@@ -104,14 +104,8 @@ const config = defineConfig({
         to: { transform: "rotate(360deg)" },
       },
     },
-    textStyles: {
-      // font weights:
-      // regular - 400
-      //medium- 500
-      // semi bold - 600
-      // bold - 700
-      // extra-bold - 800
 
+    textStyles: {
       d1: {
         value: {
           fontSize: "72px",
@@ -173,6 +167,12 @@ const config = defineConfig({
           fontWeight: 600,
         },
       },
+      sub: {
+        value: {
+          fontSize: "20px",
+          fontWeight: "500",
+        },
+      },
       menu: {
         value: {
           fontSize: "16px",
@@ -222,6 +222,7 @@ const config = defineConfig({
     child: "& > *",
     off: "&:is([data-state=off])",
     on: "&:is([data-state=on])",
+    checked: "&:is([checked])",
   },
   globalCss: {
     "*": {

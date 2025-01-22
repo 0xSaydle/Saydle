@@ -18,12 +18,17 @@ const Navbar = () => {
       justifyContent={"space-between"}
       alignItems={"center"}
       direction={"row"}
-      p={{ lg: "20px 100px", sm: "20px" }}
+      p={{ lg: "0px", md: "0px", }}
       asChild
     >
       <div>
         <Logo />
-        <Flex hideBelow={"sm"} asChild gap={"80px"}>
+        <Flex
+          hideBelow={"md"}
+          transform={"translateX(20%)"}
+          asChild
+          gap={"40px"}
+        >
           {/* Nav Items */}
           <div>
             <Text asChild>
@@ -40,7 +45,7 @@ const Navbar = () => {
         {/* Loigin & Signup */}
         <Flex
           asChild
-          hideBelow={"sm"}
+          hideBelow={"md"}
           bgColor={"light.400"}
           p={"8px"}
           gap={"12px"}
@@ -65,7 +70,7 @@ const Navbar = () => {
         </Flex>
         {/* Hamburger menu icon */}
         <Icon
-          hideFrom={"sm"}
+          hideFrom={"md"}
           cursor={"pointer"}
           fontSize={"23px"}
           asChild
@@ -75,7 +80,8 @@ const Navbar = () => {
         </Icon>
         {/* Menu List */}
         <Flex
-          padding={"40px"}
+          padding={{ base: "15px", sm: "40px" }}
+          zIndex={"20000"}
           position={"fixed"}
           right={"0px"}
           top={"0px"}
