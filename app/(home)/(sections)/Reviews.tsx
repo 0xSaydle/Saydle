@@ -1,8 +1,8 @@
 import { Box, Text, Flex, Icon } from "@chakra-ui/react";
 import Image, { StaticImageData } from "next/image";
-import russ from "../../../public/images/Dianne.svg";
+import russ from "@/public/images/Dianne.svg";
 ``;
-import theresa from "../../../public/images/theresa.svg";
+import theresa from "@/public/images/theresa.svg";
 ``;
 
 const ReviewData = [
