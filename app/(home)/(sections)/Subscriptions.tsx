@@ -190,7 +190,7 @@ const Subscriptions = () => {
   return (
     <Box py={"48px"} asChild>
       <div>
-        <Text textAlign={"center"} textStyle={"h5"} mb={"10px"}>
+        <Text textAlign={"center"} textStyle={{ base: "h5", sm: "h3" }} mb={"10px"}>
           Our Subscription Plans
         </Text>
         <Text
