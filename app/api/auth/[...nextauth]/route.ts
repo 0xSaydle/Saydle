@@ -29,7 +29,7 @@ export const authOptions: AuthOptions = {
         phone: { label: "Phone Number", type: "text", placeholder: "+1234567890" },
         otp: { label: "OTP", type: "text", placeholder: "123456" },
       },
-      async authorize(credentials) {
+      async authorize(credentials:CredentialsProvider) {
         await connectDB();
 
         if (!credentials?.phone || !credentials.otp) return null;
