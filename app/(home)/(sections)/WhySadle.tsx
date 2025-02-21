@@ -1,5 +1,5 @@
 import { Flex, Box, Text, Icon } from "@chakra-ui/react";
-import why_sadle from "../../../public/images/why_saydle-banner.png";
+import why_sadle from "@/public/images/why_saydle-banner.png";
 import Image from "next/image";
 import { Poppins } from "../../fonts";
 const WhySadleReasons = [

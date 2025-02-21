@@ -1,21 +1,21 @@
 import { Box, Flex, Icon, Text } from "@chakra-ui/react";
-import Tag from "../../components/custom/Tag";
-import purple from "../../public/icons/vuesax/purple.svg";
-import pink from "../../public/icons/vuesax/pink.svg";
-import Navbar from "../../components/custom/Navbar";
-import HeadlinerText from "../../components/custom/HeadlinerText";
-import HeroSubText from "../../components/custom/HeroSubText";
-import Button from "../../components/custom/button";
+import Tag from "@/components/custom/Tag";
+import purple from "@/public/icons/vuesax/purple.svg";
+import pink from "@/public/icons/vuesax/pink.svg";
+import Navbar from "@/components/custom/Navbar";
+import HeadlinerText from "@/components/custom/HeadlinerText";
+import HeroSubText from "@/components/custom/HeroSubText";
+import Button from "@/components/custom/button";
 import Link from "next/link";
 import Image from "next/image";
-import icon from "../../public/icons/receive-square.svg";
+import icon from "@/public/icons/receive-square.svg";
 import WhySadle from "./(sections)/WhySadle";
 import { Poppins } from "../fonts";
 import HowItWorks from "./(sections)/HowItWorks";
 import Subscriptions from "./(sections)/Subscriptions";
 import Reviews from "./(sections)/Reviews";
 import FAQ from "./(sections)/FAQ";
-import Footer from "../../components/custom/Footer";
+import Footer from "@/components/custom/Footer";
 const Home = () => {
   return (
     <>

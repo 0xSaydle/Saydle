@@ -1,10 +1,10 @@
 import { Flex, Text, Box, Icon } from "@chakra-ui/react";
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
-import wave from "../../../public/icons/wave.svg";
-import arm from "../../../public/icons/arm.svg";
-import rocket from "../../../public/icons/rocket.svg";
-import curved_arrow from "../../../public/icons/curved_arrow.svg";
+import wave from "@/public/icons/wave.svg";
+import arm from "@/public/icons/arm.svg";
+import rocket from "@/public/icons/rocket.svg";
+import curved_arrow from "@/public/icons/curved_arrow.svg";
 
 const SubscriptionPlanDetails = [
   {
@@ -190,7 +190,7 @@ const Subscriptions = () => {
   return (
     <Box py={"48px"} asChild>
       <div>
-        <Text textAlign={"center"} textStyle={"h5"} mb={"10px"}>
+        <Text textAlign={"center"} textStyle={{ base: "h5", sm: "h3" }} mb={"10px"}>
           Our Subscription Plans
         </Text>
         <Text

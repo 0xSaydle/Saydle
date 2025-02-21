@@ -1,8 +1,8 @@
 import { Box, Text, Flex, Icon } from "@chakra-ui/react";
 import Image, { StaticImageData } from "next/image";
-import russ from "../../../public/images/Dianne.svg";
+import russ from "@/public/images/Dianne.svg";
 ``;
-import theresa from "../../../public/images/theresa.svg";
+import theresa from "@/public/images/theresa.svg";
 ``;
 
 const ReviewData = [
@@ -77,7 +77,7 @@ const Reviews = () => {
   return (
     <Box asChild>
       <div>
-        <Text textAlign={"center"} textStyle={"h5"}>
+        <Text textAlign={"center"} textStyle={{ base: "h5", sm: "h3" }}>
           What our users are saying😍
         </Text>
         <Text textAlign={"center"} textStyle={"body_lg"} color={"dark.300"} maxWidth={"600px"} mx={"auto"} my={"20px"}>

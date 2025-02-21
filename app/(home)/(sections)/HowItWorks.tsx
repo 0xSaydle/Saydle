@@ -6,9 +6,9 @@ import {
   SystemStyleObject,
 } from "@chakra-ui/react";
 import Image, { StaticImageData } from "next/image";
-import one from "../../../public/images/unsplash_girl-book1.png";
-import two from "../../../public/images/girl_phone.png";
-import three from "../../../public/images/hand_phone.png";
+import one from "@/public/images/unsplash_girl-book1.png";
+import two from "@/public/images/girl_phone.png";
+import three from "@/public/images/hand_phone.png";
 
 const HowItWorksItems = [
   {
