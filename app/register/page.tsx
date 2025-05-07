@@ -41,7 +41,7 @@ const page = () => {
       </Flex>
       <Flex
         width={"50vw"}
-        backgroundColor={"#f55f6f"}
+        backgroundColor={"secondary.600"}
         padding="30px"
         flexDirection={"column"}
         alignItems={"center"}
