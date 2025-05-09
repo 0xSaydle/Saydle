@@ -11,47 +11,68 @@ const page = () => {
   const validateAndSubmit = async (formData: FormData) => {
     "use server";
     const userEmail = formData.get("email");
-    console.log(userEmail)
+    console.log(userEmail);
   };
   return (
-    <Flex gap={"5px"} justifyContent={"space-between"}>
-      <Flex flexDirection={"column"} gap={"10px"} width={"50vw"} padding={"40px"} >
+    <Flex gap={"5px"} justifyContent={"space-between"} mt={"5%"}>
+      <Flex
+        flexDirection={"column"}
+        gap={"10px"}
+        width={{md:"50vw", sm:"100%"}}
+        padding={"40px"}
+      >
         <Text textStyle={"h1"}>Welcome!</Text>
         <Text textStyle={"sub"}>Your new way to form healthy habits</Text>
-        <Flex pt={"10px"} gap={"20px"}flexDirection={"column"} asChild>
-        <Form action={validateAndSubmit}>
-          <Field label="Sign up with email" errorText="This field is required" >
-            <InputGroup width={"100%"} flex="1" startElement={<MdOutlineEmail />}>
-              <Input
-                name="email"
-                size={"md"}
-                required
-                placeholder="Enter your email"
+        <Flex pt={"10px"} gap={"20px"} flexDirection={"column"} asChild>
+          <Form action={validateAndSubmit}>
+            <Field
+              label="Sign up with email"
+              errorText="This field is required"
+            >
+              <InputGroup
                 width={"100%"}
-              />
-            </InputGroup>
-          </Field>
-          <Box mt={"10px"} color={"white"} rounded={"lg"} textStyle={"button_sm"} width={"100%"} padding="8px 12px" background={"secondary.600"} asChild>
-            <button type="submit">Sign Up</button>
-          </Box>
-        </Form>
-       </Flex>
-        <Text m={"10px auto"}>OR</Text> <br />
+                flex="1"
+                startElement={<MdOutlineEmail />}
+              >
+                <Input
+                  name="email"
+                  size={"md"}
+                  required
+                  placeholder="Enter your email"
+                  width={"100%"}
+                />
+              </InputGroup>
+            </Field>
+            <Box
+              mt={"10px"}
+              color={"white"}
+              rounded={"lg"}
+              textStyle={"button_sm"}
+              width={"100%"}
+              padding="8px 12px"
+              background={"secondary.600"}
+              asChild
+            >
+              <button type="submit">Sign Up</button>
+            </Box>
+          </Form>
+        </Flex>
+        <Text m={"10px auto"}>OR</Text>
         <LoginWithGoogleBtn prop="up" />
       </Flex>
       <Flex
         width={"50vw"}
         backgroundColor={"secondary.600"}
-        padding="30px"
+        py="30px"
+        pl="30px"
         flexDirection={"column"}
         alignItems={"center"}
         hideBelow={"md"}
         mr={"-70px"}
       >
-      
-        <ChakraImage  asChild>
-        <Image alt="banner" src={form_banner} />
-       </ChakraImage>
+        <ChakraImage asChild>
+          <Image alt="banner" src={form_banner} />
+        </ChakraImage>
       </Flex>
     </Flex>
   );

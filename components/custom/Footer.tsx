@@ -27,8 +27,9 @@ const Footer = () => {
             asChild
           >
             <a href="mailto:support@rareblocks.xyz">
-              {" "}
-              <IoMailOutline /> support@rareblocks.xyz
+              <Icon asChild fontSize={"25px"}>
+                <IoMailOutline />
+              </Icon> support@rareblocks.xyz
             </a>
           </Flex>
           <Flex
