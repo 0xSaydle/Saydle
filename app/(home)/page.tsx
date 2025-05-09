@@ -19,7 +19,7 @@ import Footer from "@/components/custom/Footer";
 const Home = () => {
   return (
     <>
-      <Box padding={{ base: "15px", sm: "30px 40px", md:"4%" }} position={"relative"} asChild>
+      <Box padding={{ base: "15px", sm: "30px 40px", md:"3%" }} position={"relative"} asChild>
         <div>
           <Navbar />
           <Flex pt={"24px"} asChild>
@@ -33,7 +33,6 @@ const Home = () => {
           {/* CTA Buttons */}
           <Flex
             gap={"10px"}
-            // justifyContent={"space-between"}
             alignItems={"center"}
             borderRadius={"24px"}
             pt={"24px"}

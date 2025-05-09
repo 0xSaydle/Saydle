@@ -14,7 +14,7 @@ const page = () => {
     console.log(userEmail);
   };
   return (
-    <Flex gap={"5px"} justifyContent={"space-between"} mt={"5%"}>
+    <Flex gap={"5px"} justifyContent={"space-between"} mt={"0%"}>
       <Flex
         flexDirection={"column"}
         gap={"10px"}
@@ -60,20 +60,20 @@ const page = () => {
         <Text m={"10px auto"}>OR</Text>
         <LoginWithGoogleBtn prop="up" />
       </Flex>
-      <Flex
+      <Box
         width={"50vw"}
         backgroundColor={"secondary.600"}
-        py="30px"
-        pl="30px"
-        flexDirection={"column"}
-        alignItems={"center"}
+        py="50px"
+        pl="50px"
         hideBelow={"md"}
-        mr={"-70px"}
+        mr={"-27px"}
       >
-        <ChakraImage asChild>
+        <ChakraImage
+          
+          asChild>
           <Image alt="banner" src={form_banner} />
         </ChakraImage>
-      </Flex>
+      </Box>
     </Flex>
   );
 };
