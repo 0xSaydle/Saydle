@@ -10,7 +10,12 @@ export default function OnboardingStep1() {
   const router = useRouter();
 
   const handleContinue = () => {
-    setOnboardingData((prev) => ({ ...prev, name }));
+    console.log("Name before update:", name);
+    setOnboardingData((prev) => {
+      const updated = { ...prev, name };
+      console.log("Updated onboarding data:", updated);
+      return updated;
+    });
     router.push("/dashboard/onboarding/step/2");
   };
 
@@ -56,6 +61,7 @@ export default function OnboardingStep1() {
           <Input
             placeholder="Alex"
             value={name}
+            border="1px solid #FfFfFf"
             onChange={(e) => setName(e.target.value)}
             mb={8}
           />

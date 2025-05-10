@@ -1,0 +1,28 @@
+TODO: Check Onboarding Flow Criteria
+
+1. Phone Number to Subscription Flow
+   - Verify that users with phone numbers are properly redirected
+   - Ensure users can't access onboarding after completing phone verification
+   - Check if subscription step is properly integrated after phone verification
+   - Validate that all user data (phone, name, etc.) is saved before subscription
+
+2. Database Updates
+   - Confirm that user data is properly updated in the database
+   - Verify that subscription status is correctly set
+   - Check if all required fields are populated
+
+3. Session Management
+   - Ensure session is updated with latest user data
+   - Verify that subscription status is reflected in the session
+   - Check if user state is properly maintained throughout the flow
+
+4. Edge Cases
+   - Test what happens if user leaves during onboarding
+   - Verify behavior when user returns after partial completion
+   - Check handling of failed subscription attempts
+
+Priority: High
+Status: Pending Review 
+
+
+sen/resend otp button in step 2

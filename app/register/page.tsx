@@ -1,4 +1,4 @@
-import { Box, Flex, Text, Input, Image as ChakraImage } from "@chakra-ui/react";
+import { Box, Flex, Text, Input, Image as ChakraImage, Link } from "@chakra-ui/react";
 import LoginWithGoogleBtn from "@/components/custom/LoginWithGoogleBtn";
 import Image from "next/image";
 import form_banner from "@/public/images/register_girl.svg";
@@ -59,6 +59,12 @@ const page = () => {
         </Flex>
         <Text m={"10px auto"}>OR</Text>
         <LoginWithGoogleBtn prop="up" />
+        <Text mt={4} textAlign="center">
+         Already have an account?{" "}
+          <Link textDecor={"none"} color="secondary.600" href="/login" fontWeight="bold">
+            Sign In
+          </Link>
+        </Text>
       </Flex>
       <Box
         width={"50vw"}

@@ -75,6 +75,7 @@ export default function OnboardingStep2() {
               type="tel"
               placeholder="+1 (555) 000-0000"
               value={phone}
+              border="1px solid #FfFfFf"
               onChange={(e) => setPhone(e.target.value)}
             />
           </HStack>
@@ -84,6 +85,7 @@ export default function OnboardingStep2() {
             placeholder="------"
             maxLength={6}
             value={code}
+            border="1px solid #FfFfFf"
             onChange={(e) => setCode(e.target.value)}
             mb={2}
           />

@@ -173,7 +173,7 @@ export default function Login() {
         <LoginWithGoogleBtn prop="in" />
         <Text mt={4} textAlign="center">
           Don&apos;t have an account?{" "}
-          <Link textDecor={"none"} color="#FF6F61" href="#" fontWeight="bold">
+          <Link textDecor={"none"} color="#FF6F61" href="/register" fontWeight="bold">
             Sign Up
           </Link>
         </Text>

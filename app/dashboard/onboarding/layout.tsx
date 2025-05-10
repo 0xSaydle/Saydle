@@ -36,28 +36,6 @@ export default function OnboardingLayout({
         <Box bg="#F5F7F9">
           {/* Top bar with logo, nav, and step counter */}
           <Flex align="center" justify="space-between" px={6} pt={4} pb={2}>
-            <Flex>
-              <IconButton
-                aria-label="Previous"
-                onClick={goPrev}
-                disabled={step === 1}
-                variant="ghost"
-                fontSize="28px"
-                ml={1}
-              >
-                <MdOutlineNavigateBefore />
-              </IconButton>
-              <IconButton
-                aria-label="Next"
-                onClick={goNext}
-                disabled={step === totalSteps}
-                variant="ghost"
-                fontSize="28px"
-                ml={1}
-              >
-                <MdOutlineNavigateNext />
-              </IconButton>
-            </Flex>
             <Logo />
             <Box fontWeight="bold" fontSize="sm" minW="60px" textAlign="right">
               Step {step} / {totalSteps}
@@ -80,7 +58,7 @@ export default function OnboardingLayout({
               </Progress.Root>
             </Box>
           </Flex>
-          <Box bg="#F5F7F9" h="calc(100vh - 70px)" /* overflow="hidden" */>
+          <Box bg="#f2e3e1" h="calc(100vh - 70px)" /* overflow="hidden" */>
             {children}
           </Box>
         </Box>

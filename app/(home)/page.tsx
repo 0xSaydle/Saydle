@@ -39,7 +39,7 @@ const Home = () => {
             asChild
           >
             <div>
-              <Button bg={"primary.20"} text="Subscribe" />
+              <Button bg={"primary.20"} text="Subscribe" path="/dashboard/subscription" />
               <Box
                 p={"12px 24px"}
                 borderRadius={"24px"}

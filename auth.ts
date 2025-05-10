@@ -8,6 +8,8 @@ import UserDoc from "./app/lib/User";
 import type { JWT } from "next-auth/jwt";
 import type { Session, User, DefaultSession } from "next-auth";
 import Otp from "./app/lib/Otp";
+import { supabaseAdmin } from "@/supabase/supabase_client";
+import { getServerSession } from "next-auth/next";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -17,6 +19,10 @@ declare module "next-auth" {
       email: string;
       phone?: string;
       accessToken: string;
+      plan?: string;
+      dateOfSubscription?: string;
+      nextBillingDate?: string;
+      planDuration?: number;
     } & DefaultSession["user"];
   }
 }
@@ -24,11 +30,19 @@ declare module "next-auth" {
 interface CustomUser extends User {
   phone: string;
   accessToken: string;
+  plan?: string;
+  dateOfSubscription?: string;
+  nextBillingDate?: string;
+  planDuration?: number;
 }
 
 interface CustomToken extends JWT {
   accessToken?: string;
   phone?: string;
+  plan?: string;
+  dateOfSubscription?: string;
+  nextBillingDate?: string;
+  planDuration?: number;
 }
 
 const config = {
@@ -78,6 +92,10 @@ const config = {
           accessToken,
           name: user.name || "Saydle User",
           email: user.email || "",
+          plan: user.plan,
+          dateOfSubscription: user.date_of_subscription,
+          nextBillingDate: user.next_billing_date,
+          planDuration: user.plan_duration,
         };
       },
     }),
@@ -90,6 +108,10 @@ const config = {
       if (user) {
         token.accessToken = user.accessToken;
         token.phone = user.phone;
+        token.plan = user.plan;
+        token.dateOfSubscription = user.dateOfSubscription;
+        token.nextBillingDate = user.nextBillingDate;
+        token.planDuration = user.planDuration;
       }
       return token;
     },
@@ -102,11 +124,74 @@ const config = {
     }) {
       session.user.accessToken = token.accessToken as string;
       session.user.phone = token.phone;
+      session.user.plan = token.plan;
+      session.user.dateOfSubscription = token.dateOfSubscription;
+      session.user.nextBillingDate = token.nextBillingDate;
+      session.user.planDuration = token.planDuration;
+
+      // Only proceed if we have a valid email
+      if (!session?.user?.email) {
+        console.log("No email found in session, skipping Supabase update");
+        return session;
+      }
+
+      try {
+        console.log("Processing session for email:", session.user.email);
+
+        // Always fetch the latest user data from the database
+        const { data: userData, error: fetchError } = await supabaseAdmin
+          .from("users")
+          .select("*")
+          .eq("email", session.user.email)
+          .single();
+
+        if (fetchError) {
+          console.error("Error fetching user data:", fetchError);
+          return session;
+        }
+
+        if (userData) {
+          // Update session with latest data from database
+          session.user.name = userData.name;
+          session.user.phone = userData.phone_number;
+          session.user.id = userData.id;
+          session.user.plan = userData.plan;
+          session.user.dateOfSubscription = userData.date_of_subscription;
+          session.user.nextBillingDate = userData.next_billing_date;
+          session.user.planDuration = userData.plan_duration;
+        }
+
+        // Update last sign in
+        const { error: updateError } = await supabaseAdmin
+          .from("users")
+          .update({
+            last_sign_in: new Date().toISOString(),
+          })
+          .eq("email", session.user.email);
+
+        if (updateError) {
+          console.error("Error updating last sign in:", updateError);
+        }
+      } catch (error) {
+        console.error("Error in session callback:", error);
+      }
+
       return session;
     },
-    async redirect({ baseUrl }: { baseUrl: string }) {
-      return `${baseUrl}/settings`; // Redirect to settings page after login
+    async redirect({ baseUrl, url }: { baseUrl: string; url: string }) {
+      // If the URL is already an absolute URL, return it
+      if (url.startsWith("http")) return url;
+
+      // If the URL is already a full URL, return it
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+
+      // Default to dashboard
+      return `${baseUrl}/dashboard`;
     },
+  },
+  pages: {
+    signIn: "/auth/signin",
+    error: "/auth/error",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

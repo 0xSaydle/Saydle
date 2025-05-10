@@ -6,11 +6,11 @@ import { useOnboarding } from "../../onboarding-context";
 
 export default function OnboardingStep3() {
   const { onboardingData, setOnboardingData } = useOnboarding();
-  const [struggles, setStruggles] = useState(onboardingData.struggles || "");
+  const [weaknesses, setWeaknesses] = useState(onboardingData.weaknesses || "");
   const router = useRouter();
 
   const handleContinue = () => {
-    setOnboardingData((prev) => ({ ...prev, struggles }));
+    setOnboardingData((prev) => ({ ...prev, weaknesses }));
     router.push("/dashboard/onboarding/step/4");
   };
 
@@ -80,11 +80,12 @@ export default function OnboardingStep3() {
           </Text>
           <Textarea
             placeholder="Tell us your thoughts..."
-            value={struggles}
-            onChange={(e) => setStruggles(e.target.value)}
+            value={weaknesses}
+            onChange={(e) => setWeaknesses(e.target.value)}
             mb={8}
             minH="120px"
             bg="white"
+            border="1px solid #FfFfFf"
           />
           <Button
             w="full"

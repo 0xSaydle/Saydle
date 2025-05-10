@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useOnboarding } from "../../onboarding-context";
 
 export default function OnboardingStep4() {
-  const { onboardingData, completeOnboarding } = useOnboarding();
+  const { onboardingData, completeOnboarding, setOnboardingData } =
+    useOnboarding();
   const [feelings, setFeelings] = useState(onboardingData.feelings || "");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -17,13 +18,23 @@ export default function OnboardingStep4() {
 
     setIsLoading(true);
     try {
-      // Log the final onboarding data
-      console.log("Onboarding completed with data:", onboardingData);
+      console.log("Before update - Onboarding data:", onboardingData);
+      console.log("Feelings to be saved:", feelings);
 
-      // Complete the onboarding process
-      completeOnboarding();
+      // Update feelings in context
+      setOnboardingData((prev) => {
+        const updated = {
+          ...prev,
+          feelings,
+        };
+        console.log("After context update:", updated);
+        return updated;
+      });
 
-      // Only navigate if we got here (meaning the above operations succeeded)
+      // Complete onboarding and update database
+      await completeOnboarding();
+
+      // Navigate to next step
       router.push("/dashboard/onboarding/step/5");
     } catch (error) {
       console.error("Failed to complete onboarding:", error);
@@ -104,37 +115,40 @@ export default function OnboardingStep4() {
             mb={8}
             minH="120px"
             bg="white"
+            border="1px solid #FfFfFf"
             disabled={isLoading}
           />
-          <Button
-            w="full"
-            maxW="400px"
-            borderRadius="24px"
-            bgImage={
-              isFeelingsValid
-                ? "linear-gradient(90deg, #FF6F61 0%, #A76D99 100%)"
-                : "gray.200"
-            }
-            color={isFeelingsValid ? "white" : "gray.500"}
-            _hover={{
-              bgImage: isFeelingsValid
-                ? "linear-gradient(90deg, #A76D99 0%, #FF6F61 100%)"
-                : "gray.200",
-              color: isFeelingsValid ? "white" : "gray.500",
-              opacity: isFeelingsValid ? 0.9 : 1,
-            }}
-            fontWeight="bold"
-            fontSize="lg"
-            py={6}
-            onClick={handleComplete}
-            disabled={!isFeelingsValid || isLoading}
-            _disabled={{
-              opacity: 0.7,
-              cursor: "not-allowed",
-            }}
-          >
-            {isLoading ? "Saving..." : "Continue"}
-          </Button>
+          <Flex justify={{ base: "center", md: "flex-start" }} w="100%">
+            <Button
+              w="full"
+              maxW="400px"
+              borderRadius="24px"
+              bgImage={
+                isFeelingsValid
+                  ? "linear-gradient(90deg, #FF6F61 0%, #A76D99 100%)"
+                  : "gray.200"
+              }
+              color={isFeelingsValid ? "white" : "gray.500"}
+              _hover={{
+                bgImage: isFeelingsValid
+                  ? "linear-gradient(90deg, #A76D99 0%, #FF6F61 100%)"
+                  : "gray.200",
+                color: isFeelingsValid ? "white" : "gray.500",
+                opacity: isFeelingsValid ? 0.9 : 1,
+              }}
+              fontWeight="bold"
+              fontSize="lg"
+              py={6}
+              onClick={handleComplete}
+              disabled={!isFeelingsValid || isLoading}
+              _disabled={{
+                opacity: 0.7,
+                cursor: "not-allowed",
+              }}
+            >
+              {isLoading ? "Saving..." : "Continue"}
+            </Button>
+          </Flex>
         </Box>
       </Flex>
     </Flex>

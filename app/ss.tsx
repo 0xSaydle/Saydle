@@ -2,13 +2,12 @@
 
 import { Box, Text, SimpleGrid } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { useOnboarding } from "../../onboarding-context";
+import PlanCard from "../components/custom/PlanCard";
 import { useState } from "react";
-import PlanCard from "@/components/custom/PlanCard";
 
 const plans = [
   {
-    title: "Monthly",
+    name: "Monthly",
     price: "9.99",
     period: "month",
     features: [
@@ -18,11 +17,11 @@ const plans = [
       "Community support",
       "Basic meditation guides",
     ],
-    icon: " 👋🏽",
+    emoji: "🌟",
     description: "Perfect for those starting their journey",
   },
   {
-    title: "Yearly",
+    name: "Yearly",
     price: "99.99",
     period: "year",
     features: [
@@ -33,35 +32,23 @@ const plans = [
       "Early access to new features",
     ],
     emoji: "✨",
-    icon: "💪🏽",
     description: "Best value for committed users",
-    special: "on",
+    popular: true,
   },
 ];
 
-export default function OnboardingStep5() {
+export default function Home() {
   const router = useRouter();
-  const { onboardingData, setOnboardingData } = useOnboarding();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const handlePlanSelect = (plan: string) => {
     setSelectedPlan(plan);
   };
 
-  const handleComplete = async () => {
-    if (!selectedPlan) return;
-
-    setIsLoading(true);
-    try {
-      setOnboardingData({ ...onboardingData, plan: selectedPlan });
-      await router.push("/dashboard");
-    } catch (error) {
-      console.error("Error completing onboarding:", error);
-      alert("Failed to complete onboarding. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSubscribe = (plan: string) => {
+    // Store the selected plan in localStorage or state management
+    localStorage.setItem("selectedPlan", plan);
+    router.push("/dashboard/subscription");
   };
 
   return (
@@ -73,16 +60,15 @@ export default function OnboardingStep5() {
         Select the plan that best fits your needs
       </Text>
 
-      <SimpleGrid
-        columns={{ base: 1, md: 2 }}
-        gap={6}
-        maxW="1000px"
-        mx="auto"
-        placeItems="center"
-        justifyItems="center"
-      >
+      <SimpleGrid columns={{ base: 1, md: 2 }} gap={6} maxW="1000px" mx="auto">
         {plans.map((plan) => (
-          <PlanCard key={plan.title} {...plan} />
+          <PlanCard
+            key={plan.name}
+            {...plan}
+            isSelected={selectedPlan === plan.name}
+            onClick={() => handlePlanSelect(plan.name)}
+            onSubscribe={() => handleSubscribe(plan.name)}
+          />
         ))}
       </SimpleGrid>
     </Box>

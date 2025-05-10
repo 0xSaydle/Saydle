@@ -3,8 +3,21 @@ import { signIn } from "next-auth/react";
 import { Box, Icon, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import google from "@/public/Google_Icon.webp";
+import supabase from "@/supabase/supabase_client";
 
 const LoginWithGoogleBtn = ({ prop }: { prop: string }) => {
+  const handleGoogleLogin = async () => {
+    try {
+      // Start the Google sign-in process
+      await signIn("google", {
+        callbackUrl: "/dashboard",
+        redirect: true,
+      });
+    } catch (error) {
+      console.error("Error during Google login:", error);
+    }
+  };
+
   return (
     <Box
       padding={"8px 16px"}
@@ -15,14 +28,9 @@ const LoginWithGoogleBtn = ({ prop }: { prop: string }) => {
       rounded={"lg"}
       cursor={"pointer"}
       w={"100%"}
-      onClick={() =>
-        signIn("google", {
-          callbackUrl: "/settings",
-          redirect: true,
-        })
-      }
+      onClick={handleGoogleLogin}
     >
-      <Icon ml={"-4px"} fontSize={"24px"} asChild>
+      <Icon h={"24px"} w={"24px"} ml={"-4px"} fontSize={"24px"} asChild>
         <Image src={google} alt="Google_icon"></Image>
       </Icon>
       <Text fontSize={"14px"}>Sign {prop} with Google</Text>

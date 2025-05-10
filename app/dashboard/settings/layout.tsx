@@ -1,5 +1,3 @@
-import "tailwindcss/tailwind.css";
-import "flowbite/dist/flowbite.css";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
