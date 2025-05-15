@@ -1,19 +1,47 @@
 "use client";
-import { Box, Flex, Text, Input, Button, Link, HStack } from "@chakra-ui/react";
-import { useState } from "react";
+import { Box, Flex, Text, Input, Button, HStack } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useOnboarding } from "../../onboarding-context";
+import { useOnboarding, phoneSchema } from "../../onboarding-context";
+import { z } from "zod";
 
 export default function OnboardingStep2() {
   const { onboardingData, setOnboardingData } = useOnboarding();
   const [country, setCountry] = useState(onboardingData.country || "US");
   const [phone, setPhone] = useState(onboardingData.phone || "");
-  const [code, setCode] = useState(onboardingData.code || "");
+  const [error, setError] = useState("");
+  const [isValid, setIsValid] = useState(false);
+  const [touched, setTouched] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    if (!touched) return;
+
+    try {
+      phoneSchema.parse(phone);
+      setError("");
+      setIsValid(true);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setError(err.errors[0].message);
+        setIsValid(false);
+      }
+    }
+  }, [phone, touched]);
+
   const handleContinue = () => {
-    setOnboardingData((prev) => ({ ...prev, country, phone, code }));
-    router.push("/dashboard/onboarding/step/3");
+    try {
+      // Validate phone number
+      phoneSchema.parse(phone);
+      setError("");
+      setOnboardingData((prev) => ({ ...prev, country, phone }));
+      router.push("/onboarding/step/3");
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setError(err.errors[0].message);
+        setIsValid(false);
+      }
+    }
   };
 
   return (
@@ -53,7 +81,7 @@ export default function OnboardingStep2() {
       >
         <Box w="100%" maxW="500px" mt={{ base: 4, md: 12 }} px={4}>
           <Text mb={2} fontWeight="medium">
-            Whats your Phone number, Alex?
+            What&apos;s your phone number, {onboardingData.name}?
           </Text>
           <HStack mb={4}>
             <select
@@ -76,35 +104,36 @@ export default function OnboardingStep2() {
               placeholder="+1 (555) 000-0000"
               value={phone}
               border="1px solid #FfFfFf"
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => {
+                setTouched(true);
+                setPhone(e.target.value);
+              }}
+              onBlur={() => setTouched(true)}
             />
           </HStack>
-          <Text mb={1}>Verification code</Text>
-          <Input
-            type="text"
-            placeholder="------"
-            maxLength={6}
-            value={code}
-            border="1px solid #FfFfFf"
-            onChange={(e) => setCode(e.target.value)}
-            mb={2}
-          />
-          <Link color="#A76D99" fontSize="sm" mb={6} display="block" href="#">
-            Click here to get/resend
-          </Link>
+          {touched && error && (
+            <Text color="red.500" fontSize="sm" mb={4}>
+              {error}
+            </Text>
+          )}
           <Button
             w="full"
             borderRadius="24px"
-            bg="#FF6F61"
-            color="white"
+            bg={isValid ? "#FF6F61" : "gray.200"}
+            color={isValid ? "white" : "gray.500"}
             _hover={{
-              bg: "#A76D99",
-              color: "white",
+              bg: isValid ? "#A76D99" : "gray.200",
+              color: isValid ? "white" : "gray.500",
             }}
             fontWeight="bold"
             fontSize="16px"
             py={6}
             onClick={handleContinue}
+            disabled={!isValid}
+            _disabled={{
+              opacity: 0.7,
+              cursor: "not-allowed",
+            }}
           >
             Continue
           </Button>

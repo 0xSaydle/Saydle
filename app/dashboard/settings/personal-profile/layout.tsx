@@ -1,14 +1,15 @@
-import { Provider } from "../../../components/ui/provider";
-import { GeneralSans } from "../../fonts";
-export default function RootLayout(props: { children: React.ReactNode }) {
-  const { children } = props;
+import { Box } from "@chakra-ui/react";
+import { Provider } from "@/components/ui/provider";
+import { fonts } from "@/app/fonts";
+
+export default function PersonalProfileLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html suppressHydrationWarning>
-      <body
-        className={`${GeneralSans.className} antialiased`}
-      >
-        <Provider>{children}</Provider>
-      </body>
-    </html>
+    <Provider>
+      <Box className={fonts.inter.className}>{children}</Box>
+    </Provider>
   );
 }

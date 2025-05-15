@@ -1,43 +1,6 @@
-import { Flex, Text, Box, Icon } from "@chakra-ui/react";
-import Image, { StaticImageData } from "next/image";
-import Link from "next/link";
-import wave from "@/public/icons/wave.svg";
-import arm from "@/public/icons/arm.svg";
-import rocket from "@/public/icons/rocket.svg";
+import { Flex, Text, Box } from "@chakra-ui/react";
 import PlanCard from "@/components/custom/PlanCard";
-
-const SubscriptionPlanDetails = [
-  {
-    title: "Monthly",
-    price: "9.99",
-    period: "month",
-    features: [
-      "Unlimited access to all features",
-      "Personalized daily affirmations",
-      "Progress tracking",
-      "Community support",
-      "Basic meditation guides",
-    ],
-    icon: " 👋🏽",
-    description: "Perfect for those starting their journey",
-  },
-  {
-    title: "Yearly",
-    price: "99.99",
-    period: "year",
-    features: [
-      "Everything in Monthly plan",
-      "Advanced meditation guides",
-      "Priority support",
-      "Exclusive workshops",
-      "Early access to new features",
-    ],
-    emoji: "✨",
-    icon: "💪🏽",
-    description: "Best value for committed users",
-    special: "on",
-  },
-];
+import plans from "@/app/lib/plans";
 
 const Subscriptions = () => {
   return (
@@ -72,7 +35,7 @@ const Subscriptions = () => {
         >
           <div>
           
-            {SubscriptionPlanDetails.map((plan, index) => (
+            {plans.map((plan, index) => (
               <PlanCard key={index} {...plan} />
             ))}
           </div>

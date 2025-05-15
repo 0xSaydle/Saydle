@@ -6,10 +6,10 @@ import connectDB from "./app/lib/mongo";
 import { signJwt } from "./app/lib/jwt";
 import UserDoc from "./app/lib/User";
 import type { JWT } from "next-auth/jwt";
-import type { Session, User, DefaultSession } from "next-auth";
+import type { Session, User, DefaultSession, Account } from "next-auth";
 import Otp from "./app/lib/Otp";
 import { supabaseAdmin } from "@/supabase/supabase_client";
-import { getServerSession } from "next-auth/next";
+import { randomUUID } from "crypto";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -187,6 +187,66 @@ const config = {
 
       // Default to dashboard
       return `${baseUrl}/dashboard`;
+    },
+    async signIn(params: {
+      user: User | { email?: string | null; name?: string | null };
+      account: Account | null;
+      email?: { verificationRequest?: boolean };
+      credentials?: Record<string, any>;
+    }) {
+      const { user, account } = params;
+
+      if (account?.provider === "google" && user.email) {
+        try {
+          console.log(
+            "Attempting to create/update user in Supabase:",
+            user.email
+          );
+
+          // Check if user exists in Supabase
+          const { data: existingUser, error: fetchError } = await supabaseAdmin
+            .from("users")
+            .select("id")
+            .eq("email", user.email)
+            .single();
+
+          if (fetchError && fetchError.code !== "PGRST116") {
+            // PGRST116 is "not found" error
+            console.error("Error checking existing user:", fetchError);
+            return false;
+          }
+
+          if (!existingUser) {
+            console.log("Creating new user in Supabase");
+            // Create new user in Supabase
+            const { error: insertError } = await supabaseAdmin
+              .from("users")
+              .insert([
+                {
+                  id: randomUUID(), // Generate a unique ID using crypto
+                  email: user.email,
+                  name: user.name || "Saydle User",
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                  verified: false,
+                },
+              ]);
+
+            if (insertError) {
+              console.error("Error creating user in Supabase:", insertError);
+              return false;
+            }
+            console.log("Successfully created new user");
+          } else {
+            console.log("User already exists in Supabase");
+          }
+          return true;
+        } catch (error) {
+          console.error("Error in signIn callback:", error);
+          return false;
+        }
+      }
+      return true;
     },
   },
   pages: {

@@ -1,22 +1,49 @@
 "use client";
 import { Box, Flex, Text, Input, Button } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useOnboarding } from "../../onboarding-context";
+import { useOnboarding, nameSchema } from "../../onboarding-context";
+import { z } from "zod";
 
 export default function OnboardingStep1() {
   const { onboardingData, setOnboardingData } = useOnboarding();
   const [name, setName] = useState(onboardingData.name || "");
+  const [error, setError] = useState("");
+  const [isValid, setIsValid] = useState(false);
+  const [touched, setTouched] = useState(false);
   const router = useRouter();
 
-  const handleContinue = () => {
-    console.log("Name before update:", name);
-    setOnboardingData((prev) => {
-      const updated = { ...prev, name };
-      console.log("Updated onboarding data:", updated);
-      return updated;
-    });
-    router.push("/dashboard/onboarding/step/2");
+  useEffect(() => {
+    if (!touched) return;
+
+    try {
+      nameSchema.parse(name);
+      setError("");
+      setIsValid(true);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setError(err.errors[0].message);
+        setIsValid(false);
+      }
+    }
+  }, [name, touched]);
+
+  const handleContinue = async () => {
+    try {
+      // Validate name
+      nameSchema.parse(name);
+
+      // Update context
+      setOnboardingData((prev) => ({ ...prev, name }));
+
+      // Navigate to next step
+      router.push("/onboarding/step/2");
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setError(err.errors[0].message);
+        setIsValid(false);
+      }
+    }
   };
 
   return (
@@ -59,25 +86,39 @@ export default function OnboardingStep1() {
             What would you like us to call you?
           </Text>
           <Input
-            placeholder="Alex"
+            placeholder="Enter your name"
             value={name}
+            onChange={(e) => {
+              setTouched(true);
+              setName(e.target.value);
+            }}
+            onBlur={() => setTouched(true)}
+            mb={2}
             border="1px solid #FfFfFf"
-            onChange={(e) => setName(e.target.value)}
-            mb={8}
           />
+          {touched && error && (
+            <Text color="red.500" fontSize="sm" mb={4}>
+              {error}
+            </Text>
+          )}
           <Button
             w="full"
             borderRadius="24px"
-            bg="#FF6F61"
-            color="white"
+            bg={isValid ? "#FF6F61" : "gray.200"}
+            color={isValid ? "white" : "gray.400"}
             _hover={{
-              bg: "#A76D99",
-              color: "white",
+              bg: isValid ? "#A76D99" : "gray.200",
+              color: isValid ? "white" : "gray.400",
             }}
             fontWeight="bold"
             fontSize="16px"
             py={6}
             onClick={handleContinue}
+            disabled={!isValid}
+            _disabled={{
+              opacity: 0.7,
+              cursor: "not-allowed",
+            }}
           >
             Continue
           </Button>

@@ -1,17 +1,33 @@
 "use client";
 import { Box, Flex, Text, Input, Button, Textarea } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useOnboarding } from "../../onboarding-context";
 
 export default function OnboardingStep3() {
   const { onboardingData, setOnboardingData } = useOnboarding();
   const [weaknesses, setWeaknesses] = useState(onboardingData.weaknesses || "");
+  const [error, setError] = useState("");
+  const [isValid, setIsValid] = useState(false);
+  const [touched, setTouched] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    if (!touched) return;
+
+    if (weaknesses.trim().length > 0) {
+      setError("");
+      setIsValid(true);
+    } else {
+      setError("Please share something you're struggling with");
+      setIsValid(false);
+    }
+  }, [weaknesses, touched]);
+
   const handleContinue = () => {
+    if (!isValid) return;
     setOnboardingData((prev) => ({ ...prev, weaknesses }));
-    router.push("/dashboard/onboarding/step/4");
+    router.push("/onboarding/step/4");
   };
 
   return (
@@ -41,7 +57,7 @@ export default function OnboardingStep3() {
           Daily reminders
         </Text>
         <Text color="gray.600" mb={6}>
-          Lets improve your mental health
+          Let&apos;s improve your mental health
         </Text>
         {/* Illustration placeholder */}
         <Box mt={4} mb={2} alignSelf={{ base: "center", md: "flex-start" }}>
@@ -73,7 +89,7 @@ export default function OnboardingStep3() {
       >
         <Box w="100%" maxW="600px" mt={{ base: 4, md: 12 }} px={4}>
           <Text mb={1} fontWeight="medium">
-            What's something you've been struggling with?
+            What&apos;s something you&apos;ve been struggling with?
           </Text>
           <Text mb={4} color="gray.500" fontSize="sm">
             (The more you share the more personalized your affirmations will be)
@@ -81,25 +97,39 @@ export default function OnboardingStep3() {
           <Textarea
             placeholder="Tell us your thoughts..."
             value={weaknesses}
-            onChange={(e) => setWeaknesses(e.target.value)}
+            onChange={(e) => {
+              setTouched(true);
+              setWeaknesses(e.target.value);
+            }}
+            onBlur={() => setTouched(true)}
             mb={8}
             minH="120px"
             bg="white"
             border="1px solid #FfFfFf"
           />
+          {touched && error && (
+            <Text color="red.500" fontSize="sm" mb={4}>
+              {error}
+            </Text>
+          )}
           <Button
             w="full"
             borderRadius="24px"
-            bg="#FF6F61"
-            color="white"
+            bg={isValid ? "#FF6F61" : "gray.200"}
+            color={isValid ? "white" : "gray.500"}
             _hover={{
-              bg: "#A76D99",
-              color: "white",
+              bg: isValid ? "#A76D99" : "gray.200",
+              color: isValid ? "white" : "gray.500",
             }}
             fontWeight="bold"
             fontSize="16px"
             py={6}
             onClick={handleContinue}
+            disabled={!isValid}
+            _disabled={{
+              opacity: 0.7,
+              cursor: "not-allowed",
+            }}
           >
             Continue
           </Button>

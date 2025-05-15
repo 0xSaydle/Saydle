@@ -21,8 +21,14 @@ TODO: Check Onboarding Flow Criteria
    - Verify behavior when user returns after partial completion
    - Check handling of failed subscription attempts
 
+5. Middleware Improvements
+   - Improve the middleware redirection logic for step 5 access
+   - Implement a more robust solution for handling onboarding completion
+   - Consider using a dedicated "onboarding_completed" flag instead of checking phone_number
+
 Priority: High
 Status: Pending Review 
 
 
 sen/resend otp button in step 2
+logo in home screen on mobile shoulb=d be bigger, the plancards add key prop

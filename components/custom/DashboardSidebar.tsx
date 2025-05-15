@@ -1,127 +1,146 @@
 "use client";
 
-import {
-  Box,
-  Flex,
-  Text,
-  Icon,
-  IconButton,
-  useDisclosure,
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-} from "@chakra-ui/react";
+import { Box, Flex, Text, Icon } from "@chakra-ui/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   MdDashboard,
-  MdPerson,
   MdSettings,
+  MdLogout,
   MdSubscriptions,
-  MdNotifications,
-  MdHelp,
-  MdMenu,
 } from "react-icons/md";
+import { signOut } from "next-auth/react";
 
 const menuItems = [
   { name: "Dashboard", icon: MdDashboard, path: "/dashboard" },
-  { name: "Profile", icon: MdPerson, path: "/dashboard/profile" },
   {
-    name: "Subscriptions",
+    name: "Subscription",
     icon: MdSubscriptions,
     path: "/dashboard/subscription",
   },
-  {
-    name: "Notifications",
-    icon: MdNotifications,
-    path: "/dashboard/notifications",
-  },
   { name: "Settings", icon: MdSettings, path: "/dashboard/settings" },
-  { name: "Help", icon: MdHelp, path: "/dashboard/help" },
 ];
 
-const SidebarContent = ({ onClose }: { onClose?: () => void }) => {
+const SidebarContent = ({ isMobile }: { isMobile: boolean }) => {
   const pathname = usePathname();
-
   return (
-    <Flex direction="column" gap={2} px={4}>
-      {menuItems.map((item) => {
-        const isActive = pathname === item.path;
-        return (
-          <Link
-            key={item.path}
-            href={item.path}
-            style={{ textDecoration: "none" }}
-            onClick={onClose}
-          >
-            <Flex
-              align="center"
-              gap={3}
-              p={3}
-              borderRadius="lg"
-              bg={isActive ? "primary.20" : "transparent"}
-              color={isActive ? "white" : "gray.600"}
-              _hover={{
-                bg: isActive ? "primary.20" : "gray.100",
-              }}
-            >
-              <Icon as={item.icon} boxSize={5} />
-              <Text fontWeight={isActive ? "bold" : "normal"}>{item.name}</Text>
-            </Flex>
-          </Link>
-        );
-      })}
+    <Flex
+      direction={isMobile ? "row" : "column"}
+      h={isMobile ? "auto" : "100%"}
+      w={isMobile ? "100%" : "210px"}
+      justify={isMobile ? "space-around" : "space-between"}
+      align={"center"}
+      py={isMobile ? 0 : 6}
+      px={isMobile ? 0 : 0}
+      bg={isMobile ? "white" : undefined}
+    >
+      <Flex
+        direction={isMobile ? "row" : "column"}
+        w={isMobile ? "100%" : "auto"}
+        justifyContent="space-between"
+        px={{ base: "10px" }}
+      >
+        {menuItems.map((item) => {
+          const isActive = pathname === item.path;
+          return (
+            <Link key={item.path} href={item.path}>
+              <Flex
+                direction={isMobile ? "column" : "row"}
+                alignItems="center"
+                gap={isMobile ? 0 : 2}
+                justify={isMobile ? "center" : "flex-start"}
+                px={isMobile ? 2 : 6}
+                py={isMobile ? 2 : 3}
+                fontWeight={isActive ? "bold" : "normal"}
+                color={isActive ? "#FF6F61" : "gray.700"}
+                bg={isActive && !isMobile ? "#FFF3F0" : "transparent"}
+                borderRadius={isMobile ? "none" : "md"}
+                _hover={{ bg: isMobile ? "gray.100" : "gray.100" }}
+                mb={isMobile ? 0 : 1}
+                fontSize={isMobile ? "xs" : "15px"}
+              >
+                <Icon as={item.icon} boxSize={5} mb={isMobile ? 0 : 1} />
+                {!isMobile && <Text fontSize="15px">{item.name}</Text>}
+                {isMobile && (
+                  <Text fontSize="10px" mt={1}>
+                    {item.name}
+                  </Text>
+                )}
+              </Flex>
+            </Link>
+          );
+        })}
+        <Flex
+          flexDir={"column"}
+          hideBelow={"md"}
+          flex={1}
+          justifyContent="center"
+        ></Flex>
+        {/* Logout button */}
+        <Flex
+          direction={isMobile ? "column" : "row"}
+          alignItems="center"
+          justifyContent={isMobile ? "center" : "flex-start"}
+          gap={isMobile ? 0 : 2}
+          px={isMobile ? 2 : 6}
+          py={isMobile ? 2 : 3}
+          color="gray.700"
+          fontWeight="normal"
+          borderRadius={isMobile ? "none" : "md"}
+          cursor="pointer"
+          _hover={{ bg: isMobile ? "gray.100" : "gray.100" }}
+          mb={isMobile ? 0 : 1}
+          fontSize={isMobile ? "xs" : "15px"}
+          onClick={() => signOut()}
+        >
+          <Icon as={MdLogout} boxSize={5} mb={isMobile ? 0 : 1} />
+          {!isMobile && <Text fontSize="15px">Logout</Text>}
+          {isMobile && (
+            <Text fontSize="10px" mt={1}>
+              Logout
+            </Text>
+          )}
+        </Flex>
+      </Flex>
     </Flex>
   );
 };
 
 export default function DashboardSidebar() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
   return (
     <>
-      {/* Mobile Menu Button */}
-      <IconButton
-        aria-label="Open menu"
-        icon={<Icon as={MdMenu} />}
-        display={{ base: "flex", md: "none" }}
-        position="fixed"
-        top="20px"
-        left="20px"
-        zIndex={1001}
-        onClick={onOpen}
-      />
-
       {/* Desktop Sidebar */}
       <Box
-        w="250px"
+        w="210px"
         h="100vh"
         bg="white"
-        borderRight="1px solid"
-        borderColor="gray.200"
+        borderRight="1px solid #F0F0F0"
         position="fixed"
         left={0}
         top={0}
-        pt="80px"
+        pt="60px"
         display={{ base: "none", md: "block" }}
+        zIndex={1100}
       >
-        <SidebarContent />
+        <SidebarContent isMobile={false} />
       </Box>
-
-      {/* Mobile Drawer */}
-      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerHeader>Menu</DrawerHeader>
-          <DrawerCloseButton />
-          <DrawerBody pt={4}>
-            <SidebarContent onClose={onClose} />
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
+      {/* Mobile Bottom Bar */}
+      <Box
+        w="100vw"
+        h="60px"
+        bg="white"
+        borderTop="1px solid #F0F0F0"
+        position="fixed"
+        left={0}
+        bottom={0}
+        display={{ base: "flex", md: "none" }}
+        zIndex={1100}
+        boxShadow="0 -2px 8px rgba(0,0,0,0.03)"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <SidebarContent isMobile={true} />
+      </Box>
     </>
   );
 }

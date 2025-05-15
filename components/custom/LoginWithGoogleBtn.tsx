@@ -1,3 +1,4 @@
+"use client";
 
 import { signIn } from "next-auth/react";
 import { Box, Icon, Text } from "@chakra-ui/react";

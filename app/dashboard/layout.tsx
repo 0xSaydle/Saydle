@@ -1,8 +1,8 @@
 "use client";
 
 import { Box } from "@chakra-ui/react";
+import DashboardSidebar from "@/components/custom/DashboardSidebar";
 import { usePathname } from "next/navigation";
-import Navbar from "@/components/custom/Navbar";
 
 export default function DashboardLayout({
   children,
@@ -17,9 +17,17 @@ export default function DashboardLayout({
   }
 
   return (
-    <Box h="100vh" bg="#f2e3e1">
-      <Navbar />
-      <Box as="main" pt="80px">
+    <Box minH="100vh" bg="#f2e3e1">
+      {/* <DashboardHeader /> */}
+      <Box
+        as="main"
+        ml={{ base: 0, md: "250px" }}
+        pt="80px"
+        px={{ base: 4, md: 8 }}
+        maxW="1200px"
+        mx="auto"
+      >
+        <DashboardSidebar />
         {children}
       </Box>
     </Box>

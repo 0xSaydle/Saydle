@@ -2,18 +2,18 @@ import { NextResponse, NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { supabaseAdmin } from "@/supabase/supabase_client";
 
-const middleware = async (req: NextRequest) => {
+export async function middleware(request: NextRequest) {
   const token = await getToken({
-    req,
+    req: request,
     secret: process.env.NEXTAUTH_SECRET,
     secureCookie: process.env.NODE_ENV === "production",
   });
   const isAuth = !!token;
-  const pathname = req.nextUrl.pathname;
+  const pathname = request.nextUrl.pathname;
 
   // If not authenticated and trying to access protected routes
   if (!isAuth && pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // If authenticated
@@ -25,9 +25,15 @@ const middleware = async (req: NextRequest) => {
         .eq("email", token.email)
         .single();
 
-      // If user has phone number and tries to access onboarding, redirect to dashboard
-      if (user?.phone_number && pathname.startsWith("/dashboard/onboarding")) {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
+      // If user has phone number and tries to access onboarding steps 1-4, redirect to dashboard
+      // But allow access to step 5 (plan selection) even after completing the basic onboarding
+      if (
+        user?.phone_number &&
+        pathname.startsWith("/onboarding") &&
+        !pathname.includes("/step/5") &&
+        !pathname.includes("/step/6")
+      ) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
       }
 
       // If no phone number and trying to access dashboard, redirect to onboarding
@@ -36,17 +42,51 @@ const middleware = async (req: NextRequest) => {
         (pathname === "/dashboard" || pathname === "/dashboard/")
       ) {
         return NextResponse.redirect(
-          new URL("/dashboard/onboarding/step/1", req.url)
+          new URL("/onboarding/step/1", request.url)
         );
       }
-    } catch (error) {
-      console.error("Error checking user phone number:", error);
-    }
 
-    return NextResponse.next();
+      // Handle onboarding step validation
+      // if (pathname.startsWith("/dashboard/onboarding/step/")) {
+      //   const stepMatch = pathname.match(/\/step\/(\d+)/);
+      //   if (stepMatch) {
+      //     const requestedStep = parseInt(stepMatch[1]);
+
+      //     // If trying to access step 4 or beyond, allow it
+      //     if (requestedStep >= 4) {
+      //       return NextResponse.next();
+      //     }
+
+      //     // Get onboarding data from cookie
+      //     const onboardingData = request.cookies.get("onboardingData")?.value;
+      //     let data;
+      //     try {
+      //       data = onboardingData ? JSON.parse(onboardingData) : {};
+      //     } catch {
+      //       data = {};
+      //     }
+
+      //     // Check which step they should be on
+      //     let currentStep = 1;
+      //     if (data.name) currentStep = 2;
+      //     if (data.phone) currentStep = 3;
+
+      //     // If trying to access a step beyond their progress, redirect to current step
+      //     if (requestedStep > currentStep) {
+      //       return NextResponse.redirect(
+      //         new URL(`/dashboard/onboarding/step/${currentStep}`, request.url)
+      //       );
+      //     }
+      //   }
+      // }
+    } catch (error) {
+      console.error("Error in middleware:", error);
+    }
   }
 
   return NextResponse.next();
-};
+}
 
-export default middleware;
+export const config = {
+  matcher: ["/dashboard/:path*", "/onboarding/step/:path*"],
+};

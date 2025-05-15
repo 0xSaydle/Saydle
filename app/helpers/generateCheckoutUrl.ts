@@ -28,7 +28,7 @@ export async function generateCheckoutUrl(productId: string) {
           }
         },
         product_options: {
-          redirect_url: `${process.env.NEXTAUTH_URL}/dashboard/onboarding/step/6`,
+          redirect_url: `${process.env.NEXTAUTH_URL}/onboarding/step/6`,
           receipt_button_text: 'Continue to Saydle',
           receipt_thank_you_note: 'Thank you for subscribing!'
         }
@@ -44,6 +44,8 @@ export async function generateCheckoutUrl(productId: string) {
     }
   };
   try {
+    console.log("Store ID:", process.env.LEMON_SQUEEZY_STORE_ID);
+console.log("Variant ID being used:", productId);
     const response = await fetch("https://api.lemonsqueezy.com/v1/checkouts", {
       method: "POST",
       headers: {
@@ -53,7 +55,7 @@ export async function generateCheckoutUrl(productId: string) {
     },
     body: JSON.stringify(payload),
   });
-
+  console.log(response);
   if (!response.ok) {
     const errorData = await response.json();
       throw new Error(errorData?.errors?.[0]?.detail || 'Failed to create checkout');
