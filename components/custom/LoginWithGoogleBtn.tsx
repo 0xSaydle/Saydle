@@ -1,9 +1,8 @@
-"use client";
+
 import { signIn } from "next-auth/react";
 import { Box, Icon, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import google from "@/public/Google_Icon.webp";
-import supabase from "@/supabase/supabase_client";
 
 const LoginWithGoogleBtn = ({ prop }: { prop: string }) => {
   const handleGoogleLogin = async () => {
