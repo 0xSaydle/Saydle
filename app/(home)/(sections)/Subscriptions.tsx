@@ -1,6 +1,6 @@
 import { Flex, Text, Box } from "@chakra-ui/react";
 import PlanCard from "@/components/custom/PlanCard";
-import plans from "@/app/lib/plans";
+import plans from "@/lib/plans";
 
 const Subscriptions = () => {
   return (
@@ -22,7 +22,6 @@ const Subscriptions = () => {
           Choose a plan that suits your journey and start receiving personalized
           affirmations every day
         </Text>
-      
 
         <Flex
           gap={"10px"}
@@ -34,7 +33,6 @@ const Subscriptions = () => {
           asChild
         >
           <div>
-          
             {plans.map((plan, index) => (
               <PlanCard key={index} {...plan} />
             ))}

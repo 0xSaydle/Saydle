@@ -1,4 +1,4 @@
-import { generateCheckoutUrl } from "@/app/helpers/generateCheckoutUrl";
+import { generateCheckoutUrl } from "@/helpers/generateCheckoutUrl";
 import { Text, Link } from "@chakra-ui/react";
 
 export const SubscribeBtn = async ({
@@ -9,8 +9,10 @@ export const SubscribeBtn = async ({
   title: string;
   special?: string;
   productId?: string;
-  }) => {
-    const checkoutUrl = productId ? await generateCheckoutUrl(productId) : "/login";
+}) => {
+  const checkoutUrl = productId
+    ? await generateCheckoutUrl(productId)
+    : "/login";
   return (
     <Text
       data-state={special}

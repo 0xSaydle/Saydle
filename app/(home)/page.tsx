@@ -16,6 +16,7 @@ import Subscriptions from "./(sections)/Subscriptions";
 import Reviews from "./(sections)/Reviews";
 import FAQ from "./(sections)/FAQ";
 import Footer from "@/components/custom/Footer";
+import Banner from "./(sections)/Banner";
 const Home = () => {
   return (
     <>
@@ -26,16 +27,18 @@ const Home = () => {
       >
         <div>
           <Navbar />
-          <Flex pt={"24px"} asChild>
+          <Banner/>
+          <Flex hideFrom={"md"} pt={"24px"} asChild>
             <div>
               <Tag icon={pink} text="Positivity" />
               <Tag icon={purple} text="Wellness" />
             </div>
           </Flex>
-          <HeadlinerText />
+          <HeadlinerText  />
           <HeroSubText />
           {/* CTA Buttons */}
           <Flex
+            hideFrom={"md"}
             gap={"10px"}
             alignItems={"center"}
             borderRadius={"24px"}

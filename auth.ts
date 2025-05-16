@@ -2,12 +2,9 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import AppleProvider from "next-auth/providers/apple";
 import CredentialsProvider from "next-auth/providers/credentials";
-import connectDB from "./app/lib/mongo";
-import { signJwt } from "./app/lib/jwt";
-import UserDoc from "./app/lib/User";
+import UserDoc from "./lib/User";
 import type { JWT } from "next-auth/jwt";
 import type { Session, User, DefaultSession, Account } from "next-auth";
-import Otp from "./app/lib/Otp";
 import { supabaseAdmin } from "@/supabase/supabase_client";
 import { randomUUID } from "crypto";
 

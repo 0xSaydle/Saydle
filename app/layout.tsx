@@ -1,6 +1,7 @@
 import { GeneralSans } from "./fonts";
 import { Provider } from "@/components/ui/provider";
 import { SessionProvider } from "next-auth/react";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function RootLayout({
   children,
@@ -12,6 +13,7 @@ export default function RootLayout({
       <body className={`${GeneralSans.className} antialiased`}>
         <Provider>
           <SessionProvider>{children}</SessionProvider>
+          <Toaster />
         </Provider>
       </body>
     </html>

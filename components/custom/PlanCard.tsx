@@ -1,7 +1,7 @@
 import { Flex, Text, Box, Icon } from "@chakra-ui/react";
 import Image from "next/image";
 import curved_arrow from "@/public/icons/curved_arrow.svg";
-import { generateCheckoutUrl } from "@/app/helpers/generateCheckoutUrl";
+import { generateCheckoutUrl } from "@/helpers/generateCheckoutUrl";
 import { SubscribeBtn } from "./SubscribeBtn";
 import Link from "next/link";
 
@@ -98,26 +98,28 @@ const PlanCard = ({
                 </Text>
               </span>
             </Flex>
-            { Button || <Text
-              data-state={special}
-              _on={{
-                background: "primary.20",
-              }}
-              color={"light.400"}
-              display={"block"}
-              textStyle={"button_lg"}
-              padding={"12px 24px"}
-              bg={"dark.100"}
-              borderRadius={"24px"}
-              my={"10px"}
-              textDecoration={"none"}
-              textAlign={"center"}
-              asChild
-            >
-              <Link href={"/dashboard/subscription"}>
-                Subscribe to our {title} plan
-              </Link>
-            </Text>}
+            {Button || (
+              <Text
+                data-state={special}
+                _on={{
+                  background: "primary.20",
+                }}
+                color={"light.400"}
+                display={"block"}
+                textStyle={"button_lg"}
+                padding={"12px 24px"}
+                bg={"dark.100"}
+                borderRadius={"24px"}
+                my={"10px"}
+                textDecoration={"none"}
+                textAlign={"center"}
+                asChild
+              >
+                <Link href={"/dashboard/subscription"}>
+                  Subscribe to our {title} plan
+                </Link>
+              </Text>
+            )}
             <Text my={"6px 16px"} color={"light.900"} fontSize={"13px"}>
               FEATURES
             </Text>

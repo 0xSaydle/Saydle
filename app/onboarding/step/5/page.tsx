@@ -1,7 +1,7 @@
 import { Box, Text, SimpleGrid } from "@chakra-ui/react";
 
 import PlanCard from "@/components/custom/PlanCard";
-import plans from "@/app/lib/plans";
+import plans from "@/lib/plans";
 import { SubscribeBtn } from "@/components/custom/SubscribeBtn";
 
 export default function OnboardingStep5() {
@@ -23,7 +23,16 @@ export default function OnboardingStep5() {
         justifyItems="center"
       >
         {plans.map((plan) => (
-          <PlanCard Button={<SubscribeBtn title={plan.title} productId={plan.productId}></SubscribeBtn>} key={plan.title} {...plan} />
+          <PlanCard
+            Button={
+              <SubscribeBtn
+                title={plan.title}
+                productId={plan.productId}
+              ></SubscribeBtn>
+            }
+            key={plan.title}
+            {...plan}
+          />
         ))}
       </SimpleGrid>
     </Box>

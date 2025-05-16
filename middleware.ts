@@ -19,16 +19,17 @@ export async function middleware(request: NextRequest) {
   // If authenticated
   if (isAuth) {
     try {
+      // Get user from Supabase using the token
       const { data: user } = await supabaseAdmin
         .from("users")
-        .select("phone_number")
-        .eq("email", token.email)
+        .select("phone, verified")
+        .eq("id", token.sub)
         .single();
 
-      // If user has phone number and tries to access onboarding steps 1-4, redirect to dashboard
+      // If user has completed verification and tries to access onboarding steps 1-4, redirect to dashboard
       // But allow access to step 5 (plan selection) even after completing the basic onboarding
       if (
-        user?.phone_number &&
+        user?.verified &&
         pathname.startsWith("/onboarding") &&
         !pathname.includes("/step/5") &&
         !pathname.includes("/step/6")
@@ -36,9 +37,9 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/dashboard", request.url));
       }
 
-      // If no phone number and trying to access dashboard, redirect to onboarding
+      // If not verified and trying to access dashboard, redirect to onboarding
       if (
-        !user?.phone_number &&
+        !user?.verified &&
         (pathname === "/dashboard" || pathname === "/dashboard/")
       ) {
         return NextResponse.redirect(

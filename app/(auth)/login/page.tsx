@@ -15,57 +15,105 @@ import {
 import Image from "next/image";
 import login_girl from "@/public/images/login_girl.jpg";
 import LoginWithGoogleBtn from "@/components/custom/LoginWithGoogleBtn";
-import { MdOutlineEmail } from "react-icons/md";
+import { MdOutlinePhone } from "react-icons/md";
 import { InputGroup } from "@/components/ui/input-group";
+import { toaster } from "@/components/ui/toaster";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
+  const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
-  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const isValidEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  const isValidPhone = (phone: string) => {
+    return phone.match(/^\+[0-9]{10,15}$/);
   };
 
   const sendOtp = async () => {
-    if (!isValidEmail(email)) {
-      setError("Please enter a valid email address");
+    if (!isValidPhone(phone)) {
+      toaster.create({
+        title: "Invalid phone number",
+        description:
+          "Please enter a valid phone number with country code (e.g. +1234567890)",
+        type: "error",
+        duration: 3000,
+      });
       return;
     }
-    setError("");
-    const response = await fetch("/api/auth/send-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    const data = await response.json();
-    if (data.success) {
-      setIsOtpSent(true);
-      setMessage("Sent OTP to: " + email);
-    } else {
-      setMessage("Failed to send OTP.");
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setIsOtpSent(true);
+        toaster.create({
+          title: "OTP Sent",
+          description: `OTP has been sent to ${phone}`,
+          type: "success",
+          duration: 3000,
+        });
+      } else {
+        toaster.create({
+          title: "Error",
+          description: data.error || "Failed to send OTP",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    } catch {
+      toaster.create({
+        title: "Error",
+        description: "An unexpected error occurred",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const verifyOtp = async () => {
-    const response = await fetch("/api/auth/verify-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, otp }),
-    });
-    const data = await response.json();
-    if (data.success) {
-      setMessage(data.message);
-      await signIn("credentials", {
-        redirect: false,
-        email,
-        otp,
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, otp }),
       });
-    } else {
-      setMessage("Invalid OTP.");
+      const data = await response.json();
+      if (data.success) {
+        toaster.create({
+          title: "Success",
+          description: "OTP verified successfully",
+          type: "success",
+          duration: 3000,
+        });
+        await signIn("credentials", {
+          redirect: false,
+          phone,
+          otp,
+        });
+      } else {
+        toaster.create({
+          title: "Error",
+          description: data.error || "Invalid OTP",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    } catch {
+      toaster.create({
+        title: "Error",
+        description: "An unexpected error occurred",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -100,18 +148,18 @@ export default function Login() {
         {!isOtpSent ? (
           <Box as="form" mb={4}>
             <Text mb={1} fontWeight="medium">
-              Enter email address
+              Enter phone number
             </Text>
             <InputGroup
               width={"100%"}
               mb={2}
-              startElement={<MdOutlineEmail size={20} />}
+              startElement={<MdOutlinePhone size={20} />}
             >
               <Input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="tel"
+                placeholder="+1234567890"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
             </InputGroup>
             <Button
@@ -125,14 +173,11 @@ export default function Login() {
                 color: "white",
               }}
               onClick={sendOtp}
+              loading={isLoading}
+              loadingText="Sending..."
             >
               Continue
             </Button>
-            {error && (
-              <Text color="red.500" mt={2}>
-                {error}
-              </Text>
-            )}
           </Box>
         ) : (
           <Box as="form" mb={4}>
@@ -157,15 +202,12 @@ export default function Login() {
                 color: "white",
               }}
               onClick={verifyOtp}
+              loading={isLoading}
+              loadingText="Verifying..."
             >
               Continue
             </Button>
           </Box>
-        )}
-        {message && (
-          <Text color="gray.600" mt={2}>
-            {message}
-          </Text>
         )}
         <Text mt={4} mb={4} textAlign="center">
           OR
@@ -173,7 +215,12 @@ export default function Login() {
         <LoginWithGoogleBtn prop="in" />
         <Text mt={4} textAlign="center">
           Don&apos;t have an account?{" "}
-          <Link textDecor={"none"} color="#FF6F61" href="/register" fontWeight="bold">
+          <Link
+            textDecor={"none"}
+            color="#FF6F61"
+            href="/register"
+            fontWeight="bold"
+          >
             Sign Up
           </Link>
         </Text>

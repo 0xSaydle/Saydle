@@ -4,15 +4,16 @@ import Image from "next/image";
 interface TagProps {
   icon: string;
   text: string;
+  color?: string;
 }
 
-const Tag = ({ icon, text }: TagProps) => {
+const Tag = ({ icon, text, color }: TagProps) => {
   return (
     <Flex
-      padding={"8px 12px"}
+      padding={"4px 8px"}
       alignItems={"center"}
-      gap={"4px"}
-      borderRadius={"24px"}
+      gap={"2px"}
+      borderRadius={"12px"}
       border={"1px solid"}
       borderColor={"dark.50"}
       width={"max-content"}
@@ -21,12 +22,12 @@ const Tag = ({ icon, text }: TagProps) => {
       backdropFilter={"lg"}
     >
       <div>
-        <Icon
-        
-          asChild>
-          <Image src={icon} alt="icon"></Image>
+        <Icon asChild>
+          <Image src={icon} alt="icon" width={16} height={16} />
         </Icon>
-        <Text>{text}</Text>
+        <Text fontSize="10px" fontWeight="normal" color={color}>
+          {text}
+        </Text>
       </div>
     </Flex>
   );
