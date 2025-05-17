@@ -19,7 +19,8 @@ const Tag = ({ icon, text, color }: TagProps) => {
       width={"max-content"}
       asChild
       textStyle={"caption"}
-      backdropFilter={"lg"}
+       bg="whiteAlpha.100"
+              backdropFilter="blur(18px)"
     >
       <div>
         <Icon asChild>

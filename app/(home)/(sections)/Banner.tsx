@@ -1,4 +1,5 @@
-import { Box, Flex, Heading, Text, Image, Icon, Link } from "@chakra-ui/react";
+import { Box, Flex, Heading, Text, Icon, Link } from "@chakra-ui/react";
+import Image from "next/image";
 import Tag from "@/components/custom/Tag";
 import icon from "@/public/icons/receive-square.svg";
 import Button from "@/components/custom/button";
@@ -22,15 +23,15 @@ const rightTags = [
 
 const Banner = () => {
   return (
-    <Box justifyContent={"center"} p={{ base: 8, md: 16 }}>
+    <Box justifyContent={"center"} >
       <Flex
         direction={{ base: "column", md: "row" }}
         alignItems="flex-end"
         gap={2} 
       >
         {/* Left Section */}
-        <Box flex="1" maxW="450px">
-          <Flex gap={2} mb={4}>
+        <Box flex="1" position={"relative"}  >
+          <Flex gap={2} mb={"180px"}>
             {tagData.map((tag, idx) => (
               <Tag key={idx} icon={tag.icon} text={tag.text} />
             ))}
@@ -43,6 +44,9 @@ const Banner = () => {
             mb={4}
             mr={"-50px"} position={"relative"}
             zIndex={"99"} ml={"auto"}
+            pos={"absolute"}
+            w={"max-content"}
+            top={"45px"}
           >
             <Heading
               as="h1"
@@ -52,11 +56,29 @@ const Banner = () => {
             >
               EMBRACE EACH DAY WITH
             </Heading>
+          </Box>
+          <Box
+            bg="#fff"
+            borderRadius="24px"
+            boxShadow="0 4px 24px rgba(0,0,0,0.04)"
+            p={{ base: 4, md: 5 }}
+            mb={4}
+            mr={"-50px"} position={"relative"}
+            zIndex={"99"} ml={"auto"}
+            pos={"absolute"}
+            w={"max-content"}
+            top={"95px"}
+          >
             <Heading
               as="h2"
               fontSize={{ base: "2xl", md: "3xl" }}
               fontWeight="bold"
-              color="#FF6B6B"
+              border={"1px solid"}
+              borderColor="#FF6B6B"
+              pb={2}
+              w={"max-content"}
+              padding={"12px"}
+              borderRadius={"25px"}
             >
               UPLIFTING AFFIRMATIONS
             </Heading>
@@ -98,29 +120,30 @@ const Banner = () => {
           </Flex>
         </Box>
         {/* Center Section (Girl Image) */}
-        <Box flex="1" maxW="400px" position="relative">
+        <Box flex="1" w={"400px"} position="relative">
           <Box
             borderRadius="32px"
             overflow="hidden"
             boxShadow="0 4px 24px rgba(0,0,0,0.08)"
             position="relative"
             bg="#e6e6e6"
-            // width="324.5px"
             height="505.34px"
+            minW="350.5px"
+            maxW="400px"
             flexShrink={0}
-            background="url('/images/unsplash_girl.png') lightgray bottom right / 90% no-repeat"
-          >
+            background="url('/images/unsplash_girl.png') #E6E6E6 bottom right / 90% no-repeat"
+            >
             <Box
               position="absolute"
               top={4}
               right={4}
-              bg="whiteAlpha.200"
               px={3}
               py={2}
               borderRadius="16px"
               fontSize="sm"
               fontWeight="medium"
-              backdropFilter="blur(8px)"
+              bg="whiteAlpha.200"
+              backdropFilter="blur(18px)"
               color={"#f4f4f5"}
               width="50%"
             >
@@ -136,6 +159,7 @@ const Banner = () => {
         {/* Right Section (Boy Image + Info) */}
         <Box
           flex="1"
+          minW="208px"
           maxW="258px"
           display={{ base: "none", md: "flex" }}
           flexDirection="column"
@@ -203,21 +227,20 @@ const Banner = () => {
             width="auto"
             height="280.2455px"
             flexShrink={0}
-            background="url('/images/unsplash_boy.png') lightgray bottom right / 80% no-repeat"
+            background="url('/images/unsplash_boy.png') #DFE1E3 bottom right / 80% no-repeat"
           >
             <Text
-              // position="absolute"
-              // top={"130px"}
+              w={'60%'}
               left={4}
               bg="whiteAlpha.200"
               px={3}
               py={2}
               borderRadius="16px"
               fontSize="10px"
-              // fontWeight="semibold"
               color={"#fff"}
               mb={2}
-              backdropFilter="blur(8px)"
+              ml={'auto'}
+              backdropFilter="blur(28px)"
             >
               Your daily dose of positivity, tailored just for you!
             </Text>
@@ -228,7 +251,6 @@ const Banner = () => {
                   icon={tag.icon}
                   text={tag.text}
                   color="#fff"
-                  fontSize="sm"
                 />
               ))}
             </Flex>
