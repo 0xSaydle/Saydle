@@ -2,11 +2,14 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import AppleProvider from "next-auth/providers/apple";
 import CredentialsProvider from "next-auth/providers/credentials";
-import UserDoc from "./lib/User";
+import { signJwt } from "./helpers/jwt";
 import type { JWT } from "next-auth/jwt";
-import type { Session, User, DefaultSession, Account } from "next-auth";
+import type { Session, User, DefaultSession, Account, NextAuthConfig } from "next-auth";
 import { supabaseAdmin } from "@/supabase/supabase_client";
 import { randomUUID } from "crypto";
+import { saveUserToLocalStorage } from './lib/local_storage';
+// import { IUser } from "./lib/User";
+
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -24,14 +27,14 @@ declare module "next-auth" {
   }
 }
 
-interface CustomUser extends User {
-  phone: string;
-  accessToken: string;
-  plan?: string;
-  dateOfSubscription?: string;
-  nextBillingDate?: string;
-  planDuration?: number;
-}
+// interface CustomUser extends User {
+//   phone: string;
+//   accessToken: string;
+//   plan?: string;
+//   dateOfSubscription?: string;
+//   nextBillingDate?: string;
+//   planDuration?: number;
+// }
 
 interface CustomToken extends JWT {
   accessToken?: string;
@@ -42,7 +45,7 @@ interface CustomToken extends JWT {
   planDuration?: number;
 }
 
-const config = {
+export const config: NextAuthConfig = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -64,35 +67,60 @@ const config = {
         otp: { label: "OTP", type: "text", placeholder: "123456" },
       },
       async authorize(credentials) {
-        await connectDB();
-
         if (!credentials?.phone || !credentials.otp) return null;
 
         const { phone, otp } = credentials;
-        const userOtp = await Otp.findOne({ phoneNumber: phone, otp });
+        
+        const { data: userOtp, error } = await supabaseAdmin
+          .from('otps')
+          .select('*')
+          // .eq('phone_number', phone)
+          .eq('email', phone)
+          .eq('otp', otp)
+          .single();
 
-        if (!userOtp) throw new Error("Otp not found");
+        if (error || !userOtp) {
+          throw new Error('Otp not found');
+        }
 
-        if (userOtp.expiresAt < new Date()) throw new Error("Invalid OTP");
+        if (new Date(userOtp.expires_at) < new Date()) {
+          throw new Error('Invalid OTP');
+        }
 
-        const user = await UserDoc.findOne({ phone });
+        const { data: userData, error: fetchError } = await supabaseAdmin
+          .from("users")
+          .select("*")
+          .eq("phone_number", phone)
+          .single();
+
+        if (fetchError) {
+          console.error("Error fetching user data:", fetchError);
+        }
         // Generate JWT token
-        const accessToken = signJwt({ id: user._id, phone: user.phone });
+        const accessToken = await signJwt({ id: userData._id, phone: userData.phone });
 
-        await Otp.updateOne(
-          { phoneNumber: phone },
-          { $unset: { otp: "", expiresAt: "" } }
-        );
+        const { error: otpError } = await supabaseAdmin
+        .from('otps')
+        .update({
+          otp: null,
+          expires_at: null,
+        })
+        .eq('phone_number', phone);
+
+        if (otpError) {
+          throw new Error("Failed to clear OTP");
+        }
+
         return {
-          id: user._id.toString(),
-          phone: user.phone,
+          id: userData._id.toString(),
+          phone: userData.phone,
           accessToken,
-          name: user.name || "Saydle User",
-          email: user.email || "",
-          plan: user.plan,
-          dateOfSubscription: user.date_of_subscription,
-          nextBillingDate: user.next_billing_date,
-          planDuration: user.plan_duration,
+          name: userData.name || "Saydle User",
+          email: userData.email || "",
+          plan: userData.plan,
+          dateOfSubscription: userData.date_of_subscription,
+          nextBillingDate: userData.next_billing_date,
+          planDuration: userData.plan_duration,
         };
       },
     }),
@@ -101,15 +129,30 @@ const config = {
     strategy: "jwt" as const,
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: CustomUser }) {
+    async jwt({ token, user }: { token: JWT; user?: User }) {
       if (user) {
         token.accessToken = user.accessToken;
         token.phone = user.phone;
-        token.plan = user.plan;
-        token.dateOfSubscription = user.dateOfSubscription;
-        token.nextBillingDate = user.nextBillingDate;
-        token.planDuration = user.planDuration;
+        
+        // Handle Google login
+        if (user.email && !token.phone) {
+          const { data: userData } = await supabaseAdmin
+            .from("users")
+            .select("*")
+            .eq("email", user.email)
+            .single();
+
+          if (userData) {
+            token.phone = userData.phone_number;
+            token.accessToken = await signJwt({ id: userData.id, phone: userData.phone_number });
+            token.plan = userData.plan;
+            token.dateOfSubscription = userData.date_of_subscription;
+            token.nextBillingDate = userData.next_billing_date;
+            token.planDuration = userData.plan_duration;
+          }
+        }
       }
+
       return token;
     },
     async session({
@@ -119,12 +162,17 @@ const config = {
       session: Session;
       token: CustomToken;
     }) {
-      session.user.accessToken = token.accessToken as string;
-      session.user.phone = token.phone;
-      session.user.plan = token.plan;
-      session.user.dateOfSubscription = token.dateOfSubscription;
-      session.user.nextBillingDate = token.nextBillingDate;
-      session.user.planDuration = token.planDuration;
+      session.user = {
+      id: token.id as string,
+      email: token.email as string,
+      phone: token.phone as string,
+      name: token.name as string,
+      accessToken: token.accessToken as string,
+      plan: token.plan,
+      dateOfSubscription: token.dateOfSubscription,
+      nextBillingDate: token.nextBillingDate,
+      planDuration: token.planDuration,
+    };      
 
       // Only proceed if we have a valid email
       if (!session?.user?.email) {
@@ -172,7 +220,13 @@ const config = {
       } catch (error) {
         console.error("Error in session callback:", error);
       }
-
+      saveUserToLocalStorage({
+          id: session.user.id,
+          fullName: session.user.name,
+          email: session.user.email,
+          phone: session.user.phone,
+          accessToken: session.user.accessToken,
+      });
       return session;
     },
     async redirect({ baseUrl, url }: { baseUrl: string; url: string }) {
@@ -187,7 +241,7 @@ const config = {
     },
     async signIn(params: {
       user: User | { email?: string | null; name?: string | null };
-      account: Account | null;
+      account?: Account | null;
       email?: { verificationRequest?: boolean };
       credentials?: Record<string, any>;
     }) {
@@ -253,4 +307,4 @@ const config = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-export const { handlers, auth, signIn, signOut } = NextAuth(config);
+export const { handlers } = NextAuth(config);

@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
 
     // Set session cookie
     const cookieStore = cookies();
-    cookieStore.set("supabase-auth-token", JSON.stringify(data), {
+    (await cookieStore).set("supabase-auth-token", JSON.stringify(data), {
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 1 week
       httpOnly: true,

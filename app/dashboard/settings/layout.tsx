@@ -1,10 +1,21 @@
+"use client";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+import { Box } from "@chakra-ui/react";
+
+export default function SettingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="bg-gray-100 text-gray-900"> {/* Ensure global styles apply */}
+    <Box minH="100vh" bg="#f2e3e1">
+      {/* <DashboardHeader /> */}
+      <Box
+        as="main"
+        // ml={{ base: 0, md: "250px" }}
+        // pt="0px"
+        px={{ base: 4, md: 4 }}
+        // maxW="1200px"
+        mx="auto"
+      >
         {children}
-      </body>
-    </html>
+      </Box>
+    </Box>
   );
 }

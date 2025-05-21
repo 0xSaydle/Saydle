@@ -1,47 +1,53 @@
 "use client";
 
 import { useState } from "react";
+import {
+  Box,
+  Heading,
+  
+  Container,
+  // useColorModeValue,
+} from "@chakra-ui/react";
+import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
 import PersonalProfile from "./PersonalProfile";
 import ProfessionalProfile from "./ProfessionalProfile";
+import PersonalPreferences from "./PersonalPreferences";
 import PersonalityDetails from "./PersonalityDetails";
-
-const tabs = [
-  { name: "Personal Profile", key: "personal" },
-  { name: "Professional Profile", key: "professional" },
-  { name: "Personality Details", key: "personality" },
-  { name: "Preferences", key: "preferences" },
-];
+import { useColorModeValue } from "@/components/ui/color-mode";
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState("personal");
+  const tabBg = useColorModeValue("white", "gray.800");
+  const tabBorderColor = useColorModeValue("#f2e3e1", "gray.600");
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Settings</h1>
+    <Container maxW="4xl" py={10}>
+      <Box
+        bg={tabBg}
+        shadow="md"
+        rounded="lg"
+        border="2px"
+        borderColor={tabBorderColor}
+        p={6}
+      >
+        <Heading as="h1" size="lg" mb={6}>
+          Settings
+        </Heading>
 
-      {/* Flowbite Styled Tabs */}
-      <div className="flex border-b mb-4">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`py-2 px-4 text-lg font-medium transition-all ${
-              activeTab === tab.key
-                ? "border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-500 hover:text-gray-800"
-            }`}
-          >
-            {tab.name}
-          </button>
-        ))}
-      </div>
+        <Tabs>
+          <TabList>
+            <Tab>Personal</Tab>
+            <Tab>Professional</Tab>
+            <Tab>Personality</Tab>
+            <Tab></Tab>
+          </TabList>
 
-      {/* Content Area */}
-      <div className="p-4">
-        {activeTab === "personal" && <PersonalProfile />}
-        {activeTab === "professional" && <ProfessionalProfile />}
-        {activeTab === "personality" && <PersonalityDetails />}
-      </div>
-    </div>
+          <TabPanel><PersonalProfile /></TabPanel>
+          <TabPanel><ProfessionalProfile /></TabPanel>
+          <TabPanel><PersonalityDetails /></TabPanel>
+          <TabPanel><PersonalPreferences /></TabPanel>
+        </Tabs>
+      </Box>
+    </Container>
   );
 }
