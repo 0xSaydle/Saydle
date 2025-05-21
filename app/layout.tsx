@@ -11,10 +11,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${GeneralSans.className} antialiased`}>
-        <Provider>
-          <SessionProvider>{children}</SessionProvider>
-          <Toaster />
-        </Provider>
+        
+        <SessionProvider>
+          <Provider>
+            {children}
+            <Toaster />
+          </Provider>
+        </SessionProvider>
       </body>
     </html>
   );

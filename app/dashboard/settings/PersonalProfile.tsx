@@ -1,6 +1,34 @@
 import { useState, useEffect } from "react";
+import {
+  Box,
+  Heading,
+  Image,
+  Button,
+  Input,
+  Text,
+  
+  Spinner,
+} from "@chakra-ui/react";
+import { getUserFromLocalStorage } from '../../../lib/local_storage';
+import { VStack, HStack } from "@chakra-ui/layout"
+import { Select } from "@chakra-ui/select";
+import { useSession } from "next-auth/react";
+import {
+  Alert,
+  // AlertTitle,
+  AlertIcon,
+  AlertDescription,
+} from "@chakra-ui/alert"
+import {
+  FormControl,
+  FormLabel,
+  // FormErrorMessage,
+  // FormHelperText,
+  // FormErrorIcon,
+} from "@chakra-ui/form-control"
 
 export default function PersonalProfile() {
+  const { data: session, status } = useSession();
   const [profilePic, setProfilePic] = useState<string>("");
   const [uploading, setUploading] = useState<boolean>(false);
   const [formData, setFormData] = useState({
@@ -15,6 +43,7 @@ export default function PersonalProfile() {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   useEffect(() => {
+    console.log(getUserFromLocalStorage())
     async function fetchProfile() {
       try {
         const res = await fetch("/api/setting/profile");
@@ -47,12 +76,12 @@ export default function PersonalProfile() {
 
     setUploading(true);
     setError(null);
-    
+
     const fileData = new FormData();
     fileData.append("file", file);
 
     try {
-      const res = await fetch("/api/upload", {
+      const res = await fetch("/api/setting/upload", {
         method: "POST",
         body: fileData,
       });
@@ -87,127 +116,165 @@ export default function PersonalProfile() {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Personal Profile</h2>
-      
-      <div className="flex flex-col items-center gap-4">
-        <img
+    <Box maxW="lg" mx="auto" p={6} bg="white" rounded="lg" shadow="md">
+      <Heading size="lg" mb={6}>
+        Personal Profile
+      </Heading>
+
+      <VStack spacing={4} align="center" mb={6}>
+        <Image
           src={profilePic || "/default-avatar.png"}
           alt="Profile"
-          className="w-32 h-32 rounded-full object-cover border"
+          boxSize="128px"
+          objectFit="cover"
+          rounded="full"
+          border="1px solid"
+          borderColor="gray.200"
         />
+
         {isEditing && (
           <>
-            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" id="fileInput" />
-            <label htmlFor="fileInput" className="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg">
-              {uploading ? "Uploading..." : "Upload Picture"}
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              display="none"
+              id="fileInput"
+            />
+            <label htmlFor="fileInput">
+              <Button
+                cursor="pointer"
+                colorScheme="blue"
+                loading={uploading}
+                loadingText="Uploading..."
+                as="span" // make it inline to keep button appearance
+              >
+                Upload Picture
+              </Button>
             </label>
           </>
         )}
-      </div>
+      </VStack>
 
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {error && (
+        <Alert status="error" mb={4} rounded="md">
+          <AlertIcon />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       {!isEditing ? (
-        <div className="mt-4 space-y-2">
-          <p><strong>Full Name:</strong> {formData.fullName}</p>
-          <p><strong>Email:</strong> {formData.email}</p>
-          <p><strong>Phone:</strong> {formData.phone}</p>
-          <p><strong>Date of Birth:</strong> {formData.dob}</p>
-          <p><strong>Address:</strong> {formData.address}</p>
-          <p><strong>Gender:</strong> {formData.gender}</p>
-          <button
-            className="mt-4 w-full bg-yellow-500 text-white py-2 rounded-lg"
+        <VStack spacing={3} align="start">
+          <Text>
+            <strong>Full Name:</strong> {formData.fullName}
+          </Text>
+          <Text>
+            <strong>Email:</strong> {formData.email}
+          </Text>
+          <Text>
+            <strong>Phone:</strong> {formData.phone}
+          </Text>
+          <Text>
+            <strong>Date of Birth:</strong> 
+            {new Date(formData.dob).toLocaleDateString()}
+          </Text>
+          <Text>
+            <strong>Address:</strong> {formData.address}
+          </Text>
+          <Text>
+            <strong>Gender:</strong> {formData.gender}
+          </Text>
+
+          <Button
+            mt={4}
+            colorScheme="yellow"
+            w="full"
             onClick={() => setIsEditing(true)}
           >
             Edit Profile
-          </button>
-        </div>
+          </Button>
+        </VStack>
       ) : (
-        <div className="mt-4 grid grid-cols-1 gap-4">
-          <label className="block">
-            Full Name:
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              placeholder="Enter full name"
-              className="p-2 border rounded w-full"
-            />
-          </label>
+        <VStack spacing={4} align="stretch">
+            <Text>Full Name</Text>
 
-          <label className="block">
-            Email:
-            <input
+              <Input
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                placeholder="Enter full name"
+              />
+          
+
+          <FormControl>
+            <FormLabel>Email</FormLabel>
+            <Input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter email"
-              className="p-2 border rounded w-full"
             />
-          </label>
+          </FormControl>
 
-          <label className="block">
-            Phone:
-            <input
-              type="text"
+          <FormControl>
+            <FormLabel>Phone</FormLabel>
+            <Input
               name="phone"
               value={formData.phone}
               onChange={handleChange}
               placeholder="Enter phone number"
-              className="p-2 border rounded w-full"
             />
-          </label>
+          </FormControl>
 
-          <label className="block">
-            Date of Birth:
-            <input
+          <FormControl>
+            <FormLabel>Date of Birth</FormLabel>
+            <Input
               type="date"
               name="dob"
               value={formData.dob}
               onChange={handleChange}
-              className="p-2 border rounded w-full"
             />
-          </label>
+          </FormControl>
 
-          <label className="block">
-            Address:
-            <input
-              type="text"
+          <FormControl>
+            <FormLabel>Address</FormLabel>
+            <Input
               name="address"
               value={formData.address}
               onChange={handleChange}
               placeholder="Enter address"
-              className="p-2 border rounded w-full"
             />
-          </label>
+          </FormControl>
 
-          <label className="block">
-            Gender:
-            <select
+          <FormControl>
+            <FormLabel>Gender</FormLabel>
+            <Select
               name="gender"
               value={formData.gender}
               onChange={handleChange}
-              className="p-2 border rounded w-full"
+              placeholder="Select Gender"
             >
-              <option value="">Select Gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="other">Other</option>
-            </select>
-          </label>
+            </Select>
+          </FormControl>
+          <Button variant="outline" onClick={() => setIsEditing(false)}>
+            Cancel
+          </Button>
 
-          <button
-            className="mt-4 w-full bg-green-500 text-white py-2 rounded-lg"
+          <Button
+            mt={4}
+            colorScheme="green"
+            w="full"
             onClick={handleUpdateProfile}
-            disabled={uploading}
+            loading={uploading}
           >
             Save Changes
-          </button>
-        </div>
+          </Button>
+        </VStack>
       )}
-    </div>
+    </Box>
   );
 }
