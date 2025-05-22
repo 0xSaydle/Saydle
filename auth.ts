@@ -10,7 +10,7 @@ import type {
   Account,
   Profile,
 } from "next-auth";
-import { supabaseAdmin } from "@/supabase/supabase_client";
+import { supabaseAdmin } from "./middleware";
 import { randomUUID } from "crypto";
 import { AdapterUser } from "next-auth/adapters";
 

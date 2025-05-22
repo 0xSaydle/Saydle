@@ -1,7 +1,12 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { supabaseAdmin } from "@/supabase/supabase_client";
+import { createClient } from "@supabase/supabase-js";
 
+
+export const supabaseAdmin = createClient(
+  process.env.SUPABASE_URL as string,
+  process.env.SUPABASE_SERVICE_ROLE_KEY as string
+);
 export async function middleware(request: NextRequest) {
   const token = await getToken({
     req: request,
