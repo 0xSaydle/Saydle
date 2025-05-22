@@ -9,16 +9,14 @@ import { Logo } from "./logo";
 const Navbar = () => {
   const [menu, setMenu] = useState("off");
   const toggleMenu = () => {
-    return menu === "on" ? setMenu("off") : setMenu("on");
-
-    
+    setMenu(menu === "on" ? "off" : "on");
   };
   return (
     <Flex
       justifyContent={"space-between"}
       alignItems={"center"}
       direction={"row"}
-      p={{ lg: "0px", md: "0px", }}
+      p={{ lg: "0px", md: "0px" }}
       asChild
     >
       <div>
@@ -89,18 +87,12 @@ const Navbar = () => {
           width="100vw"
           height={"100vh"}
           backgroundColor={"#f0f0f0"}
-          _off={{
-            display: "none",
-            visibility: "hidden",
-          }}
-          _on={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "30px",
-            textStyle: "menu_lg",
-            alignItems: "start",
-            visibility: "visible",
-          }}
+          display={menu === "on" ? "flex" : "none"}
+          visibility={menu === "on" ? "visible" : "hidden"}
+          flexDirection={menu === "on" ? "column" : undefined}
+          gap={menu === "on" ? "30px" : undefined}
+          textStyle={menu === "on" ? "menu_lg" : undefined}
+          alignItems={menu === "on" ? "start" : undefined}
           asChild
         >
           <div>
