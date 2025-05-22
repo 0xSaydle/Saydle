@@ -25,6 +25,6 @@ export async function POST(req: NextRequest) {
     
     return NextResponse.json({ message: "Image uploaded successfully", imageUrl });
   } catch (error) {
-    return NextResponse.json({ message: "Error uploading file" }, { status: 500 });
+    return NextResponse.json({ message: "Error uploading file", error }, { status: 500 });
   }
 }

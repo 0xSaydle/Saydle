@@ -1,8 +1,6 @@
 import { Flex, Text, Box, Icon } from "@chakra-ui/react";
 import Image from "next/image";
 import curved_arrow from "@/public/icons/curved_arrow.svg";
-import { generateCheckoutUrl } from "@/helpers/generateCheckoutUrl";
-import { SubscribeBtn } from "./SubscribeBtn";
 import Link from "next/link";
 
 const PlanCard = ({

@@ -41,6 +41,8 @@ export async function POST(request: NextRequest) {
         break;
       case "subscription_payment_success":
         await handleSubscriptionPaymentSuccess(email, subscriptionId, status, customData);
+      case "subscription_payment_failed":
+        await handleSubscriptionPaymentFailed(email, subscriptionId, status, customData);
       case "subscription_plan_changed":
         await handleSubscriptionPlanChanged(email, subscriptionId, status, customData);
         break;
@@ -58,7 +60,7 @@ export async function POST(request: NextRequest) {
   // Handlers 
 
 
-  async function handleSubscriptionCreated(email: string, subscriptionId: string, status: string, customData: any) {
+  async function handleSubscriptionCreated(email: string, subscriptionId: string, status: string, customData: {user_id: string}) {
     const userId = customData.user_id;
     const { data, error } = await supabase
       .from("users")
@@ -69,6 +71,8 @@ export async function POST(request: NextRequest) {
       .eq("id", userId)
       .select();
 
+    console.log(data);
+
     if (error) {
       console.error("Error updating user:", error);
       return NextResponse.json({ error: "Error updating user" }, { status: 500 });
@@ -76,7 +80,7 @@ export async function POST(request: NextRequest) {
   
   }
 
-  async function handleSubscriptionUpdated(email: string, subscriptionId: string, status: string, customData: any) {
+  async function handleSubscriptionUpdated(email: string, subscriptionId: string, status: string, customData: {user_id: string}) {
     const userId = customData.user_id;
     const { data, error } = await supabase
       .from("users")
@@ -86,13 +90,13 @@ export async function POST(request: NextRequest) {
       })
       .eq("id", userId)
       .select();
-
+    console.log(data);
     if (error) {
       console.error("Error updating user:", error);
    
     }
   }
-  async function handleSubscriptionCancelled(email: string, subscriptionId: string, status: string, customData: any) {
+  async function handleSubscriptionCancelled(email: string, subscriptionId: string, status: string, customData: {user_id: string}) {
       const userId = customData.user_id;
       const { data, error } = await supabase
         .from("users")
@@ -107,7 +111,39 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    async function handleSubscriptionPaymentSuccess(email: string, subscriptionId: string, status: string, customData: any) {
+    async function handleSubscriptionPaymentSuccess(email: string, subscriptionId: string, status: string, customData: {user_id: string}) {
+      const userId = customData.user_id;
+      const { data, error } = await supabase
+        .from("users")
+        .update({
+          subscription_id: subscriptionId,
+          subscription_status: status,
+        })
+        .eq("id", userId)
+        .select();
+      console.log(data);
+      if (error) {
+        console.error("Error updating user:", error);
+      }
+    }
+
+    async function handleSubscriptionPlanChanged(email: string, subscriptionId: string, status: string, customData: {user_id: string}) {
+      const userId = customData.user_id;
+      const { data, error } = await supabase
+        .from("users")
+        .update({
+          subscription_id: subscriptionId,
+          subscription_status: status,
+        })
+        .eq("id", userId)
+        .select();
+      console.log(data);
+      if (error) {
+        console.error("Error updating user:", error);
+      }
+    }
+
+    async function handleSubscriptionPaymentFailed(email: string, subscriptionId: string, status: string, customData: {user_id: string}) {
       const userId = customData.user_id;
       const { data, error } = await supabase
         .from("users")
@@ -118,40 +154,14 @@ export async function POST(request: NextRequest) {
         .eq("id", userId)
         .select();
 
-      if (error) {
-        console.error("Error updating user:", error);
-      }
-    }
-
-    async function handleSubscriptionPlanChanged(email: string, subscriptionId: string, status: string, customData: any) {
-      const userId = customData.user_id;
-      const { data, error } = await supabase
-        .from("users")
-        .update({
-          subscription_id: subscriptionId,
-          subscription_status: status,
-        })
-        .eq("id", userId)
-        .select();
+      console.log(data);
 
       if (error) {
         console.error("Error updating user:", error);
       }
     }
+  
+  
+  handleSubscriptionCancelled()
 
-    async function handleSubscriptionPaymentFailed(email: string, subscriptionId: string, status: string, customData: any) {
-      const userId = customData.user_id;
-      const { data, error } = await supabase
-        .from("users")
-        .update({
-          subscription_id: subscriptionId,
-          subscription_status: status,
-        })
-        .eq("id", userId)
-        .select();
-
-      if (error) {
-        console.error("Error updating user:", error);
-      }
-    }
   }

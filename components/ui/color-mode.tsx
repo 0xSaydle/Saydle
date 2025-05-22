@@ -7,9 +7,8 @@ import type { ThemeProviderProps } from "next-themes"
 import * as React from "react"
 import { LuMoon, LuSun } from "react-icons/lu"
 
-export interface ColorModeProviderProps extends ThemeProviderProps {}
 
-export function ColorModeProvider(props: ColorModeProviderProps) {
+export function ColorModeProvider(props: ThemeProviderProps) {
   return (
     <ThemeProvider attribute="class" disableTransitionOnChange {...props} />
   )
@@ -36,12 +35,11 @@ export function ColorModeIcon() {
   const { colorMode } = useColorMode()
   return colorMode === "light" ? <LuSun /> : <LuMoon />
 }
-
-interface ColorModeButtonProps extends Omit<IconButtonProps, "aria-label"> {}
+// An interface declaring no members is equivalent to its supertype.  @typescript-eslint/no-empty-object-type
 
 export const ColorModeButton = React.forwardRef<
   HTMLButtonElement,
-  ColorModeButtonProps
+  Omit<IconButtonProps, "aria-label">
 >(function ColorModeButton(props, ref) {
   const { toggleColorMode } = useColorMode()
   return (

@@ -1,9 +1,9 @@
 import { Box, Text, Flex, Icon } from "@chakra-ui/react";
 import Image, { StaticImageData } from "next/image";
 import russ from "@/public/images/Dianne.svg";
-``;
+
 import theresa from "@/public/images/theresa.svg";
-``;
+
 
 const ReviewData = [
   {
@@ -86,8 +86,8 @@ const Reviews = () => {
         </Text>
         <Flex flexDirection={{ base: "column", md:"row" }} justifyContent={{"md":"center"}} gap={"20px"} asChild>
           <div>
-            {ReviewData.map((review) => (
-              <Review
+            {ReviewData.map((review, key) => (
+              <Review key={key}
                 highlight={review.highlight}
                 quote={review.quote}
                 by={review.by}

@@ -9,9 +9,9 @@ import { Logo } from "./logo";
 const Navbar = () => {
   const [menu, setMenu] = useState("off");
   const toggleMenu = () => {
-    menu === "on" ? setMenu("off") : setMenu("on");
+    return menu === "on" ? setMenu("off") : setMenu("on");
 
-    console.log(menu);
+    
   };
   return (
     <Flex
