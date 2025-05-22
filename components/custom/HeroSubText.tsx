@@ -2,7 +2,7 @@ import { Box, Text } from "@chakra-ui/react";
 
 const HeroSubText = () => {
   return (
-    <Text
+    <Text hideFrom={"md"}
       textStyle={"body_sm"}
       color={"dark.300"}
       py={"16px"}

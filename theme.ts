@@ -185,6 +185,12 @@ const config = defineConfig({
           fontWeight: 500,
         },
       },
+      normal_lg: {
+        value: {
+          fontSize: "21px",
+          fontWeight: 700,
+        },
+      },
       body_sm: {
         value: {
           fontSize: "14px",

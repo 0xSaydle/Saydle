@@ -6,7 +6,7 @@ export const Logo = ({ css }: { css?: SystemStyleObject }) => {
     <Text
       className={`${Poppins.className}`}
       textStyle="menu"
-      fontSize={"20px"}
+      fontSize={{md:"26px", sm:"20px"}}
       fontWeight={"900"}
       css={css}
       asChild

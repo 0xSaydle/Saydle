@@ -16,31 +16,37 @@ import Subscriptions from "./(sections)/Subscriptions";
 import Reviews from "./(sections)/Reviews";
 import FAQ from "./(sections)/FAQ";
 import Footer from "@/components/custom/Footer";
+import Banner from "./(sections)/Banner";
 const Home = () => {
   return (
     <>
-      <Box padding={{ base: "15px", sm: "30px 40px", md:"4%" }} position={"relative"} asChild>
+      <Box
+        padding={{ base: "15px", sm: "30px 40px", md: "3%" }}
+        position={"relative"}
+        asChild
+      >
         <div>
           <Navbar />
-          <Flex pt={"24px"} asChild>
+          <Banner/>
+          <Flex hideFrom={"md"} pt={"24px"} asChild>
             <div>
               <Tag icon={pink} text="Positivity" />
               <Tag icon={purple} text="Wellness" />
             </div>
           </Flex>
-          <HeadlinerText />
+          <HeadlinerText  />
           <HeroSubText />
           {/* CTA Buttons */}
           <Flex
+            hideFrom={"md"}
             gap={"10px"}
-            // justifyContent={"space-between"}
             alignItems={"center"}
             borderRadius={"24px"}
             pt={"24px"}
             asChild
           >
             <div>
-              <Button bg={"primary.20"} text="Subscribe" />
+              <Button bg={"primary.20"} text="Subscribe" path="/login" />
               <Box
                 p={"12px 24px"}
                 borderRadius={"24px"}
@@ -66,7 +72,7 @@ const Home = () => {
           <Text
             pt={"48px"}
             textAlign={"center"}
-            maxWidth={{base: "347px", sm: "100%"}}
+            maxWidth={{ base: "347px", sm: "100%" }}
             mx={"auto"}
             textStyle={"body_lg"}
             asChild
