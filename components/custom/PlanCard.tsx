@@ -99,9 +99,7 @@ const PlanCard = ({
             {Button || (
               <Text
                 data-state={special}
-                _on={{
-                  background: "primary.20",
-                }}
+            
                 color={"light.400"}
                 display={"block"}
                 textStyle={"button_lg"}

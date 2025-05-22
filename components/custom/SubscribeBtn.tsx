@@ -16,9 +16,7 @@ export const SubscribeBtn = async ({
   return (
     <Text
       data-state={special}
-      _on={{
-        background: "primary.20",
-      }}
+   
       color={"light.400"}
       display={"block"}
       textStyle={"button_lg"}
@@ -30,7 +28,7 @@ export const SubscribeBtn = async ({
       textAlign={"center"}
       asChild
     >
-      <Link href={checkoutUrl}>Subscribe to our {title} plan</Link>
+      <Link href={checkoutUrl as string}>Subscribe to our {title} plan</Link>
     </Text>
   );
 };
