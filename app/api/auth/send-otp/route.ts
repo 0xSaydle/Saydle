@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import supabase, { supabaseAdmin } from "@/supabase/supabase_client";
+import { supabase, supabaseAdmin } from "@/middleware";
 import { randomUUID } from "crypto";
 
 export async function POST(req: NextRequest) {
