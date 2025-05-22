@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "node:crypto";
-import supabase from "@/supabase/supabase_client";
+import { supabase } from "@/middleware";
 
 
 export async function POST(request: NextRequest) {
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
    
     }
   }
-  async function handleSubscriptionCancelled(email: string, subscriptionId: string, status: string, customData: {user_id: string}) {
+    async function handleSubscriptionCancelled(email: string, subscriptionId: string, status: string, customData: {user_id: string}) {
       const userId = customData.user_id;
       const { data, error } = await supabase
         .from("users")
