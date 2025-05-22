@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
           subscription_status: status,
         }).eq("id", userId)
         .select();
-
+      console.log(data);
       if (error) {
         console.error("Error updating user:", error);
       }
