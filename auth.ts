@@ -7,6 +7,7 @@ import type { JWT } from "next-auth/jwt";
 import type { Session, User, DefaultSession, Account } from "next-auth";
 import { supabaseAdmin } from "@/supabase/supabase_client";
 import { randomUUID } from "crypto";
+import { AdapterUser, Profile } from "next-auth/adapters";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -101,14 +102,23 @@ const config = {
     strategy: "jwt" as const,
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: CustomUser }) {
+    async jwt(params: {
+      token: JWT;
+      user: User | AdapterUser;
+      account?: Account | null;
+      profile?: Profile;
+      trigger?: "signIn" | "signUp" | "update";
+      isNewUser?: boolean;
+      session?: any;
+    }) {
+      const { token, user } = params;
       if (user) {
-        token.accessToken = user.accessToken;
-        token.phone = user.phone;
-        token.plan = user.plan;
-        token.dateOfSubscription = user.dateOfSubscription;
-        token.nextBillingDate = user.nextBillingDate;
-        token.planDuration = user.planDuration;
+        token.accessToken = (user as CustomUser).accessToken;
+        token.phone = (user as CustomUser).phone;
+        token.plan = (user as CustomUser).plan;
+        token.dateOfSubscription = (user as CustomUser).dateOfSubscription;
+        token.nextBillingDate = (user as CustomUser).nextBillingDate;
+        token.planDuration = (user as CustomUser).planDuration;
       }
       return token;
     },
@@ -185,14 +195,19 @@ const config = {
       // Default to dashboard
       return `${baseUrl}/dashboard`;
     },
-    async signIn(params: {
-      user: User | { email?: string | null; name?: string | null };
-      account: Account | null;
+    async signIn({
+      user,
+      account,
+      profile,
+      email,
+      credentials,
+    }: {
+      user: User | AdapterUser;
+      account?: Account | null;
+      profile?: Profile;
       email?: { verificationRequest?: boolean };
-      credentials?: Record<string, any>;
+      credentials?: Record<string, unknown>;
     }) {
-      const { user, account } = params;
-
       if (account?.provider === "google" && user.email) {
         try {
           console.log(
