@@ -1,13 +1,18 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import AppleProvider from "next-auth/providers/apple";
-import CredentialsProvider from "next-auth/providers/credentials";
-import UserDoc from "./lib/User";
+
 import type { JWT } from "next-auth/jwt";
-import type { Session, User, DefaultSession, Account } from "next-auth";
+import type {
+  Session,
+  User,
+  DefaultSession,
+  Account,
+  Profile,
+} from "next-auth";
 import { supabaseAdmin } from "@/supabase/supabase_client";
 import { randomUUID } from "crypto";
-import { AdapterUser, Profile } from "next-auth/adapters";
+import { AdapterUser } from "next-auth/adapters";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -53,50 +58,49 @@ const config = {
       clientId: process.env.APPLE_CLIENT_ID as string,
       clientSecret: process.env.APPLE_CLIENT_SECRET as string,
     }),
-    CredentialsProvider({
-      id: "credentials",
-      name: "Twilio OTP",
-      credentials: {
-        phone: {
-          label: "Phone Number",
-          type: "text",
-          placeholder: "+1234567890",
-        },
-        otp: { label: "OTP", type: "text", placeholder: "123456" },
-      },
-      async authorize(credentials) {
-        await connectDB();
+    // CredentialsProvider({
+    //   id: "credentials",
+    //   name: "Twilio OTP",
+    //   credentials: {
+    //     phone: {
+    //       label: "Phone Number",
+    //       type: "text",
+    //       placeholder: "+1234567890",
+    //     },
+    //     otp: { label: "OTP", type: "text", placeholder: "123456" },
+    //   },
+    //   async authorize(credentials) {
 
-        if (!credentials?.phone || !credentials.otp) return null;
+    //     if (!credentials?.phone || !credentials.otp) return null;
 
-        const { phone, otp } = credentials;
-        const userOtp = await Otp.findOne({ phoneNumber: phone, otp });
+    //     const { phone, otp } = credentials;
+    //     const userOtp = await Otp.findOne({ phoneNumber: phone, otp });
 
-        if (!userOtp) throw new Error("Otp not found");
+    //     if (!userOtp) throw new Error("Otp not found");
 
-        if (userOtp.expiresAt < new Date()) throw new Error("Invalid OTP");
+    //     if (userOtp.expiresAt < new Date()) throw new Error("Invalid OTP");
 
-        const user = await UserDoc.findOne({ phone });
-        // Generate JWT token
-        const accessToken = signJwt({ id: user._id, phone: user.phone });
+    //     const user = await UserDoc.findOne({ phone });
+    //     // Generate JWT token
+    //     const accessToken = signJwt({ id: user._id, phone: user.phone });
 
-        await Otp.updateOne(
-          { phoneNumber: phone },
-          { $unset: { otp: "", expiresAt: "" } }
-        );
-        return {
-          id: user._id.toString(),
-          phone: user.phone,
-          accessToken,
-          name: user.name || "Saydle User",
-          email: user.email || "",
-          plan: user.plan,
-          dateOfSubscription: user.date_of_subscription,
-          nextBillingDate: user.next_billing_date,
-          planDuration: user.plan_duration,
-        };
-      },
-    }),
+    //     await Otp.updateOne(
+    //       { phoneNumber: phone },
+    //       { $unset: { otp: "", expiresAt: "" } }
+    //     );
+    //     return {
+    //       id: user._id.toString(),
+    //       phone: user.phone,
+    //       accessToken,
+    //       name: user.name || "Saydle User",
+    //       email: user.email || "",
+    //       plan: user.plan,
+    //       dateOfSubscription: user.date_of_subscription,
+    //       nextBillingDate: user.next_billing_date,
+    //       planDuration: user.plan_duration,
+    //     };
+    //   },
+    // }),
   ],
   session: {
     strategy: "jwt" as const,
@@ -109,7 +113,7 @@ const config = {
       profile?: Profile;
       trigger?: "signIn" | "signUp" | "update";
       isNewUser?: boolean;
-      session?: any;
+      session?: Session;
     }) {
       const { token, user } = params;
       if (user) {
@@ -198,9 +202,6 @@ const config = {
     async signIn({
       user,
       account,
-      profile,
-      email,
-      credentials,
     }: {
       user: User | AdapterUser;
       account?: Account | null;
