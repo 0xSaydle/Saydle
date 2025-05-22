@@ -1,5 +1,5 @@
 "use client";
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex, Link, Text } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import Headphone from "@/public/icons/headphone.svg";
 import Image from "next/image";
@@ -70,8 +70,10 @@ export default function Dashboard() {
             />
             <Box fontWeight="bold" color="dark.500">
               {session?.user?.plan === "BASIC" ? "Inactive" : "Active"} -{" "}
-              {session?.user?.plan?.charAt(0) +
-                session?.user?.plan?.slice(1).toLowerCase() || "Basic"}
+              {session?.user?.plan && typeof session.user.plan === "string"
+                ? session.user.plan.charAt(0) +
+                  session.user.plan.slice(1).toLowerCase()
+                : "No plan"}
             </Box>
           </Flex>
         </Box>
@@ -122,8 +124,7 @@ export default function Dashboard() {
             <Image src={Headphone} alt="Headphone" />
           </Box>
           <Box
-            as="a"
-            href="mailto:support@saydle.com"
+            asChild
             color="#fff"
             bg="#FF6F61"
             borderRadius="full"
@@ -138,7 +139,7 @@ export default function Dashboard() {
               textDecoration: "none",
             }}
           >
-            Contact
+            <Link href="mailto:support@saydle.com">Contact</Link>
           </Box>
         </Flex>
       </Box>
