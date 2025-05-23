@@ -1,6 +1,6 @@
 import { Flex, Text, Box } from "@chakra-ui/react";
-// import PlanCard from "@/components/custom/PlanCard";
-// import plans from "@/lib/plans";
+import PlanCard from "@/components/custom/PlanCard";
+import plans from "@/lib/plans";
 
 const Subscriptions = () => {
   return (
@@ -32,10 +32,10 @@ const Subscriptions = () => {
           my={"100px"}
         >
         
-            {/* {plans.map((plan, index) => (
+            {plans.map((plan, index) => (
               <PlanCard key={index} {...plan} />
             ))}
-         */}
+        
         </Flex>
     
     </Box>
