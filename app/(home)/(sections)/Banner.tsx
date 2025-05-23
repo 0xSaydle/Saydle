@@ -1,8 +1,16 @@
-import { Box, Flex, Heading, Text, Icon, Link } from "@chakra-ui/react";
-import Image from "next/image";
+import {
+  Box, Flex,
+  Heading,
+  Text,
+  Icon
+} from "@chakra-ui/react";
 import Tag from "@/components/custom/Tag";
-import icon from "@/public/icons/receive-square.svg";
 import Button from "@/components/custom/button";
+import Link from "next/link";
+import Image from "next/image";
+// import icons from "@/public/icons/receive-square.svg";
+
+// import LearnMore from "@/components/custom/LearnMore";
 const tagData = [
   { icon: "/icons/vuesax/pink.svg", text: "Positivity" },
   { icon: "/icons/vuesax/purple.svg", text: "Wellness" },
@@ -23,7 +31,7 @@ const rightTags = [
 
 const Banner = () => {
   return (
-    <Box justifyContent={"center"} >
+    <Box hideBelow={"md"} justifyContent={"center"} >
       <Flex
         direction={{ base: "column", md: "row" }}
         alignItems="flex-end"
@@ -88,35 +96,32 @@ const Banner = () => {
             you—providing personalized encouragement to help you navigate
             life&apos;s challenges.
           </Text>
-          {/* CTA Buttons */}
           <Flex
             gap={"10px"}
             alignItems={"center"}
             borderRadius={"24px"}
             pt={"24px"}
-            asChild
           >
-            <div>
               <Button bg={"primary.20"} text="Subscribe" path="/login" />
               <Box
-                p={"12px 24px"}
-                borderRadius={"24px"}
-                border={"1px solid"}
-                borderColor={"secondary.20"}
-                display={"flex"}
-                gap={"10px"}
-                textStyle={"button_lg"}
-                alignItems={"center"}
-                asChild
-              >
-                <Link href={"/about"}>
-                  Learn more
-                  <Icon fontSize={"24px"} asChild>
-                    <Image src={icon} alt="icon" />
-                  </Icon>
-                </Link>
-              </Box>
-            </div>
+    p={"12px 24px"}
+    borderRadius={"24px"}
+    border={"1px solid"}
+    borderColor={"secondary.20"}
+    display={"flex"}
+    gap={"10px"}
+    textStyle={"button_lg"}
+    alignItems={"center"}
+    asChild
+  >
+    <Link href={"/about"}>
+      Learn more
+      <Icon fontSize={"24px"} asChild>
+                  <Image src={"icons/receive-square.svg"} width={24} height={24} alt="icon"/>
+        {/* <Image src={icons} alt="icon"/> */}
+      </Icon>
+    </Link>
+  </Box>
           </Flex>
         </Box>
         {/* Center Section (Girl Image) */}
@@ -180,8 +185,8 @@ const Banner = () => {
               <Text fontSize="xs" width="90%" fontWeight="500" color="gray.500">
                 Small words, big impact—crafted for you to tackle challenges.
               </Text>
-              <Box
-                height={"24px"} asChild>
+              {/* <Box
+                height={"24px"} asChild> */}
                 <svg
                   width="52"
                   height="52"
@@ -212,7 +217,7 @@ const Banner = () => {
                     strokeLinejoin="round"
                   />
                 </svg>
-              </Box>
+              {/* </Box> */}
             </Flex>
           </Box>
           <Box

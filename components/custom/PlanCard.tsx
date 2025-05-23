@@ -22,7 +22,6 @@ const PlanCard = ({
   special?: string;
   Button?: React.ReactNode;
 }) => {
-  // const checkoutUrl = await generateCheckoutUrl(productId);
   return (
     <Box
       background={"white"}

@@ -17,19 +17,16 @@ const Tag = ({ icon, text, color }: TagProps) => {
       border={"1px solid"}
       borderColor={"dark.50"}
       width={"max-content"}
-      asChild
       textStyle={"caption"}
        bg="whiteAlpha.100"
               backdropFilter="blur(18px)"
     >
-      <div>
         <Icon asChild>
           <Image src={icon} alt="icon" width={16} height={16} />
         </Icon>
         <Text fontSize="10px" fontWeight="normal" color={color}>
           {text}
         </Text>
-      </div>
     </Flex>
   );
 };

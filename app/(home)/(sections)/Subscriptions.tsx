@@ -1,11 +1,11 @@
 import { Flex, Text, Box } from "@chakra-ui/react";
-import PlanCard from "@/components/custom/PlanCard";
-import plans from "@/lib/plans";
+// import PlanCard from "@/components/custom/PlanCard";
+// import plans from "@/lib/plans";
 
 const Subscriptions = () => {
   return (
-    <Box py={"48px"} asChild>
-      <div>
+    <Box py={"48px"} >
+   
         <Text
           textAlign={"center"}
           textStyle={{ base: "h5", sm: "h3" }}
@@ -30,15 +30,14 @@ const Subscriptions = () => {
           position={"relative"}
           justifyContent={"center"}
           my={"100px"}
-          asChild
         >
-          <div>
-            {plans.map((plan, index) => (
+        
+            {/* {plans.map((plan, index) => (
               <PlanCard key={index} {...plan} />
             ))}
-          </div>
+         */}
         </Flex>
-      </div>
+    
     </Box>
   );
 };

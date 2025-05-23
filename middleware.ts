@@ -2,8 +2,6 @@ import { NextResponse, NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { createClient } from "@supabase/supabase-js";
 
-console.log("url ", process.env.SUPABASE_URL as string,)
-  console.log("role-key: ", process.env.SUPABASE_SERVICE_ROLE_KEY as string)
 export const supabaseAdmin = createClient(
   process.env.SUPABASE_URL as string,
   process.env.SUPABASE_SERVICE_ROLE_KEY as string

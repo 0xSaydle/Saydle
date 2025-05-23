@@ -4,7 +4,6 @@ import russ from "@/public/images/Dianne.svg";
 
 import theresa from "@/public/images/theresa.svg";
 
-
 const ReviewData = [
   {
     highlight: "Saydle knows what you need to hear.",
@@ -46,27 +45,41 @@ const Review = ({
       maxWidth={"530px"}
     >
       <div>
-        <Text mb={"15px"} fontSize={"16px"} fontWeight={"600"} color={"secondary.900"}>
+        <Text
+          mb={"15px"}
+          fontSize={"16px"}
+          fontWeight={"600"}
+          color={"secondary.900"}
+        >
           {highlight}
         </Text>
         <Text mb={"25px"} textStyle={"body_lg"} color={"dark.300"}>
           {quote}
         </Text>
-        <Flex alignSelf={{base:"center", md:"start"} }alignItems={{base:"center", }} gap={"10px"} asChild>
+        <Flex
+          alignSelf={{ base: "center", md: "start" }}
+          alignItems={{ base: "center" }}
+          gap={"10px"}
+          asChild
+        >
           <div>
-          <Icon fontSize={"42px"} asChild>
-            <Image src={image} alt={by} />
-          </Icon>
+            <Icon fontSize={"42px"} asChild>
+              <Image src={image} alt={by} />
+            </Icon>
             <Box asChild>
-            <div>
-            <Text fontSize={"16px"} fontWeight={"700"} color={"secondary.900"}>
-              {by}
-            </Text>
-            <Text fontSize={"14px"} fontWeight={"400"} color={"dark.300"}>
-              {profession}
-            </Text>
-          </div>
-        </Box>
+              <div>
+                <Text
+                  fontSize={"16px"}
+                  fontWeight={"700"}
+                  color={"secondary.900"}
+                >
+                  {by}
+                </Text>
+                <Text fontSize={"14px"} fontWeight={"400"} color={"dark.300"}>
+                  {profession}
+                </Text>
+              </div>
+            </Box>
           </div>
         </Flex>
       </div>
@@ -75,29 +88,37 @@ const Review = ({
 };
 const Reviews = () => {
   return (
-    <Box asChild>
-      <div>
-        <Text textAlign={"center"} textStyle={{ base: "h5", sm: "h3" }}>
-          What our users are saying😍
-        </Text>
-        <Text textAlign={"center"} textStyle={"body_lg"} color={"dark.300"} maxWidth={"600px"} mx={"auto"} my={"20px"}>
-          Choose a plan that suits your journey and start receiving personalized
-          affirmations every day
-        </Text>
-        <Flex flexDirection={{ base: "column", md:"row" }} justifyContent={{"md":"center"}} gap={"20px"} asChild>
-          <div>
-            {ReviewData.map((review, key) => (
-              <Review key={key}
-                highlight={review.highlight}
-                quote={review.quote}
-                by={review.by}
-                image={review.image}
-                profession={review.profession}
-              />
-            ))}
-          </div>
-        </Flex>
-      </div>
+    <Box>
+      <Text textAlign={"center"} textStyle={{ base: "h5", sm: "h3" }}>
+        What our users are saying😍
+      </Text>
+      <Text
+        textAlign={"center"}
+        textStyle={"body_lg"}
+        color={"dark.300"}
+        maxWidth={"600px"}
+        mx={"auto"}
+        my={"20px"}
+      >
+        Choose a plan that suits your journey and start receiving personalized
+        affirmations every day
+      </Text>
+      <Flex
+        flexDirection={{ base: "column", md: "row" }}
+        justifyContent={{ md: "center" }}
+        gap={"20px"}
+      >
+        {ReviewData.map((review, key) => (
+          <Review
+            key={key}
+            highlight={review.highlight}
+            quote={review.quote}
+            by={review.by}
+            image={review.image}
+            profession={review.profession}
+          />
+        ))}
+      </Flex>
     </Box>
   );
 };

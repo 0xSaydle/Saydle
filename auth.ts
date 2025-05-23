@@ -140,9 +140,8 @@ const config = {
       session.user.nextBillingDate = token.nextBillingDate;
       session.user.planDuration = token.planDuration;
 
-      // Only proceed if we have a valid email
       if (!session?.user?.email) {
-        console.log("No email found in session, skipping Supabase update");
+        console.log("No email found in session, skipping update");
         return session;
       }
 
@@ -205,18 +204,12 @@ const config = {
     }: {
       user: User | AdapterUser;
       account?: Account | null;
-      profile?: Profile;
-      email?: { verificationRequest?: boolean };
-      credentials?: Record<string, unknown>;
     }) {
       if (account?.provider === "google" && user.email) {
         try {
-          console.log(
-            "Attempting to create/update user in Supabase:",
-            user.email
-          );
+          console.log("Attempting to create/update user:", user.email);
 
-          // Check if user exists in Supabase
+          // Check if user exists
           const { data: existingUser, error: fetchError } = await supabaseAdmin
             .from("users")
             .select("id")
@@ -224,19 +217,18 @@ const config = {
             .single();
 
           if (fetchError && fetchError.code !== "PGRST116") {
-            // PGRST116 is "not found" error
             console.error("Error checking existing user:", fetchError);
             return false;
           }
 
           if (!existingUser) {
-            console.log("Creating new user in Supabase");
-            // Create new user in Supabase
+            console.log("Creating new user");
+            // Create new user
             const { error: insertError } = await supabaseAdmin
               .from("users")
               .insert([
                 {
-                  id: randomUUID(), // Generate a unique ID using crypto
+                  id: randomUUID(),
                   email: user.email,
                   name: user.name || "Saydle User",
                   created_at: new Date().toISOString(),
@@ -246,12 +238,12 @@ const config = {
               ]);
 
             if (insertError) {
-              console.error("Error creating user in Supabase:", insertError);
+              console.error("Error creating user:", insertError);
               return false;
             }
             console.log("Successfully created new user");
           } else {
-            console.log("User already exists in Supabase");
+            console.log("User already exists");
           }
           return true;
         } catch (error) {

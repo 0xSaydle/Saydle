@@ -17,9 +17,8 @@ const Navbar = () => {
       alignItems={"center"}
       direction={"row"}
       p={{ lg: "0px", md: "0px" }}
-      asChild
     >
-      <div>
+  
         <Logo />
         <Flex
           hideBelow={"md"}
@@ -40,9 +39,7 @@ const Navbar = () => {
             </Text>
           </div>
         </Flex>
-        {/* Loigin & Signup */}
         <Flex
-          asChild
           hideBelow={"md"}
           bgColor={"light.400"}
           p={"8px"}
@@ -51,7 +48,6 @@ const Navbar = () => {
           alignItems={"center"}
           textStyle={"button_lg"}
         >
-          <div>
             <Text p={"12px 24px"} asChild>
               <Link href="/login">Log In</Link>
             </Text>
@@ -64,9 +60,7 @@ const Navbar = () => {
             >
               <Link href="/register">Register</Link>
             </Text>
-          </div>
         </Flex>
-        {/* Hamburger menu icon */}
         <Icon
           hideFrom={"md"}
           cursor={"pointer"}
@@ -76,7 +70,6 @@ const Navbar = () => {
         >
           <IoMenu />
         </Icon>
-        {/* Menu List */}
         <Flex
           padding={{ base: "15px", sm: "40px" }}
           zIndex={"20000"}
@@ -93,9 +86,8 @@ const Navbar = () => {
           gap={menu === "on" ? "30px" : undefined}
           textStyle={menu === "on" ? "menu_lg" : undefined}
           alignItems={menu === "on" ? "start" : undefined}
-          asChild
         >
-          <div>
+        
             <Flex
               justifyContent={"space-between"}
               alignItems={"center"}
@@ -105,28 +97,25 @@ const Navbar = () => {
               css={{
                 justifyContent: "space-between",
               }}
-              asChild
             >
-              <div>
-                <Logo
-                  css={{
-                    "&:hover": {
-                      color: "red.400",
-                    },
-                  }}
-                />
-                <Icon
-                  onClick={toggleMenu}
-                  cursor={"pointer"}
-                  fontSize={"23px"}
-                  _hover={{
+              <Logo
+                css={{
+                  "&:hover": {
                     color: "red.400",
-                  }}
-                  asChild
-                >
-                  <IoClose />
-                </Icon>
-              </div>
+                  },
+                }}
+              />
+              <Icon
+                onClick={toggleMenu}
+                cursor={"pointer"}
+                fontSize={"23px"}
+                _hover={{
+                  color: "red.400",
+                }}
+                asChild
+              >
+                <IoClose />
+              </Icon>
             </Flex>
 
             <Text asChild>
@@ -138,9 +127,7 @@ const Navbar = () => {
             <Text asChild>
               <Link href="/faq">{"FAQ's"}</Link>
             </Text>
-          </div>
         </Flex>
-      </div>
     </Flex>
   );
 };

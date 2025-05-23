@@ -36,13 +36,10 @@ const Footer = () => {
             gap={"20px"}
             justifyContent={"center"}
             alignItems={"center"}
-            asChild
           >
-            <div>
               <Link href={"/about"}>About</Link>
               <Link href={"/api"}>How it works</Link>
               <Link href={"/faq"}>FAQs</Link>
-            </div>
           </Flex>
         </Flex>
 
