@@ -116,13 +116,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         updated_at: new Date().toISOString(),
       };
 
-      const { data, error } = await updateUser(updateData, session);
+      const { data } = await updateUser(updateData, session);
       console.log("data", data);
-      console.log("error", error);
-      if (error) {
-        console.error("Error updating user data:", error);
-        throw error;
-      }
+    
     } catch (error) {
       console.error("Failed to update user data:", error);
       throw error;
