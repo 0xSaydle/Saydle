@@ -67,7 +67,7 @@ const FAQ = () => {
           p={"4px 8px"}
               width={"max-content"}
         >
-          <Link href="/contact">Check all common questions</Link>
+          <Link href="/faq">Check all common questions</Link>
         </Text>
 
           </div>

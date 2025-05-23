@@ -14,11 +14,11 @@ export default function OnboardingLayout({
 }) {
   const pathname = usePathname();
 
+  
   const match = pathname.match(/step\/(\d+)/);
   const step = match ? parseInt(match[1], 10) : 1;
   const totalSteps = 6;
   const progress = (step / totalSteps) * 100;
-
 
 
   return (

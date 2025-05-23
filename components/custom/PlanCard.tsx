@@ -97,13 +97,11 @@ const PlanCard = ({
             </Flex>
             {Button || (
               <Text
-                data-state={special}
-            
                 color={"light.400"}
                 display={"block"}
                 textStyle={"button_lg"}
                 padding={"12px 24px"}
-                bg={"dark.100"}
+                bg={"primary.20"}
                 borderRadius={"24px"}
                 my={"10px"}
                 textDecoration={"none"}

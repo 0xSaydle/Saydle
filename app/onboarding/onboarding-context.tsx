@@ -6,7 +6,7 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import { supabaseAdmin } from "@/supabase/supabase_client";
+import { updateUser } from "@/supabase/actions";
 import { useSession } from "next-auth/react";
 import { z } from "zod";
 
@@ -116,11 +116,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         updated_at: new Date().toISOString(),
       };
 
-      const { error } = await supabaseAdmin
-        .from("users")
-        .update(updateData)
-        .eq("email", session.user.email);
-
+      const { data, error } = await updateUser(updateData, session);
+      console.log("data", data);
+      console.log("error", error);
       if (error) {
         console.error("Error updating user data:", error);
         throw error;
