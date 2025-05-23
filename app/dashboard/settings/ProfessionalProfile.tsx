@@ -1,28 +1,63 @@
 import { Box, Heading, Text, Icon, Input, Button} from "@chakra-ui/react";
 import { FaBriefcase, FaBuilding, FaCalendarAlt } from "react-icons/fa";
 import { VStack, SimpleGrid, HStack } from "@chakra-ui/layout";
-import { useState } from "react";
-import { useToast } from "@chakra-ui/toast"
+import { useState, useEffect } from "react";
+import { useToast } from "@chakra-ui/toast";
+import {
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+} from "@chakra-ui/number-input"
 
 export default function ProfessionalProfile() {
-  const [jobTitle, setJobTitle] = useState("Software Engineer");
-  const [company, setCompany] = useState("TechCorp Inc.");
-  const [experience, setExperience] = useState("5 years");
+  const [jobTitle, setJobTitle] = useState("Student");
+  const [company, setCompany] = useState("");
+  const [experience, setExperience] = useState<number>(0);
+  const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false);
   const toast = useToast();
+
+  useEffect(() => {
+      async function fetchProfile() {
+        try {
+          const res = await fetch("/api/setting/profile");
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || "Failed to fetch profile");
+          console.log(data)
+          setJobTitle(data.job_title)
+          setCompany(data.company)
+          setExperience(typeof data.experience_years === "number" ? data.experience_years : 0);
+        } catch (error: any) {
+          setError(error.message);
+        }
+      }
+      fetchProfile();
+    }, []);
 
   const handleSave = async () => {
     setIsSaving(true);
     
     try {
-      // Simulate saving to backend
+      const response = await fetch("/api/setting/professional", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jobTitle,
+          company,
+          experience,
+        }),
+      });
 
-  //     await supabase
-  // .from('professional_profiles')
-  // .update({ jobTitle, company, experience })
-  // .eq('user_id', userId);
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to save profile");
+      }
+      const data = await response.json();
+      setJobTitle(data.job_title ?? "");
+      setCompany(data.company ?? "");
+      setExperience(typeof data.experience_years === "number" ? data.experience_years : 0);
 
       toast({
         title: "Profile updated.",
@@ -80,14 +115,22 @@ export default function ProfessionalProfile() {
         <Box>
           <HStack mb={2}>
             <Icon as={FaCalendarAlt} color="purple.500" boxSize={5} />
-            <Text fontWeight="semibold">Experience:</Text>
+            <Text fontWeight="semibold">Years of Experience:</Text>
           </HStack>
-          <Input
+          <NumberInput
+            min={0}
             value={experience}
-            onChange={(e) => setExperience(e.target.value)}
-            placeholder="e.g. 3 years"
-            ml={7}
-          />
+            onChange={(valueString, valueNumber) =>
+              setExperience(isNaN(valueNumber) ? 0 : valueNumber)
+            }
+            ml={5}
+          >
+            <NumberInputField placeholder="e.g. 3" />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
         </Box>
       </SimpleGrid>
 

@@ -1,3 +1,2 @@
-import { handlers } from "../../../../auth";
-export const { GET }= handlers;
-export const { POST } = handlers;
+import { handlers, auth, signIn, signOut } from "../../../../auth";
+export const { GET, POST }= handlers;

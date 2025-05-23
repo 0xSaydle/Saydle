@@ -39,7 +39,7 @@ export default function SettingsPage() {
             <Tab>Personal</Tab>
             <Tab>Professional</Tab>
             <Tab>Personality</Tab>
-            <Tab></Tab>
+            <Tab>Preferences</Tab>
           </TabList>
 
           <TabPanel><PersonalProfile /></TabPanel>

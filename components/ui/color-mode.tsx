@@ -11,7 +11,7 @@ export interface ColorModeProviderProps extends ThemeProviderProps {}
 
 export function ColorModeProvider(props: ColorModeProviderProps) {
   return (
-    <ThemeProvider attribute="class" disableTransitionOnChange {...props} />
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange {...props} />
   )
 }
 
@@ -29,8 +29,10 @@ export function useColorMode() {
 
 export function useColorModeValue<T>(light: T, dark: T) {
   const { colorMode } = useColorMode()
+  if (!colorMode) return light // or handle fallback
   return colorMode === "light" ? light : dark
 }
+
 
 export function ColorModeIcon() {
   const { colorMode } = useColorMode()

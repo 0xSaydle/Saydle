@@ -9,10 +9,10 @@ import {
   
   Spinner,
 } from "@chakra-ui/react";
-import { getUserFromLocalStorage } from '../../../lib/local_storage';
+import dayjs from "dayjs"
 import { VStack, HStack } from "@chakra-ui/layout"
 import { Select } from "@chakra-ui/select";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 import {
   Alert,
   // AlertTitle,
@@ -26,16 +26,17 @@ import {
   // FormHelperText,
   // FormErrorIcon,
 } from "@chakra-ui/form-control"
+import { Avatar } from "../../../components/ui/avatar"
 
 export default function PersonalProfile() {
-  const { data: session, status } = useSession();
-  const [profilePic, setProfilePic] = useState<string>("");
+  const [image, setProfilePic] = useState<string>("");
   const [uploading, setUploading] = useState<boolean>(false);
+  const [dob, setDob] = useState("");
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     email: "",
-    phone: "",
-    dob: "",
+    phone_number: "",
+    date_of_birth: "",
     address: "",
     gender: "",
   });
@@ -43,22 +44,22 @@ export default function PersonalProfile() {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log(getUserFromLocalStorage())
     async function fetchProfile() {
       try {
         const res = await fetch("/api/setting/profile");
         const data = await res.json();
+         console.log(data)
         if (!res.ok) throw new Error(data.message || "Failed to fetch profile");
 
         setFormData({
-          fullName: data.fullName,
+          name: data.name,
           email: data.email,
-          phone: data.phone,
-          dob: data.dob,
+          phone_number: data.phone_number,
+          date_of_birth: data.date_of_birth,
           address: data.address,
           gender: data.gender,
         });
-        setProfilePic(data.profilePicture);
+        setProfilePic(data.image);
       } catch (error: any) {
         setError(error.message);
       }
@@ -66,8 +67,35 @@ export default function PersonalProfile() {
     fetchProfile();
   }, []);
 
+  const validateDob = (value: string) => {
+    const selectedDate = new Date(value);
+    const today = new Date();
+    const tenYearsAgo = new Date();
+    tenYearsAgo.setFullYear(today.getFullYear() - 10);
+
+    if (selectedDate > today) {
+      return "DOB cannot be a future date.";
+    }
+    if (selectedDate > tenYearsAgo) {
+      return "User must be at least 10 years old.";
+    }
+    return "";
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleDOBChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const value = e.target.value;
+    setDob(value);
+    if (dob != "") {
+      setFormData({
+        ...formData, 
+        date_of_birth: dob,
+      });
+    }
+    setError(validateDob(value));
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,9 +115,11 @@ export default function PersonalProfile() {
       });
 
       const data = await res.json();
+      console.log(data)
       if (!res.ok) throw new Error(data.message || "Upload failed");
 
       setProfilePic(data.imageUrl);
+      console.log(image)
     } catch (error: any) {
       setError(error.message);
     } finally {
@@ -99,10 +129,11 @@ export default function PersonalProfile() {
 
   const handleUpdateProfile = async () => {
     try {
+      console.log(formData)
       const res = await fetch("/api/setting/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, profilePicture: profilePic }),
+        body: JSON.stringify({ ...formData, image: image }),
       });
 
       const data = await res.json();
@@ -122,9 +153,9 @@ export default function PersonalProfile() {
       </Heading>
 
       <VStack spacing={4} align="center" mb={6}>
-        <Image
-          src={profilePic || "/default-avatar.png"}
-          alt="Profile"
+        <Avatar
+          name={formData.name}
+          src={image}
           boxSize="128px"
           objectFit="cover"
           rounded="full"
@@ -166,23 +197,23 @@ export default function PersonalProfile() {
       {!isEditing ? (
         <VStack spacing={3} align="start">
           <Text>
-            <strong>Full Name:</strong> {formData.fullName}
+            <strong>Full Name:</strong> {formData.name || ""}
           </Text>
           <Text>
-            <strong>Email:</strong> {formData.email}
+            <strong>Email:</strong> {formData.email || ""}
           </Text>
           <Text>
-            <strong>Phone:</strong> {formData.phone}
+            <strong>Phone:</strong> {formData.phone_number || ""}
           </Text>
           <Text>
             <strong>Date of Birth:</strong> 
-            {new Date(formData.dob).toLocaleDateString()}
+            {dayjs(formData.date_of_birth).isValid() ? dayjs(formData.date_of_birth).format('DD MMM YYYY') : ''}
           </Text>
           <Text>
-            <strong>Address:</strong> {formData.address}
+            <strong>Address:</strong> {formData.address || ""}
           </Text>
           <Text>
-            <strong>Gender:</strong> {formData.gender}
+            <strong>Gender:</strong> {formData.gender || ""}
           </Text>
 
           <Button
@@ -199,8 +230,8 @@ export default function PersonalProfile() {
             <Text>Full Name</Text>
 
               <Input
-                name="fullName"
-                value={formData.fullName}
+                name="name"
+                value={formData.name || ""}
                 onChange={handleChange}
                 placeholder="Enter full name"
               />
@@ -211,7 +242,7 @@ export default function PersonalProfile() {
             <Input
               type="email"
               name="email"
-              value={formData.email}
+              value={formData.email || ""}
               onChange={handleChange}
               placeholder="Enter email"
             />
@@ -220,8 +251,8 @@ export default function PersonalProfile() {
           <FormControl>
             <FormLabel>Phone</FormLabel>
             <Input
-              name="phone"
-              value={formData.phone}
+              name="phone_number"
+              value={formData.phone_number}
               onChange={handleChange}
               placeholder="Enter phone number"
             />
@@ -231,9 +262,10 @@ export default function PersonalProfile() {
             <FormLabel>Date of Birth</FormLabel>
             <Input
               type="date"
-              name="dob"
-              value={formData.dob}
-              onChange={handleChange}
+              name="date_of_birth"
+              value={formData.date_of_birth}
+              onChange={handleDOBChange}
+              max={new Date().toISOString().split("T")[0]}
             />
           </FormControl>
 

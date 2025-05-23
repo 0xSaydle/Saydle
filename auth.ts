@@ -7,8 +7,6 @@ import type { JWT } from "next-auth/jwt";
 import type { Session, User, DefaultSession, Account, NextAuthConfig } from "next-auth";
 import { supabaseAdmin } from "@/supabase/supabase_client";
 import { randomUUID } from "crypto";
-import { saveUserToLocalStorage } from './lib/local_storage';
-// import { IUser } from "./lib/User";
 
 
 declare module "next-auth" {
@@ -17,7 +15,7 @@ declare module "next-auth" {
       id: string;
       name: string;
       email: string;
-      phone?: string;
+      phone_number?: string;
       accessToken: string;
       plan?: string;
       dateOfSubscription?: string;
@@ -38,7 +36,7 @@ declare module "next-auth" {
 
 interface CustomToken extends JWT {
   accessToken?: string;
-  phone?: string;
+  phone_number?: string;
   plan?: string;
   dateOfSubscription?: string;
   nextBillingDate?: string;
@@ -59,7 +57,7 @@ export const config: NextAuthConfig = {
       id: "credentials",
       name: "Twilio OTP",
       credentials: {
-        phone: {
+        phone_number: {
           label: "Phone Number",
           type: "text",
           placeholder: "+1234567890",
@@ -67,15 +65,14 @@ export const config: NextAuthConfig = {
         otp: { label: "OTP", type: "text", placeholder: "123456" },
       },
       async authorize(credentials) {
-        if (!credentials?.phone || !credentials.otp) return null;
+        if (!credentials?.phone_number || !credentials.otp) return null;
 
-        const { phone, otp } = credentials;
+        const { phone_number, otp } = credentials;
         
         const { data: userOtp, error } = await supabaseAdmin
           .from('otps')
           .select('*')
-          // .eq('phone_number', phone)
-          .eq('email', phone)
+          .eq('phone_number', phone_number)
           .eq('otp', otp)
           .single();
 
@@ -90,14 +87,14 @@ export const config: NextAuthConfig = {
         const { data: userData, error: fetchError } = await supabaseAdmin
           .from("users")
           .select("*")
-          .eq("phone_number", phone)
+          .eq("phone_number", phone_number)
           .single();
 
         if (fetchError) {
           console.error("Error fetching user data:", fetchError);
         }
         // Generate JWT token
-        const accessToken = await signJwt({ id: userData._id, phone: userData.phone });
+        const accessToken = await signJwt({ id: userData._id, phone_number: userData.phone_number });
 
         const { error: otpError } = await supabaseAdmin
         .from('otps')
@@ -105,15 +102,15 @@ export const config: NextAuthConfig = {
           otp: null,
           expires_at: null,
         })
-        .eq('phone_number', phone);
+        .eq('phone_number', phone_number);
 
         if (otpError) {
           throw new Error("Failed to clear OTP");
         }
 
         return {
-          id: userData._id.toString(),
-          phone: userData.phone,
+          id: userData.id,
+          phone_number: userData.phone_number,
           accessToken,
           name: userData.name || "Saydle User",
           email: userData.email || "",
@@ -132,10 +129,10 @@ export const config: NextAuthConfig = {
     async jwt({ token, user }: { token: JWT; user?: User }) {
       if (user) {
         token.accessToken = user.accessToken;
-        token.phone = user.phone;
+        token.phone_number = user.phone_number;
         
         // Handle Google login
-        if (user.email && !token.phone) {
+        if (user.email && !token.phone_number) {
           const { data: userData } = await supabaseAdmin
             .from("users")
             .select("*")
@@ -143,7 +140,8 @@ export const config: NextAuthConfig = {
             .single();
 
           if (userData) {
-            token.phone = userData.phone_number;
+            token.id = userData.id
+            token.phone_number = userData.phone_number;
             token.accessToken = await signJwt({ id: userData.id, phone: userData.phone_number });
             token.plan = userData.plan;
             token.dateOfSubscription = userData.date_of_subscription;
@@ -165,7 +163,7 @@ export const config: NextAuthConfig = {
       session.user = {
       id: token.id as string,
       email: token.email as string,
-      phone: token.phone as string,
+      phone_number: token.phone_number as string,
       name: token.name as string,
       accessToken: token.accessToken as string,
       plan: token.plan,
@@ -197,9 +195,9 @@ export const config: NextAuthConfig = {
 
         if (userData) {
           // Update session with latest data from database
-          session.user.name = userData.name;
-          session.user.phone = userData.phone_number;
           session.user.id = userData.id;
+          session.user.name = userData.name;
+          session.user.phone_number = userData.phone_number;
           session.user.plan = userData.plan;
           session.user.dateOfSubscription = userData.date_of_subscription;
           session.user.nextBillingDate = userData.next_billing_date;
@@ -220,13 +218,7 @@ export const config: NextAuthConfig = {
       } catch (error) {
         console.error("Error in session callback:", error);
       }
-      saveUserToLocalStorage({
-          id: session.user.id,
-          fullName: session.user.name,
-          email: session.user.email,
-          phone: session.user.phone,
-          accessToken: session.user.accessToken,
-      });
+
       return session;
     },
     async redirect({ baseUrl, url }: { baseUrl: string; url: string }) {
@@ -270,7 +262,7 @@ export const config: NextAuthConfig = {
           if (!existingUser) {
             console.log("Creating new user in Supabase");
             // Create new user in Supabase
-            const { error: insertError } = await supabaseAdmin
+            const { data: insertData, error: insertError } = await supabaseAdmin
               .from("users")
               .insert([
                 {
@@ -282,6 +274,8 @@ export const config: NextAuthConfig = {
                   verified: false,
                 },
               ]);
+
+              // console.log(insertData)
 
             if (insertError) {
               console.error("Error creating user in Supabase:", insertError);
@@ -307,4 +301,4 @@ export const config: NextAuthConfig = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-export const { handlers } = NextAuth(config);
+export const { handlers, signIn, auth, signOut } = NextAuth(config);

@@ -1,6 +1,7 @@
 import { GeneralSans } from "./fonts";
 import { Provider } from "@/components/ui/provider";
 import { SessionProvider } from "next-auth/react";
+import theme from "../theme";
 import { Toaster } from "@/components/ui/toaster";
 
 export default function RootLayout({
