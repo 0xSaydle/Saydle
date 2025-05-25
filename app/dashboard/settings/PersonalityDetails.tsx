@@ -27,15 +27,8 @@ export default function PersonalityDetails() {
   const toast = useToast();
   const [type, setType] = useState("INTP-T");
   const [isSaving, setIsSaving] = useState(false);
-  const [strengths, setStrengths] = useState<string[]>([
-    "Logical",
-    "Analytical",
-    "Creative",
-  ]);
-  const [weaknesses, setWeaknesses] = useState<string[]>([
-    "Overthinking",
-    "Perfectionist",
-  ]);
+  const [strengths, setStrengths] = useState<string[]>([]);
+  const [weaknesses, setWeaknesses] = useState<string[]>([]);
 
   // Handlers to add/remove tags
   const addTag = (
@@ -92,11 +85,23 @@ export default function PersonalityDetails() {
       .then((res) => res.json())
       .then((data) => {
         setType(data.personalityType || "");
-        setStrengths(data.strengths || []);
-        setWeaknesses(data.weaknesses || []);
+
+        const toArray = (val: any): string[] => {
+          if (Array.isArray(val)) return val;
+          if (typeof val === "string") {
+            return val
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean);
+          }
+          return [];
+        };
+
+        setStrengths(toArray(data.strengths));
+        setWeaknesses(toArray(data.weaknesses));
       })
       .catch((err) => console.error(err));
-  }, []);
+      }, []);
 
 
   return (
@@ -143,7 +148,7 @@ export default function PersonalityDetails() {
           <FormLabel>Weaknesses</FormLabel>
           <HStack wrap="wrap" spacing={2} mb={2}>
             {weaknesses.map((w, idx) => (
-              <Tag key={idx} size="md" borderRadius="full" variant="subtle" colorScheme="red">
+              <Tag key={idx} size="md" borderRadius="full" variant="solid" colorScheme="green">
                 <TagLabel>{w}</TagLabel>
                 <TagCloseButton onClick={() => removeTag(idx, setWeaknesses)} />
               </Tag>
