@@ -2,18 +2,17 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import AppleProvider from "next-auth/providers/apple";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { signJwt } from "./helpers/jwt";
 import type { JWT } from "next-auth/jwt";
 import type {
   Session,
   User,
   DefaultSession,
   Account,
-  Profile,
+  NextAuthConfig,
 } from "next-auth";
 import { supabaseAdmin } from "./middleware";
 import { randomUUID } from "crypto";
-import { AdapterUser } from "next-auth/adapters";
+import { signJwt } from "./app/api/actions/generateCheckoutUrl/jwt";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -167,7 +166,7 @@ export const config: NextAuthConfig = {
       token: CustomToken;
     }) {
       session.user.accessToken = token.accessToken as string;
-      session.user.phone = token.phone;
+      session.user.phone_number= token.phone_number as string;
       session.user.plan = token.plan;
       session.user.dateOfSubscription = token.dateOfSubscription;
       session.user.nextBillingDate = token.nextBillingDate;
@@ -235,7 +234,7 @@ export const config: NextAuthConfig = {
       user: User | { email?: string | null; name?: string | null };
       account: Account | null;
       email?: { verificationRequest?: boolean };
-      credentials?: Record<string, any>;
+      credentials?: Record<string, string>;
     }) {
       const { user, account } = params;
 
