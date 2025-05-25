@@ -46,14 +46,14 @@ export async function middleware(request: NextRequest) {
       }
 
       // If not verified and trying to access dashboard, redirect to onboarding
-      if (
-        !user?.verified &&
-        (pathname === "/dashboard" || pathname === "/dashboard/")
-      ) {
-        return NextResponse.redirect(
-          new URL("/onboarding/step/1", request.url)
-        );
-      }
+      // if (
+      //   !user?.verified &&
+      //   (pathname === "/dashboard" || pathname === "/dashboard/")
+      // ) {
+      //   return NextResponse.redirect(
+      //     new URL("/onboarding/step/1", request.url)
+      //   );
+      // }
 
       // Handle onboarding step validation
       // if (pathname.startsWith("/dashboard/onboarding/step/")) {

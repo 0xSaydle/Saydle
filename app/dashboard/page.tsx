@@ -3,9 +3,25 @@ import { Box, Flex, Link, Text } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import Headphone from "@/public/icons/headphone.svg";
 import Image from "next/image";
+import { useEffect } from "react";
 
 export default function Dashboard() {
   const { data: session } = useSession();
+  
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const res = await fetch("/api/affirmation");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to fetch profile");
+        console.log(data)
+        
+      } catch (error: any) {
+        console.log(error);
+      }
+    }
+    fetchProfile();
+  }, []);
 
   return (
     <>

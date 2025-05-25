@@ -99,8 +99,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Set session cookie
-    const cookieStore = await cookies();
-    cookieStore.set("auth-token", data.session.access_token, {
+    const cookieStore = cookies();
+    (await cookieStore).set("supabase-auth-token", JSON.stringify(data), {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
