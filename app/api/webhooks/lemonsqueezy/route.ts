@@ -1,171 +1,230 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac } from "node:crypto";
+import { createHmac } from "crypto";
 import { supabase } from "@/middleware";
 
+type WebhookMeta = {
+  test_mode: boolean;
+  event_name: string;
+  custom_data: {
+    user_id: string;
+    user_email: string;
+    internal_ref: string;
+  };
+  webhook_id: string;
+};
+
+type WebhookData = {
+  type: string;
+  id: string;
+  attributes: {
+    status: string;
+    user_email: string;
+    store_id: number;
+    customer_id: number;
+    order_id: number;
+    order_item_id: number;
+    product_id: number;
+    variant_id: number;
+    product_name: string;
+    variant_name: string;
+    user_name: string;
+    status_formatted: string;
+    card_brand: string;
+    card_last_four: string;
+    pause: boolean | null;
+    cancelled: boolean;
+    trial_ends_at: string | null;
+    billing_anchor: number;
+    renews_at: string;
+    ends_at: string | null;
+    created_at: string;
+    updated_at: string;
+    test_mode: boolean;
+  };
+};
 
 export async function POST(request: NextRequest) {
   try {
     const signature = request.headers.get("X-Signature");
-    const payload = await request.json();
+    const body = await request.json();
+    const { meta, data } = body;
 
-    console.log(payload);
     if (!signature) {
       return NextResponse.json({ error: "No signature" }, { status: 401 });
     }
 
-    const hmac = createHmac("sha256", process.env.LEMON_SQUEEZY_WEBHOOK_SECRET!);
-    hmac.update(JSON.stringify(payload));
+    // Verify webhook signature
+    const hmac = createHmac(
+      "sha256",
+      process.env.LEMON_SQUEEZY_WEBHOOK_SECRET!
+    );
+    hmac.update(JSON.stringify(body));
     const computedSignature = hmac.digest("hex");
 
     if (computedSignature !== signature) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
-    
-    //variables
-    const attributes = payload.data.attributes;
-    const eventName = payload.meta.event_name;
-    const email = attributes.email;
-    const subscriptionId = attributes.subscription_item.subscription_id;
-    const status = attributes.status;
-    const customData = attributes.meta.custom_data;
-    // Handling diff types of events
-    // Logging
-console.log(`Processing ${eventName} for user ${customData.user_id}`);
-console.log('Subscription data:', attributes);
+
+    if (!meta || !data) {
+      return NextResponse.json(
+        { error: "Invalid webhook payload" },
+        { status: 400 }
+      );
+    }
+
+    const eventName = meta.event_name;
+    const subscriptionId = data.id;
+    const email = data.attributes.user_email;
+
     switch (eventName) {
       case "subscription_created":
-        await handleSubscriptionCreated(email, subscriptionId, status, customData);
+        await handleSubscriptionCreated(
+          email,
+          subscriptionId,
+      
+        );
         break;
       case "subscription_updated":
-        await handleSubscriptionUpdated(email, subscriptionId, status, customData);
+        await handleSubscriptionUpdated(
+          email,
+          subscriptionId,
+  
+        );
         break;
       case "subscription_cancelled":
-        await handleSubscriptionCancelled(email, subscriptionId, status, customData);
+        await handleSubscriptionCancelled(
+          email,
+          subscriptionId,
+    
+        );
         break;
       case "subscription_payment_success":
-        await handleSubscriptionPaymentSuccess(email, subscriptionId, status, customData);
+        await handleSubscriptionPaymentSuccess(
+          email,
+          subscriptionId,
+     
+        );
+        break;
       case "subscription_payment_failed":
-        await handleSubscriptionPaymentFailed(email, subscriptionId, status, customData);
+        await handleSubscriptionPaymentFailed(
+          email,
+          subscriptionId,
+    
+        );
+        break;
       case "subscription_plan_changed":
-        await handleSubscriptionPlanChanged(email, subscriptionId, status, customData);
+        await handleSubscriptionPlanChanged(
+          email,
+          subscriptionId,
+    
+        );
         break;
       default:
-        console.log(`Unhandled event: ${eventName}`);
-        return NextResponse.json({ message: "Unhandled event" }, { status: 400 });
-      
+        console.log(`Unhandled event type: ${eventName}`);
     }
-    return NextResponse.json({ message: "Webhook received" }, { status: 200 });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error processing webhook:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error("Webhook error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
+}
 
-  
+async function handleSubscriptionCreated(
 
-  // Handlers 
+  meta: WebhookMeta,
+  data: WebhookData
+) {
+  const { error } = await supabase.rpc("handle_subscription_created", {
+    p_meta: meta,
+    p_data: data,
+  });
 
-
-  async function handleSubscriptionCreated(email: string, subscriptionId: string, status: string, customData: {user_id: string}) {
-    const userId = customData.user_id;
-    const { data, error } = await supabase
-      .from("users")
-      .update({
-        subscription_id: subscriptionId,
-        subscription_status: "active",
-      })
-      .eq("id", userId)
-      .select();
-
-    console.log(data);
-
-    if (error) {
-      console.error("Error updating user:", error);
-      return NextResponse.json({ error: "Error updating user" }, { status: 500 });
-    }
-  
+  if (error) {
+    console.error("Error handling subscription creation:", error);
+    throw error;
   }
+}
 
-  async function handleSubscriptionUpdated(email: string, subscriptionId: string, status: string, customData: {user_id: string}) {
-    const userId = customData.user_id;
-    const { data, error } = await supabase
-      .from("users")
-      .update({
-        subscription_id: subscriptionId,
-        subscription_status: status,
-      })
-      .eq("id", userId)
-      .select();
-    console.log(data);
-    if (error) {
-      console.error("Error updating user:", error);
-   
-    }
+async function handleSubscriptionUpdated(
+ 
+  meta: WebhookMeta,
+  data: WebhookData
+) {
+  const { error } = await supabase.rpc("handle_subscription_created", {
+    p_meta: meta,
+    p_data: data,
+  });
+
+  if (error) {
+    console.error("Error handling subscription update:", error);
+    throw error;
   }
-    async function handleSubscriptionCancelled(email: string, subscriptionId: string, status: string, customData: {user_id: string}) {
-      const userId = customData.user_id;
-      const { data, error } = await supabase
-        .from("users")
-        .update({
-          subscription_id: subscriptionId,
-          subscription_status: status,
-        }).eq("id", userId)
-        .select();
-      console.log(data);
-      if (error) {
-        console.error("Error updating user:", error);
-      }
-    }
+}
 
-    async function handleSubscriptionPaymentSuccess(email: string, subscriptionId: string, status: string, customData: {user_id: string}) {
-      const userId = customData.user_id;
-      const { data, error } = await supabase
-        .from("users")
-        .update({
-          subscription_id: subscriptionId,
-          subscription_status: status,
-        })
-        .eq("id", userId)
-        .select();
-      console.log(data);
-      if (error) {
-        console.error("Error updating user:", error);
-      }
-    }
+async function handleSubscriptionCancelled(
 
-    async function handleSubscriptionPlanChanged(email: string, subscriptionId: string, status: string, customData: {user_id: string}) {
-      const userId = customData.user_id;
-      const { data, error } = await supabase
-        .from("users")
-        .update({
-          subscription_id: subscriptionId,
-          subscription_status: status,
-        })
-        .eq("id", userId)
-        .select();
-      console.log(data);
-      if (error) {
-        console.error("Error updating user:", error);
-      }
-    }
+  meta: WebhookMeta,
+  data: WebhookData
+) {
+  const { error } = await supabase.rpc("handle_subscription_created", {
+    p_meta: meta,
+    p_data: data,
+  });
 
-    async function handleSubscriptionPaymentFailed(email: string, subscriptionId: string, status: string, customData: {user_id: string}) {
-      const userId = customData.user_id;
-      const { data, error } = await supabase
-        .from("users")
-        .update({
-          subscription_id: subscriptionId,
-          subscription_status: status,
-        })
-        .eq("id", userId)
-        .select();
-
-      console.log(data);
-
-      if (error) {
-        console.error("Error updating user:", error);
-      }
-    }
-  
-
-
+  if (error) {
+    console.error("Error handling subscription cancellation:", error);
+    throw error;
   }
+}
+
+async function handleSubscriptionPaymentSuccess(
+
+  meta: WebhookMeta,
+  data: WebhookData
+) {
+  const { error } = await supabase.rpc("handle_subscription_created", {
+    p_meta: meta,
+    p_data: data,
+  });
+
+  if (error) {
+    console.error("Error handling subscription payment success:", error);
+    throw error;
+  }
+}
+
+async function handleSubscriptionPaymentFailed(
+
+  meta: WebhookMeta,
+  data: WebhookData
+) {
+  const { error } = await supabase.rpc("handle_subscription_created", {
+    p_meta: meta,
+    p_data: data,
+  });
+
+  if (error) {
+    console.error("Error handling subscription payment failure:", error);
+    throw error;
+  }
+}
+
+async function handleSubscriptionPlanChanged(
+
+  meta: WebhookMeta,
+  data: WebhookData
+) {
+  const { error } = await supabase.rpc("handle_subscription_created", {
+    p_meta: meta,
+    p_data: data,
+  });
+
+  if (error) {
+    console.error("Error handling subscription plan change:", error);
+    throw error;
+  }
+}
