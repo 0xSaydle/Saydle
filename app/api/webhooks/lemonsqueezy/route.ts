@@ -27,8 +27,11 @@ export async function POST(request: NextRequest) {
     const email = attributes.email;
     const subscriptionId = attributes.subscription_item.subscription_id;
     const status = attributes.status;
-    const customData = attributes.custom;
+    const customData = attributes.meta.custom_data;
     // Handling diff types of events
+    // Logging
+console.log(`Processing ${eventName} for user ${customData.user_id}`);
+console.log('Subscription data:', attributes);
     switch (eventName) {
       case "subscription_created":
         await handleSubscriptionCreated(email, subscriptionId, status, customData);
@@ -49,13 +52,15 @@ export async function POST(request: NextRequest) {
       default:
         console.log(`Unhandled event: ${eventName}`);
         return NextResponse.json({ message: "Unhandled event" }, { status: 400 });
-        break;
+      
     }
     return NextResponse.json({ message: "Webhook received" }, { status: 200 });
   } catch (error) {
     console.error("Error processing webhook:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
+
+  
 
   // Handlers 
 

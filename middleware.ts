@@ -92,7 +92,17 @@ export async function middleware(request: NextRequest) {
       console.error("Error in middleware:", error);
     }
   }
-
+  // Lemon Squeezy integration
+  if (request.nextUrl.pathname.startsWith('/api/webhooks/lemonsqueezy')) {
+    // Verify content-type is application/json
+    const contentType = request.headers.get('content-type');
+    if (contentType !== 'application/json') {
+      return new NextResponse('Invalid content type', { status: 400 });
+    }
+    
+    // We'll do the actual signature verification in the route handler
+    // since we need access to the raw body
+  }
   return NextResponse.next();
 }
 
