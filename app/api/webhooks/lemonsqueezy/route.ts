@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "crypto";
-import { supabase } from "@/middleware";
+import { supabaseAdmin } from "@/middleware";
+// import { supabase } from "@/middleware";
 
 type WebhookMeta = {
   test_mode: boolean;
@@ -78,47 +79,23 @@ export async function POST(request: NextRequest) {
 
     switch (eventName) {
       case "subscription_created":
-        await handleSubscriptionCreated(
-          email,
-          subscriptionId,
-      
-        );
+        await handleSubscriptionCreated(email, subscriptionId);
         break;
-      case "subscription_updated":
-        await handleSubscriptionUpdated(
-          email,
-          subscriptionId,
-  
-        );
-        break;
-      case "subscription_cancelled":
-        await handleSubscriptionCancelled(
-          email,
-          subscriptionId,
-    
-        );
-        break;
-      case "subscription_payment_success":
-        await handleSubscriptionPaymentSuccess(
-          email,
-          subscriptionId,
-     
-        );
-        break;
-      case "subscription_payment_failed":
-        await handleSubscriptionPaymentFailed(
-          email,
-          subscriptionId,
-    
-        );
-        break;
-      case "subscription_plan_changed":
-        await handleSubscriptionPlanChanged(
-          email,
-          subscriptionId,
-    
-        );
-        break;
+      // case "subscription_updated":
+      //   await handleSubscriptionUpdated(email, subscriptionId);
+      //   break;
+      // case "subscription_cancelled":
+      //   await handleSubscriptionCancelled(email, subscriptionId);
+      //   break;
+      // case "subscription_payment_success":
+      //   await handleSubscriptionPaymentSuccess(email, subscriptionId);
+      //   break;
+      // case "subscription_payment_failed":
+      //   await handleSubscriptionPaymentFailed(email, subscriptionId);
+      //   break;
+      // case "subscription_plan_changed":
+      //   await handleSubscriptionPlanChanged(email, subscriptionId);
+        // break;
       default:
         console.log(`Unhandled event type: ${eventName}`);
     }
@@ -133,98 +110,86 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleSubscriptionCreated(
-
-  meta: WebhookMeta,
-  data: WebhookData
-) {
-  const { error } = await supabase.rpc("handle_subscription_created", {
+async function handleSubscriptionCreated(meta: WebhookMeta, data: WebhookData) {
+  const { error } = await supabaseAdmin.rpc("handle_subscription_created", {
     p_meta: meta,
     p_data: data,
   });
-
+  console.log("handleSubscriptionCreated", "Meta: ", meta, "Data: ", data);
   if (error) {
     console.error("Error handling subscription creation:", error);
     throw error;
   }
 }
 
-async function handleSubscriptionUpdated(
- 
-  meta: WebhookMeta,
-  data: WebhookData
-) {
-  const { error } = await supabase.rpc("handle_subscription_created", {
-    p_meta: meta,
-    p_data: data,
-  });
+// async function handleSubscriptionUpdated(meta: WebhookMeta, data: WebhookData) {
+//   const { error } = await supabase.rpc("handle_subscription_created", {
+//     p_meta: meta,
+//     p_data: data,
+//   });
 
-  if (error) {
-    console.error("Error handling subscription update:", error);
-    throw error;
-  }
-}
+//   if (error) {
+//     console.error("Error handling subscription update:", error);
+//     throw error;
+//   }
+// }
 
-async function handleSubscriptionCancelled(
+// async function handleSubscriptionCancelled(
+//   meta: WebhookMeta,
+//   data: WebhookData
+// ) {
+//   const { error } = await supabase.rpc("handle_subscription_created", {
+//     p_meta: meta,
+//     p_data: data,
+//   });
 
-  meta: WebhookMeta,
-  data: WebhookData
-) {
-  const { error } = await supabase.rpc("handle_subscription_created", {
-    p_meta: meta,
-    p_data: data,
-  });
+//   if (error) {
+//     console.error("Error handling subscription cancellation:", error);
+//     throw error;
+//   }
+// }
 
-  if (error) {
-    console.error("Error handling subscription cancellation:", error);
-    throw error;
-  }
-}
+// async function handleSubscriptionPaymentSuccess(
+//   meta: WebhookMeta,
+//   data: WebhookData
+// ) {
+//   const { error } = await supabase.rpc("handle_subscription_created", {
+//     p_meta: meta,
+//     p_data: data,
+//   });
 
-async function handleSubscriptionPaymentSuccess(
+//   if (error) {
+//     console.error("Error handling subscription payment success:", error);
+//     throw error;
+//   }
+// }
 
-  meta: WebhookMeta,
-  data: WebhookData
-) {
-  const { error } = await supabase.rpc("handle_subscription_created", {
-    p_meta: meta,
-    p_data: data,
-  });
+// async function handleSubscriptionPaymentFailed(
+//   meta: WebhookMeta,
+//   data: WebhookData
+// ) {
+//   const { error } = await supabase.rpc("handle_subscription_created", {
+//     p_meta: meta,
+//     p_data: data,
+//   });
 
-  if (error) {
-    console.error("Error handling subscription payment success:", error);
-    throw error;
-  }
-}
+//   if (error) {
+//     console.error("Error handling subscription payment failure:", error);
+//     throw error;
+//   }
+// }
 
-async function handleSubscriptionPaymentFailed(
+// async function handleSubscriptionPlanChanged(
+//   meta: WebhookMeta,
+//   data: WebhookData
+// ) {
+//   const { error } = await supabase.rpc("handle_subscription_created", {
+//     p_meta: meta,
+//     p_data: data,
+//   });
 
-  meta: WebhookMeta,
-  data: WebhookData
-) {
-  const { error } = await supabase.rpc("handle_subscription_created", {
-    p_meta: meta,
-    p_data: data,
-  });
-
-  if (error) {
-    console.error("Error handling subscription payment failure:", error);
-    throw error;
-  }
-}
-
-async function handleSubscriptionPlanChanged(
-
-  meta: WebhookMeta,
-  data: WebhookData
-) {
-  const { error } = await supabase.rpc("handle_subscription_created", {
-    p_meta: meta,
-    p_data: data,
-  });
-
-  if (error) {
-    console.error("Error handling subscription plan change:", error);
-    throw error;
-  }
-}
+//   if (error) {
+//     console.error("Error handling subscription plan change:", error);
+//     throw error;
+//   }
+// }
