@@ -119,6 +119,10 @@ async function handleSubscriptionCreated(meta: WebhookMeta, data: WebhookData) {
     .from("users")
     .update({
       email: meta.custom_data.user_email,
+      subscribed: true,
+      subscription_id: data.id,
+      subscription_status: data.attributes.status,
+
     })
     .eq("id", meta.custom_data.user_id);
   console.log("handleSubscriptionCreated", "Meta: ", meta, "Data: ", data);
