@@ -191,6 +191,7 @@ const config = {
     async redirect({ baseUrl, url }: { baseUrl: string; url: string }) {
       // If the URL is already an absolute URL, return it
       if (url.startsWith("http")) return url;
+      if (url.startsWith("https")) return url;
 
       // If the URL is already a full URL, return it
       if (url.startsWith("/")) return `${baseUrl}${url}`;
