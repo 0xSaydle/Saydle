@@ -111,10 +111,16 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleSubscriptionCreated(meta: WebhookMeta, data: WebhookData) {
-  const { error } = await supabaseAdmin.rpc("handle_subscription_created", {
-    p_meta: meta,
-    p_data: data,
-  });
+  // const { error } = await supabaseAdmin.rpc("handle_subscription_created", {
+  //   p_meta: meta,
+  //   p_data: data,
+  // });
+  const { error } = await supabaseAdmin
+    .from("users")
+    .update({
+      email: meta.custom_data.user_email,
+    })
+    .eq("id", meta.custom_data.user_id);
   console.log("handleSubscriptionCreated", "Meta: ", meta, "Data: ", data);
   if (error) {
     console.error("Error handling subscription creation:", error);
