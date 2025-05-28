@@ -43,12 +43,29 @@ type WebhookData = {
     test_mode: boolean;
   };
 };
+export const config = {
+  api: {
+    bodyParser: false, // Critical for raw body access
+  },
+};
 
+async function getRawBody(readable: ReadableStream): Promise<Buffer> {
+  const chunks = [];
+  const reader = readable.getReader();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks);
+}
 export async function POST(request: NextRequest) {
   try {
+    const rawBody = await getRawBody(request.body!);
+    const textBody = rawBody.toString("utf8");
     const signature = request.headers.get("X-Signature");
-    const body = await request.json();
-    const { meta, data } = body;
+    // const body = await request.json();
+    // const { meta, data } = body;
 
     if (!signature) {
       return NextResponse.json(
@@ -64,19 +81,28 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-    const hmac = crypto.createHmac("sha256", secret);
-    const digest = Buffer.from(
-      hmac.update(JSON.stringify(body)).digest("hex"),
-      "utf8"
-    );
-    const signatureBuffer = Buffer.from(signature, "utf8");
 
-    if (!crypto.timingSafeEqual(digest, signatureBuffer)) {
-      return NextResponse.json(
-        { error: "Invalid signature detected" },
-        { status: 401 }
-      );
+    // 2. Generate HMAC using the exact raw bytes
+    const hmac = crypto.createHmac("sha256", secret);
+    hmac.update(rawBody);
+    const digest = hmac.digest("hex");
+
+    // 3. Compare signatures (timing-safe)
+    const signatureBuffer = Buffer.from(signature, "utf8");
+    const digestBuffer = Buffer.from(digest, "utf8");
+
+    if (!crypto.timingSafeEqual(signatureBuffer, digestBuffer)) {
+      console.error("Signature mismatch", {
+        received: signature,
+        computed: digest,
+        bodySample: textBody.substring(0, 100),
+      });
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
+
+    // 4. Only NOW parse the JSON
+    const payload = JSON.parse(textBody);
+    const { meta, data } = payload;
 
     if (!meta || !data) {
       return NextResponse.json(
