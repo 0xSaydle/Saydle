@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 import { supabaseAdmin } from "@/middleware";
 // import { supabase } from "@/middleware";
 
@@ -52,7 +52,10 @@ export async function POST(request: NextRequest) {
     const { meta, data } = body;
     console.log("body: ", body);
     if (!signature) {
-      return NextResponse.json({ error: "No signature" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Request has no signature" },
+        { status: 401 }
+      );
     }
 
     // Verify webhook signature
@@ -63,8 +66,16 @@ export async function POST(request: NextRequest) {
     hmac.update(JSON.stringify(body));
     const computedSignature = hmac.digest("hex");
 
-    if (computedSignature !== signature) {
-      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    // Convert signatures to buffers for timing-safe comparison
+    const signatureBuffer = Buffer.from(signature);
+    const computedSignatureBuffer = Buffer.from(computedSignature);
+
+    // Use timing-safe comparison
+    if (!timingSafeEqual(signatureBuffer, computedSignatureBuffer)) {
+      return NextResponse.json(
+        { error: "Invalid signature detected" },
+        { status: 401 }
+      );
     }
 
     if (!meta || !data) {
@@ -96,7 +107,7 @@ export async function POST(request: NextRequest) {
       //   break;
       // case "subscription_plan_changed":
       //   await handleSubscriptionPlanChanged(email, subscriptionId);
-        // break;
+      // break;
       default:
         console.log(`Unhandled event type: ${eventName}`);
     }
@@ -123,7 +134,6 @@ async function handleSubscriptionCreated(meta: WebhookMeta, data: WebhookData) {
       subscribed: true,
       subscription_id: data.id,
       subscription_status: data.attributes.status,
-
     })
     .eq("id", meta.custom_data.user_id);
   console.log("handleSubscriptionCreated", "Meta: ", meta, "Data: ", data);
