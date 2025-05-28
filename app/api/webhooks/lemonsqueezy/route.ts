@@ -103,7 +103,8 @@ export async function POST(request: NextRequest) {
     // 4. Only NOW parse the JSON
     const payload = JSON.parse(textBody);
     const { meta, data } = payload;
-
+    console.log("meta: ", meta);
+    console.log("data: ", data);
     if (!meta || !data) {
       return NextResponse.json(
         { error: "Invalid webhook payload" },
@@ -112,12 +113,10 @@ export async function POST(request: NextRequest) {
     }
 
     const eventName = meta.event_name;
-    const subscriptionId = data.id;
-    const email = data.attributes.user_email;
 
     switch (eventName) {
       case "subscription_created":
-        await handleSubscriptionCreated(email, subscriptionId);
+        await handleSubscriptionCreated( meta, data);
         break;
       // case "subscription_updated":
       //   await handleSubscriptionUpdated(email, subscriptionId);
@@ -149,20 +148,20 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleSubscriptionCreated(meta: WebhookMeta, data: WebhookData) {
-  // const { error } = await supabaseAdmin.rpc("handle_subscription_created", {
-  //   p_meta: meta,
-  //   p_data: data,
-  // });
-  const { error } = await supabaseAdmin
-    .from("users")
-    .update({
-      email: meta.custom_data.user_email,
-      subscribed: true,
-      subscription_id: data.id,
-      subscription_status: data.attributes.status,
-    })
-    .eq("id", meta.custom_data.user_id);
-  console.log("handleSubscriptionCreated", "Meta: ", meta, "Data: ", data);
+  const { error } = await supabaseAdmin.rpc("handle_subscription_created", {
+    p_meta: meta,
+    p_data: data,
+  });
+  // const { error } = await supabaseAdmin
+  //   .from("users")
+  //   .update({
+  //     email: meta.custom_data.user_email,
+  //     subscribed: true,
+  //     subscription_id: data.id,
+  //     subscription_status: data.attributes.status,
+  //   })
+  //   .eq("id", meta.custom_data.user_id);
+  
   if (error) {
     console.error("Error handling subscription creation:", error);
     throw error;
