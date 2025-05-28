@@ -47,9 +47,10 @@ type WebhookData = {
 export async function POST(request: NextRequest) {
   try {
     const signature = request.headers.get("X-Signature");
+    console.log("signature: ", signature);
     const body = await request.json();
     const { meta, data } = body;
-
+    console.log("body: ", body);
     if (!signature) {
       return NextResponse.json({ error: "No signature" }, { status: 401 });
     }
