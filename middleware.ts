@@ -30,14 +30,14 @@ export async function middleware(request: NextRequest) {
       // Get user from Supabase using the token
       const { data: user } = await supabaseAdmin
         .from("users")
-        .select("phone, verified")
+        .select("phone_number, subscribed")
         .eq("id", token.sub)
         .single();
 
       // If user has completed verification and tries to access onboarding steps 1-4, redirect to dashboard
       // But allow access to step 5 (plan selection) even after completing the basic onboarding
       if (
-        user?.verified &&
+        user?.subscribed &&
         pathname.startsWith("/onboarding") &&
         !pathname.includes("/step/5") &&
         !pathname.includes("/step/6")
@@ -45,9 +45,18 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/dashboard", request.url));
       }
 
+      // If not subscribed but completed onboarding and trying to access dashboard, redirect to step 5 so they can subscribe
+      if (
+        !user?.subscribed && user?.phone_number &&
+        (pathname === "/dashboard" || pathname === "/dashboard/")
+      ) {
+        return NextResponse.redirect(
+          new URL("/onboarding/step/5", request.url)
+        );
+      }
       // If not verified and trying to access dashboard, redirect to onboarding
       if (
-        !user?.verified &&
+        !user?.subscribed && !user?.phone_number &&
         (pathname === "/dashboard" || pathname === "/dashboard/")
       ) {
         return NextResponse.redirect(
@@ -55,39 +64,7 @@ export async function middleware(request: NextRequest) {
         );
       }
 
-      // Handle onboarding step validation
-      // if (pathname.startsWith("/dashboard/onboarding/step/")) {
-      //   const stepMatch = pathname.match(/\/step\/(\d+)/);
-      //   if (stepMatch) {
-      //     const requestedStep = parseInt(stepMatch[1]);
-
-      //     // If trying to access step 4 or beyond, allow it
-      //     if (requestedStep >= 4) {
-      //       return NextResponse.next();
-      //     }
-
-      //     // Get onboarding data from cookie
-      //     const onboardingData = request.cookies.get("onboardingData")?.value;
-      //     let data;
-      //     try {
-      //       data = onboardingData ? JSON.parse(onboardingData) : {};
-      //     } catch {
-      //       data = {};
-      //     }
-
-      //     // Check which step they should be on
-      //     let currentStep = 1;
-      //     if (data.name) currentStep = 2;
-      //     if (data.phone) currentStep = 3;
-
-      //     // If trying to access a step beyond their progress, redirect to current step
-      //     if (requestedStep > currentStep) {
-      //       return NextResponse.redirect(
-      //         new URL(`/dashboard/onboarding/step/${currentStep}`, request.url)
-      //       );
-      //     }
-      //   }
-      // }
+   
     } catch (error) {
       console.error("Error in middleware:", error);
     }
