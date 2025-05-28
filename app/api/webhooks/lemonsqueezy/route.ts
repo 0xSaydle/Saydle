@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac, timingSafeEqual } from "crypto";
+import crypto from "node:crypto";
 import { supabaseAdmin } from "@/middleware";
 // import { supabase } from "@/middleware";
 
@@ -47,10 +47,9 @@ type WebhookData = {
 export async function POST(request: NextRequest) {
   try {
     const signature = request.headers.get("X-Signature");
-    console.log("signature: ", signature);
     const body = await request.json();
     const { meta, data } = body;
-    console.log("body: ", body);
+
     if (!signature) {
       return NextResponse.json(
         { error: "Request has no signature" },
@@ -58,20 +57,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify webhook signature
-    const hmac = createHmac(
-      "sha256",
-      process.env.LEMON_SQUEEZY_WEBHOOK_SECRET!
+    const secret = process.env.LEMON_SQUEEZY_WEBHOOK_SECRET;
+    if (!secret) {
+      return NextResponse.json(
+        { error: "Webhook secret not configured" },
+        { status: 500 }
+      );
+    }
+    const hmac = crypto.createHmac("sha256", secret);
+    const digest = Buffer.from(
+      hmac.update(JSON.stringify(body)).digest("hex"),
+      "utf8"
     );
-    hmac.update(JSON.stringify(body));
-    const computedSignature = hmac.digest("hex");
+    const signatureBuffer = Buffer.from(signature, "utf8");
 
-    // Convert signatures to buffers for timing-safe comparison
-    const signatureBuffer = Buffer.from(signature);
-    const computedSignatureBuffer = Buffer.from(computedSignature);
-
-    // Use timing-safe comparison
-    if (!timingSafeEqual(signatureBuffer, computedSignatureBuffer)) {
+    if (!crypto.timingSafeEqual(digest, signatureBuffer)) {
       return NextResponse.json(
         { error: "Invalid signature detected" },
         { status: 401 }
