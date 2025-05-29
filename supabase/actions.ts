@@ -31,3 +31,24 @@ export const updateUser = async (
 
   return { data: data };
 };
+
+export const getSubDetails = async (id: string | undefined) => {
+  try {
+    console.log(id);
+    const { data, error } = await supabaseAdmin
+      .from("subscriptions")
+      .select("*")
+      .eq("user_id", id)
+      .single();
+    const subData = await data;
+
+    console.log(subData);
+    if (error) {
+      throw new Error("Error getting subscription details", error);
+    }
+
+    return subData;
+  } catch (error) {
+    console.log(error);
+  }
+};

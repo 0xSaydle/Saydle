@@ -22,30 +22,22 @@ declare module "next-auth" {
       email: string;
       phone?: string;
       accessToken: string;
-      plan?: string;
-      dateOfSubscription?: string;
-      nextBillingDate?: string;
-      planDuration?: number;
+
+      subscribed?: boolean;
     } & DefaultSession["user"];
   }
 }
 
 interface CustomUser extends User {
-  phone: string;
+  phone_number: string;
   accessToken: string;
-  plan?: string;
-  dateOfSubscription?: string;
-  nextBillingDate?: string;
-  planDuration?: number;
+  subscribed?: boolean;
 }
 
 interface CustomToken extends JWT {
   accessToken?: string;
-  phone?: string;
-  plan?: string;
-  dateOfSubscription?: string;
-  nextBillingDate?: string;
-  planDuration?: number;
+  phone_number?: string;
+  subscribed?: boolean;
 }
 
 const config = {
@@ -118,11 +110,11 @@ const config = {
       const { token, user } = params;
       if (user) {
         token.accessToken = (user as CustomUser).accessToken;
-        token.phone = (user as CustomUser).phone;
-        token.plan = (user as CustomUser).plan;
-        token.dateOfSubscription = (user as CustomUser).dateOfSubscription;
-        token.nextBillingDate = (user as CustomUser).nextBillingDate;
-        token.planDuration = (user as CustomUser).planDuration;
+        token.id = (user as CustomUser).id;
+        token.phone_number = (user as CustomUser).phone_number;
+        token.email = (user as CustomUser).email;
+        token.name = (user as CustomUser).name;
+        token.subscribed = (user as CustomUser).subscribed;
       }
       return token;
     },
@@ -134,11 +126,8 @@ const config = {
       token: CustomToken;
     }) {
       session.user.accessToken = token.accessToken as string;
-      session.user.phone = token.phone;
-      session.user.plan = token.plan;
-      session.user.dateOfSubscription = token.dateOfSubscription;
-      session.user.nextBillingDate = token.nextBillingDate;
-      session.user.planDuration = token.planDuration;
+      session.user.phone = token.phone_number;
+      session.user.subscribed = token.subscribed;
 
       if (!session?.user?.email) {
         console.log("No email found in session, skipping update");
@@ -165,10 +154,7 @@ const config = {
           session.user.name = userData.name;
           session.user.phone = userData.phone_number;
           session.user.id = userData.id;
-          session.user.plan = userData.plan;
-          session.user.dateOfSubscription = userData.date_of_subscription;
-          session.user.nextBillingDate = userData.next_billing_date;
-          session.user.planDuration = userData.plan_duration;
+          session.user.subscribed = userData.subscribed;
         }
 
         // Update last sign in

@@ -3,9 +3,11 @@ import { Box, Flex, Link, Text } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import Headphone from "@/public/icons/headphone.svg";
 import Image from "next/image";
+import { useDashboard } from "../contexts/dashboard-context";
 
 export default function Dashboard() {
   const { data: session } = useSession();
+  const { subDetails, isLoading } = useDashboard();
 
   return (
     <>
@@ -66,14 +68,14 @@ export default function Dashboard() {
               w={2}
               h={2}
               borderRadius="full"
-              bg={session?.user?.plan === "BASIC" ? "red.400" : "green.400"}
+              bg={session?.user?.subscribed ? "green.400" : "red.400"}
             />
             <Box fontWeight="bold" color="dark.500">
-              {session?.user?.plan === "BASIC" ? "Inactive" : "Active"} -{" "}
-              {session?.user?.plan && typeof session.user.plan === "string"
-                ? session.user.plan.charAt(0) +
-                  session.user.plan.slice(1).toLowerCase()
-                : "No plan"}
+            {isLoading
+              ? "Loading..."
+              : subDetails?.status_formatted
+              }
+              
             </Box>
           </Flex>
         </Box>
@@ -91,15 +93,14 @@ export default function Dashboard() {
             NEXT BILLING DATE
           </Box>
           <Box fontWeight="bold" fontSize="lg">
-            {session?.user?.nextBillingDate
-              ? new Date(session.user.nextBillingDate).toLocaleDateString(
-                  "en-US",
-                  {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  }
-                )
+            {isLoading
+              ? "Loading..."
+              : subDetails?.renews_at
+              ? new Date(subDetails.renews_at).toLocaleDateString("en-US", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })
               : "Not set"}
           </Box>
         </Box>

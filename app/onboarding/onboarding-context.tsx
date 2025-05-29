@@ -31,7 +31,6 @@ export interface OnboardingData {
   phone: string;
   weaknesses: string;
   feelings: string;
-  plan: string;
 }
 
 interface OnboardingContextType {
@@ -60,7 +59,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     phone: "",
     weaknesses: "",
     feelings: "",
-    plan: "basic",
   });
 
   const { data: session } = useSession();
@@ -87,14 +85,14 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
           onboardingData.weaknesses.trim().length > 0 &&
           onboardingData.feelings.trim().length > 0
         );
-      case 5:
-        return (
-          nameSchema.safeParse(onboardingData.name).success &&
-          phoneSchema.safeParse(onboardingData.phone).success &&
-          onboardingData.weaknesses.trim().length > 0 &&
-          onboardingData.feelings.trim().length > 0 &&
-          onboardingData.plan !== ""
-        );
+      // case 5:
+      //   return (
+      //     nameSchema.safeParse(onboardingData.name).success &&
+      //     phoneSchema.safeParse(onboardingData.phone).success &&
+      //     onboardingData.weaknesses.trim().length > 0 &&
+      //     onboardingData.feelings.trim().length > 0 &&
+      //     onboardingData.plan !== ""
+      //   );
       default:
         return false;
     }
