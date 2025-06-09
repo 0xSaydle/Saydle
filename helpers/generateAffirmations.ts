@@ -1,8 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
-import fetch from "node-fetch";
-
 const HF_API_KEY = process.env.HF_API_KEY
 
 interface HFResponse {
