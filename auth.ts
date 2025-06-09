@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import AppleProvider from "next-auth/providers/apple";
-
+import CredentialsProvider from "next-auth/providers/credentials";
 import type { JWT } from "next-auth/jwt";
 import type {
   Session,
@@ -13,6 +13,7 @@ import type {
 import { supabaseAdmin } from "./middleware";
 import { randomUUID } from "crypto";
 import { AdapterUser } from "next-auth/adapters";
+import { signJwt } from "./lib/jwt";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -50,49 +51,79 @@ const config = {
       clientId: process.env.APPLE_CLIENT_ID as string,
       clientSecret: process.env.APPLE_CLIENT_SECRET as string,
     }),
-    // CredentialsProvider({
-    //   id: "credentials",
-    //   name: "Twilio OTP",
-    //   credentials: {
-    //     phone: {
-    //       label: "Phone Number",
-    //       type: "text",
-    //       placeholder: "+1234567890",
-    //     },
-    //     otp: { label: "OTP", type: "text", placeholder: "123456" },
-    //   },
-    //   async authorize(credentials) {
+    CredentialsProvider({
+      id: "credentials",
+      name: "Twilio OTP",
+      credentials: {
+        phone: {
+          label: "Phone Number",
+          type: "text",
+          placeholder: "+1234567890",
+        },
+        otp: { label: "OTP", type: "text", placeholder: "123456" },
+      },
+      async authorize(
+        credentials: Partial<Record<"phone" | "otp", unknown>> | undefined
+      ) {
+        if (!credentials?.phone || !credentials.otp) return null;
 
-    //     if (!credentials?.phone || !credentials.otp) return null;
+        const phone = credentials.phone as string;
+        const otp = credentials.otp as string;
 
-    //     const { phone, otp } = credentials;
-    //     const userOtp = await Otp.findOne({ phoneNumber: phone, otp });
+        const { data: userOtp, error } = await supabaseAdmin
+          .from("otps")
+          .select("*")
+          .eq("phone_number", phone)
+          .eq("otp", otp)
+          .single();
 
-    //     if (!userOtp) throw new Error("Otp not found");
+        if (error || !userOtp) {
+          throw new Error("Otp not found");
+        }
 
-    //     if (userOtp.expiresAt < new Date()) throw new Error("Invalid OTP");
+        if (new Date(userOtp.expires_at) < new Date()) {
+          throw new Error("Invalid OTP");
+        }
 
-    //     const user = await UserDoc.findOne({ phone });
-    //     // Generate JWT token
-    //     const accessToken = signJwt({ id: user._id, phone: user.phone });
+        const { data: userData, error: fetchError } = await supabaseAdmin
+          .from("users")
+          .select("*")
+          .eq("phone_number", phone)
+          .single();
 
-    //     await Otp.updateOne(
-    //       { phoneNumber: phone },
-    //       { $unset: { otp: "", expiresAt: "" } }
-    //     );
-    //     return {
-    //       id: user._id.toString(),
-    //       phone: user.phone,
-    //       accessToken,
-    //       name: user.name || "Saydle User",
-    //       email: user.email || "",
-    //       plan: user.plan,
-    //       dateOfSubscription: user.date_of_subscription,
-    //       nextBillingDate: user.next_billing_date,
-    //       planDuration: user.plan_duration,
-    //     };
-    //   },
-    // }),
+        if (fetchError) {
+          console.error("Error fetching user data:", fetchError);
+          return null;
+        }
+
+        // Generate JWT token
+        const accessToken = await signJwt({
+          id: userData.id,
+          phone: userData.phone_number,
+        });
+
+        const { error: otpError } = await supabaseAdmin
+          .from("otps")
+          .update({
+            otp: null,
+            expires_at: null,
+          })
+          .eq("phone_number", phone);
+
+        if (otpError) {
+          throw new Error("Failed to clear OTP");
+        }
+
+        return {
+          id: userData.id,
+          phone_number: userData.phone_number,
+          accessToken,
+          name: userData.name || "Saydle User",
+          email: userData.email || "",
+          subscribed: userData.subscribed || false,
+        } as User;
+      },
+    }),
   ],
   session: {
     strategy: "jwt" as const,
