@@ -1,18 +1,18 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import AppleProvider from "next-auth/providers/apple";
-import CredentialsProvider from "next-auth/providers/credentials";
+
 import type { JWT } from "next-auth/jwt";
 import type {
   Session,
   User,
   DefaultSession,
   Account,
-  NextAuthConfig,
+  Profile,
 } from "next-auth";
 import { supabaseAdmin } from "./middleware";
 import { randomUUID } from "crypto";
-import { signJwt } from "./app/api/actions/generateCheckoutUrl/jwt";
+import { AdapterUser } from "next-auth/adapters";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -20,35 +20,27 @@ declare module "next-auth" {
       id: string;
       name: string;
       email: string;
-      phone_number?: string;
+      phone?: string;
       accessToken: string;
-      plan?: string;
-      dateOfSubscription?: string;
-      nextBillingDate?: string;
-      planDuration?: number;
+
+      subscribed?: boolean;
     } & DefaultSession["user"];
   }
 }
 
-// interface CustomUser extends User {
-//   phone: string;
-//   accessToken: string;
-//   plan?: string;
-//   dateOfSubscription?: string;
-//   nextBillingDate?: string;
-//   planDuration?: number;
-// }
+interface CustomUser extends User {
+  phone_number: string;
+  accessToken: string;
+  subscribed?: boolean;
+}
 
 interface CustomToken extends JWT {
   accessToken?: string;
   phone_number?: string;
-  plan?: string;
-  dateOfSubscription?: string;
-  nextBillingDate?: string;
-  planDuration?: number;
+  subscribed?: boolean;
 }
 
-export const config: NextAuthConfig = {
+const config = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -58,104 +50,72 @@ export const config: NextAuthConfig = {
       clientId: process.env.APPLE_CLIENT_ID as string,
       clientSecret: process.env.APPLE_CLIENT_SECRET as string,
     }),
-    CredentialsProvider({
-      id: "credentials",
-      name: "Twilio OTP",
-      credentials: {
-        phone_number: {
-          label: "Phone Number",
-          type: "text",
-          placeholder: "+1234567890",
-        },
-        otp: { label: "OTP", type: "text", placeholder: "123456" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.phone_number || !credentials.otp) return null;
+    // CredentialsProvider({
+    //   id: "credentials",
+    //   name: "Twilio OTP",
+    //   credentials: {
+    //     phone: {
+    //       label: "Phone Number",
+    //       type: "text",
+    //       placeholder: "+1234567890",
+    //     },
+    //     otp: { label: "OTP", type: "text", placeholder: "123456" },
+    //   },
+    //   async authorize(credentials) {
 
-        const { phone_number, otp } = credentials;
-        
-        const { data: userOtp, error } = await supabaseAdmin
-          .from('otps')
-          .select('*')
-          .eq('phone_number', phone_number)
-          .eq('otp', otp)
-          .single();
+    //     if (!credentials?.phone || !credentials.otp) return null;
 
-        if (error || !userOtp) {
-          throw new Error('Otp not found');
-        }
+    //     const { phone, otp } = credentials;
+    //     const userOtp = await Otp.findOne({ phoneNumber: phone, otp });
 
-        if (new Date(userOtp.expires_at) < new Date()) {
-          throw new Error('Invalid OTP');
-        }
+    //     if (!userOtp) throw new Error("Otp not found");
 
-        const { data: userData, error: fetchError } = await supabaseAdmin
-          .from("users")
-          .select("*")
-          .eq("phone_number", phone_number)
-          .single();
+    //     if (userOtp.expiresAt < new Date()) throw new Error("Invalid OTP");
 
-        if (fetchError) {
-          console.error("Error fetching user data:", fetchError);
-        }
-        // Generate JWT token
-        const accessToken = await signJwt({ id: userData._id, phone_number: userData.phone_number });
+    //     const user = await UserDoc.findOne({ phone });
+    //     // Generate JWT token
+    //     const accessToken = signJwt({ id: user._id, phone: user.phone });
 
-        const { error: otpError } = await supabaseAdmin
-        .from('otps')
-        .update({
-          otp: null,
-          expires_at: null,
-        })
-        .eq('phone_number', phone_number);
-
-        if (otpError) {
-          throw new Error("Failed to clear OTP");
-        }
-
-        return {
-          id: userData.id,
-          phone_number: userData.phone_number,
-          accessToken,
-          name: userData.name || "Saydle User",
-          email: userData.email || "",
-          plan: userData.plan,
-          dateOfSubscription: userData.date_of_subscription,
-          nextBillingDate: userData.next_billing_date,
-          planDuration: userData.plan_duration,
-        };
-      },
-    }),
+    //     await Otp.updateOne(
+    //       { phoneNumber: phone },
+    //       { $unset: { otp: "", expiresAt: "" } }
+    //     );
+    //     return {
+    //       id: user._id.toString(),
+    //       phone: user.phone,
+    //       accessToken,
+    //       name: user.name || "Saydle User",
+    //       email: user.email || "",
+    //       plan: user.plan,
+    //       dateOfSubscription: user.date_of_subscription,
+    //       nextBillingDate: user.next_billing_date,
+    //       planDuration: user.plan_duration,
+    //     };
+    //   },
+    // }),
   ],
   session: {
     strategy: "jwt" as const,
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: User }) {
+    async jwt(params: {
+      token: JWT;
+      user: User | AdapterUser;
+      account?: Account | null;
+      profile?: Profile;
+      trigger?: "signIn" | "signUp" | "update";
+      isNewUser?: boolean;
+      session?: Session;
+    }) {
+      const { token, user } = params;
       if (user) {
-        token.accessToken = user.accessToken;
-        token.phone_number = user.phone_number;
-        
-        // Handle Google login
-        if (user.email && !token.phone_number) {
-          const { data: userData } = await supabaseAdmin
-            .from("users")
-            .select("*")
-            .eq("email", user.email)
-            .single();
-
-          if (userData) {
-            token.id = userData.id
-            token.phone_number = userData.phone_number;
-            token.accessToken = await signJwt({ id: userData.id, phone: userData.phone_number });
-            token.plan = userData.plan;
-            token.dateOfSubscription = userData.date_of_subscription;
-            token.nextBillingDate = userData.next_billing_date;
-            token.planDuration = userData.plan_duration;
-          }
-        }
+        token.accessToken = (user as CustomUser).accessToken;
+        token.id = (user as CustomUser).id;
+        token.phone_number = (user as CustomUser).phone_number;
+        token.email = (user as CustomUser).email;
+        token.name = (user as CustomUser).name;
+        token.subscribed = (user as CustomUser).subscribed;
       }
-
       return token;
     },
     async session({
@@ -166,11 +126,8 @@ export const config: NextAuthConfig = {
       token: CustomToken;
     }) {
       session.user.accessToken = token.accessToken as string;
-      session.user.phone_number= token.phone_number as string;
-      session.user.plan = token.plan;
-      session.user.dateOfSubscription = token.dateOfSubscription;
-      session.user.nextBillingDate = token.nextBillingDate;
-      session.user.planDuration = token.planDuration;
+      session.user.phone = token.phone_number;
+      session.user.subscribed = token.subscribed;
 
       if (!session?.user?.email) {
         console.log("No email found in session, skipping update");
@@ -194,13 +151,10 @@ export const config: NextAuthConfig = {
 
         if (userData) {
           // Update session with latest data from database
-          session.user.id = userData.id;
           session.user.name = userData.name;
-          session.user.phone_number = userData.phone_number;
-          session.user.plan = userData.plan;
-          session.user.dateOfSubscription = userData.date_of_subscription;
-          session.user.nextBillingDate = userData.next_billing_date;
-          session.user.planDuration = userData.plan_duration;
+          session.user.phone = userData.phone_number;
+          session.user.id = userData.id;
+          session.user.subscribed = userData.subscribed;
         }
 
         // Update last sign in
@@ -223,6 +177,7 @@ export const config: NextAuthConfig = {
     async redirect({ baseUrl, url }: { baseUrl: string; url: string }) {
       // If the URL is already an absolute URL, return it
       if (url.startsWith("http")) return url;
+      if (url.startsWith("https")) return url;
 
       // If the URL is already a full URL, return it
       if (url.startsWith("/")) return `${baseUrl}${url}`;
@@ -230,14 +185,13 @@ export const config: NextAuthConfig = {
       // Default to dashboard
       return `${baseUrl}/dashboard`;
     },
-    async signIn(params: {
-      user: User | { email?: string | null; name?: string | null };
-      account: Account | null;
-      email?: { verificationRequest?: boolean };
-      credentials?: Record<string, string>;
+    async signIn({
+      user,
+      account,
+    }: {
+      user: User | AdapterUser;
+      account?: Account | null;
     }) {
-      const { user, account } = params;
-
       if (account?.provider === "google" && user.email) {
         try {
           console.log("Attempting to create/update user:", user.email);
@@ -270,8 +224,6 @@ export const config: NextAuthConfig = {
                 },
               ]);
 
-              // console.log(insertData)
-
             if (insertError) {
               console.error("Error creating user:", insertError);
               return false;
@@ -296,4 +248,4 @@ export const config: NextAuthConfig = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-export const { handlers, signIn, auth, signOut } = NextAuth(config);
+export const { handlers, auth, signIn, signOut } = NextAuth(config);
