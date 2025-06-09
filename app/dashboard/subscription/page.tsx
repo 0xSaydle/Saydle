@@ -122,6 +122,7 @@ export default function SubscriptionPage() {
           colorScheme="red"
           onClick={() => setIsOpen(true)}
           size="lg"
+          px={2}
         >
           Cancel Subscription
         </Button>

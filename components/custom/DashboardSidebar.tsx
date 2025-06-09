@@ -57,9 +57,9 @@ const SidebarContent = ({ isMobile }: { isMobile: boolean }) => {
                 color={isActive ? "#FF6F61" : "gray.700"}
                 bg={isActive && !isMobile ? "#FFF3F0" : "transparent"}
                 borderRadius={isMobile ? "none" : "md"}
-                _hover={{ bg: isMobile ? "gray.100" : "gray.100" }}
+                _hover={{  bg: isMobile ? "gray.100" : "gray.100" }}
                 mb={isMobile ? 0 : 1}
-                fontSize={isMobile ? "xs" : "15px"}
+               fontSize={isMobile ? "xs" : "15px"}
               >
                 <Icon as={item.icon} boxSize={5} mb={isMobile ? 0 : 1} />
                 {!isMobile && <Text fontSize="15px">{item.name}</Text>}

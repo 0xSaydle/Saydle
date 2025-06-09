@@ -2,7 +2,6 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import AppleProvider from "next-auth/providers/apple";
 import CredentialsProvider from "next-auth/providers/credentials";
-
 import type { JWT } from "next-auth/jwt";
 import type {
   Session,
@@ -14,7 +13,7 @@ import type {
 import { supabaseAdmin } from "./middleware";
 import { randomUUID } from "crypto";
 import { AdapterUser } from "next-auth/adapters";
-import { signJwt } from "./app/api/actions/generateCheckoutUrl/jwt";
+import { signJwt } from "./lib/jwt";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -122,7 +121,7 @@ const config = {
           name: userData.name || "Saydle User",
           email: userData.email || "",
           subscribed: userData.subscribed || false,
-        };
+        } as User;
       },
     }),
   ],
