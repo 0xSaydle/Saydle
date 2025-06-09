@@ -8,11 +8,7 @@ import { Provider } from "@/components/ui/provider";
 import { GeneralSans } from "./fonts";
 import "./globals.css";
 
-export default function RootLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${GeneralSans.className} antialiased`}>
