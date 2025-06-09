@@ -110,8 +110,8 @@ export default function Dashboard() {
               bg={session?.user?.subscribed ? "green.400" : "red.400"}
             />
             <Box fontWeight="bold" color="dark.500">
-              {isLoading
-                ? "Loading..."
+            {isLoading
+              ? "Loading..."
                 : subDetails?.status_formatted || "No subscription"}
             </Box>
           </Flex>

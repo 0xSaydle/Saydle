@@ -2,31 +2,14 @@ import { useState, useEffect } from "react";
 import {
   Box,
   Heading,
-  Image,
   Button,
   Input,
   Text,
-  
-  Spinner,
+  Stack,
+  Select,
+  createListCollection,
 } from "@chakra-ui/react";
-import dayjs from "dayjs"
-import { VStack, HStack } from "@chakra-ui/layout"
-import { Select } from "@chakra-ui/select";
-// import { useSession } from "next-auth/react";
-import {
-  Alert,
-  // AlertTitle,
-  AlertIcon,
-  AlertDescription,
-} from "@chakra-ui/alert"
-import {
-  FormControl,
-  FormLabel,
-  // FormErrorMessage,
-  // FormHelperText,
-  // FormErrorIcon,
-} from "@chakra-ui/form-control"
-import { Avatar } from "../../../components/ui/avatar"
+import { Avatar } from "@/components/ui/avatar";
 
 export default function PersonalProfile() {
   const [image, setProfilePic] = useState<string>("");
@@ -48,7 +31,6 @@ export default function PersonalProfile() {
       try {
         const res = await fetch("/api/setting/profile");
         const data = await res.json();
-         console.log(data)
         if (!res.ok) throw new Error(data.message || "Failed to fetch profile");
 
         setFormData({
@@ -60,8 +42,10 @@ export default function PersonalProfile() {
           gender: data.gender,
         });
         setProfilePic(data.image);
-      } catch (error: any) {
-        setError(error.message);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setError(error.message);
+        }
       }
     }
     fetchProfile();
@@ -82,16 +66,20 @@ export default function PersonalProfile() {
     return "";
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleDOBChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleDOBChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const value = e.target.value;
     setDob(value);
-    if (dob != "") {
+    if (dob !== "") {
       setFormData({
-        ...formData, 
+        ...formData,
         date_of_birth: dob,
       });
     }
@@ -115,13 +103,13 @@ export default function PersonalProfile() {
       });
 
       const data = await res.json();
-      console.log(data)
       if (!res.ok) throw new Error(data.message || "Upload failed");
 
       setProfilePic(data.imageUrl);
-      console.log(image)
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      }
     } finally {
       setUploading(false);
     }
@@ -129,7 +117,6 @@ export default function PersonalProfile() {
 
   const handleUpdateProfile = async () => {
     try {
-      console.log(formData)
       const res = await fetch("/api/setting/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -141,8 +128,10 @@ export default function PersonalProfile() {
 
       alert("Profile updated successfully!");
       setIsEditing(false);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      }
     }
   };
 
@@ -152,7 +141,7 @@ export default function PersonalProfile() {
         Personal Profile
       </Heading>
 
-      <VStack spacing={4} align="center" mb={6}>
+      <Stack gap={4} align="center" mb={6}>
         <Avatar
           name={formData.name}
           src={image}
@@ -178,24 +167,23 @@ export default function PersonalProfile() {
                 colorScheme="blue"
                 loading={uploading}
                 loadingText="Uploading..."
-                as="span" // make it inline to keep button appearance
+                as="span"
               >
                 Upload Picture
               </Button>
             </label>
           </>
         )}
-      </VStack>
+      </Stack>
 
       {error && (
-        <Alert status="error" mb={4} rounded="md">
-          <AlertIcon />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
+        <Box p={4} mb={4} bg="red.50" color="red.500" rounded="md">
+          {error}
+        </Box>
       )}
 
       {!isEditing ? (
-        <VStack spacing={3} align="start">
+        <Stack gap={3} align="start">
           <Text>
             <strong>Full Name:</strong> {formData.name || ""}
           </Text>
@@ -206,8 +194,10 @@ export default function PersonalProfile() {
             <strong>Phone:</strong> {formData.phone_number || ""}
           </Text>
           <Text>
-            <strong>Date of Birth:</strong> 
-            {dayjs(formData.date_of_birth).isValid() ? dayjs(formData.date_of_birth).format('DD MMM YYYY') : ''}
+            <strong>Date of Birth:</strong>
+            {formData.date_of_birth
+              ? new Date(formData.date_of_birth).toLocaleDateString()
+              : ""}
           </Text>
           <Text>
             <strong>Address:</strong> {formData.address || ""}
@@ -224,21 +214,21 @@ export default function PersonalProfile() {
           >
             Edit Profile
           </Button>
-        </VStack>
+        </Stack>
       ) : (
-        <VStack spacing={4} align="stretch">
-            <Text>Full Name</Text>
+        <Stack gap={4} align="stretch">
+          <Box>
+            <Text mb={2}>Full Name</Text>
+            <Input
+              name="name"
+              value={formData.name || ""}
+              onChange={handleChange}
+              placeholder="Enter full name"
+            />
+          </Box>
 
-              <Input
-                name="name"
-                value={formData.name || ""}
-                onChange={handleChange}
-                placeholder="Enter full name"
-              />
-          
-
-          <FormControl>
-            <FormLabel>Email</FormLabel>
+          <Box>
+            <Text mb={2}>Email</Text>
             <Input
               type="email"
               name="email"
@@ -246,20 +236,20 @@ export default function PersonalProfile() {
               onChange={handleChange}
               placeholder="Enter email"
             />
-          </FormControl>
+          </Box>
 
-          <FormControl>
-            <FormLabel>Phone</FormLabel>
+          <Box>
+            <Text mb={2}>Phone</Text>
             <Input
               name="phone_number"
               value={formData.phone_number}
               onChange={handleChange}
               placeholder="Enter phone number"
             />
-          </FormControl>
+          </Box>
 
-          <FormControl>
-            <FormLabel>Date of Birth</FormLabel>
+          <Box>
+            <Text mb={2}>Date of Birth</Text>
             <Input
               type="date"
               name="date_of_birth"
@@ -267,31 +257,59 @@ export default function PersonalProfile() {
               onChange={handleDOBChange}
               max={new Date().toISOString().split("T")[0]}
             />
-          </FormControl>
+          </Box>
 
-          <FormControl>
-            <FormLabel>Address</FormLabel>
+          <Box>
+            <Text mb={2}>Address</Text>
             <Input
               name="address"
               value={formData.address}
               onChange={handleChange}
               placeholder="Enter address"
             />
-          </FormControl>
+          </Box>
 
-          <FormControl>
-            <FormLabel>Gender</FormLabel>
-            <Select
-              name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-              placeholder="Select Gender"
+          <Box>
+            <Text mb={2}>Gender</Text>
+            <Select.Root
+              value={[formData.gender]}
+              onValueChange={(value) => {
+                const newValue = (value as unknown as { value: string }).value;
+                setFormData({ ...formData, gender: newValue });
+              }}
+              collection={createListCollection({
+                items: [
+                  { label: "Male", value: "male" },
+                  { label: "Female", value: "female" },
+                  { label: "Other", value: "other" },
+                ],
+              })}
             >
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </Select>
-          </FormControl>
+              <Select.HiddenSelect />
+              <Select.Control>
+                <Select.Trigger>
+                  <Select.ValueText placeholder="Select Gender" />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Select.Positioner>
+                <Select.Content>
+                  <Select.Item item={{ label: "Male", value: "male" }}>
+                    Male
+                  </Select.Item>
+                  <Select.Item item={{ label: "Female", value: "female" }}>
+                    Female
+                  </Select.Item>
+                  <Select.Item item={{ label: "Other", value: "other" }}>
+                    Other
+                  </Select.Item>
+                </Select.Content>
+              </Select.Positioner>
+            </Select.Root>
+          </Box>
+
           <Button variant="outline" onClick={() => setIsEditing(false)}>
             Cancel
           </Button>
@@ -305,7 +323,7 @@ export default function PersonalProfile() {
           >
             Save Changes
           </Button>
-        </VStack>
+        </Stack>
       )}
     </Box>
   );

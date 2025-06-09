@@ -1,44 +1,54 @@
-import { Box, Heading, Text, Icon, Input, Button} from "@chakra-ui/react";
-import { FaBriefcase, FaBuilding, FaCalendarAlt } from "react-icons/fa";
-import { VStack, SimpleGrid, HStack } from "@chakra-ui/layout";
-import { useState, useEffect } from "react";
-import { useToast } from "@chakra-ui/toast";
 import {
+  Box,
+  Heading,
+  Text,
+  Icon,
+  Input,
+  Button,
+  Stack,
+  SimpleGrid,
   NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-} from "@chakra-ui/number-input"
+} from "@chakra-ui/react";
+import { FaBriefcase, FaBuilding, FaCalendarAlt } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { toaster } from "@/components/ui/toaster";
 
 export default function ProfessionalProfile() {
   const [jobTitle, setJobTitle] = useState("Student");
   const [company, setCompany] = useState("");
   const [experience, setExperience] = useState<number>(0);
-  const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false);
-  const toast = useToast();
 
   useEffect(() => {
-      async function fetchProfile() {
-        try {
-          const res = await fetch("/api/setting/profile");
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.message || "Failed to fetch profile");
-          console.log(data)
-          setJobTitle(data.job_title)
-          setCompany(data.company)
-          setExperience(typeof data.experience_years === "number" ? data.experience_years : 0);
-        } catch (error: any) {
-          setError(error.message);
+    async function fetchProfile() {
+      try {
+        const res = await fetch("/api/setting/profile");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to fetch profile");
+
+        setJobTitle(data.job_title);
+        setCompany(data.company);
+        setExperience(
+          typeof data.experience_years === "number" ? data.experience_years : 0
+        );
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          toaster.create({
+            title: "Error",
+            description: error.message,
+            type: "error",
+            duration: 3000,
+            meta: { closable: true },
+          });
         }
       }
-      fetchProfile();
-    }, []);
+    }
+    fetchProfile();
+  }, []);
 
   const handleSave = async () => {
     setIsSaving(true);
-    
+
     try {
       const response = await fetch("/api/setting/professional", {
         method: "PUT",
@@ -57,22 +67,27 @@ export default function ProfessionalProfile() {
       const data = await response.json();
       setJobTitle(data.job_title ?? "");
       setCompany(data.company ?? "");
-      setExperience(typeof data.experience_years === "number" ? data.experience_years : 0);
+      setExperience(
+        typeof data.experience_years === "number" ? data.experience_years : 0
+      );
 
-      toast({
+      toaster.create({
         title: "Profile updated.",
         description: "Your professional details have been saved.",
-        status: "success",
+        type: "success",
         duration: 3000,
-        isClosable: true,
+        meta: { closable: true },
       });
-    } catch (err) {
-      toast({
+    } catch (error: unknown) {
+      toaster.create({
         title: "Update failed.",
-        description: "Something went wrong while saving.",
-        status: "error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Something went wrong while saving.",
+        type: "error",
         duration: 3000,
-        isClosable: true,
+        meta: { closable: true },
       });
     } finally {
       setIsSaving(false);
@@ -85,12 +100,12 @@ export default function ProfessionalProfile() {
         Professional Profile
       </Heading>
 
-      <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+      <SimpleGrid columns={{ base: 1, md: 3 }} gap={6}>
         <Box>
-          <HStack mb={2}>
+          <Stack direction="row" mb={2}>
             <Icon as={FaBriefcase} color="blue.500" boxSize={5} />
             <Text fontWeight="semibold">Job Title:</Text>
-          </HStack>
+          </Stack>
           <Input
             value={jobTitle}
             onChange={(e) => setJobTitle(e.target.value)}
@@ -100,10 +115,10 @@ export default function ProfessionalProfile() {
         </Box>
 
         <Box>
-          <HStack mb={2}>
+          <Stack direction="row" mb={2}>
             <Icon as={FaBuilding} color="green.500" boxSize={5} />
             <Text fontWeight="semibold">Company:</Text>
-          </HStack>
+          </Stack>
           <Input
             value={company}
             onChange={(e) => setCompany(e.target.value)}
@@ -113,33 +128,26 @@ export default function ProfessionalProfile() {
         </Box>
 
         <Box>
-          <HStack mb={2}>
+          <Stack direction="row" mb={2}>
             <Icon as={FaCalendarAlt} color="purple.500" boxSize={5} />
             <Text fontWeight="semibold">Years of Experience:</Text>
-          </HStack>
-          <NumberInput
+          </Stack>
+          <NumberInput.Root
             min={0}
-            value={experience}
-            onChange={(valueString, valueNumber) =>
-              setExperience(isNaN(valueNumber) ? 0 : valueNumber)
-            }
+            value={String(experience)}
+            onValueChange={(value) => setExperience(Number(value))}
             ml={5}
           >
-            <NumberInputField placeholder="e.g. 3" />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
+            <NumberInput.Control>
+              <NumberInput.Input placeholder="e.g. 3" />
+              <NumberInput.IncrementTrigger />
+              <NumberInput.DecrementTrigger />
+            </NumberInput.Control>
+          </NumberInput.Root>
         </Box>
       </SimpleGrid>
 
-      <Button
-        mt={6}
-        colorScheme="blue"
-        onClick={handleSave}
-        loading={isSaving}
-      >
+      <Button mt={6} colorScheme="blue" onClick={handleSave} loading={isSaving}>
         Save Changes
       </Button>
     </Box>
