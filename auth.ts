@@ -14,7 +14,7 @@ import type {
 import { supabaseAdmin } from "./middleware";
 import { randomUUID } from "crypto";
 import { AdapterUser } from "next-auth/adapters";
-import { signJwt } from "./app/api/actions/jwt";
+import { signJwt } from "./app/api/actions/generateCheckoutUrl/jwt";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {

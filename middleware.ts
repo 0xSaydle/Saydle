@@ -26,73 +26,71 @@ export async function middleware(request: NextRequest) {
 
   // If authenticated
   if (isAuth) {
+    console.log(token);
     try {
       // Get user from Supabase using the token
       const { data: user } = await supabaseAdmin
         .from("users")
-        .select("phone, verified")
-        .eq("id", token.sub)
+        .select("phone_number, subscribed")
+        .eq("email  ", token.email)
         .single();
+      console.log("User: ", user);
 
       // If user has completed verification and tries to access onboarding steps 1-4, redirect to dashboard
       // But allow access to step 5 (plan selection) even after completing the basic onboarding
+      if (user?.subscribed && pathname.startsWith("/onboarding")) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
       if (
-        user?.verified &&
+        !user?.subscribed &&
+        user?.phone_number &&
         pathname.startsWith("/onboarding") &&
         !pathname.includes("/step/5") &&
         !pathname.includes("/step/6")
       ) {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
+        return NextResponse.redirect(new URL("/onboarding/step/5", request.url));
       }
 
+      // If not subscribed but completed onboarding and trying to access dashboard, redirect to step 5 so they can subscribe
+
+      if (
+        !user?.subscribed &&
+        user?.phone_number &&
+        (pathname === "/dashboard" || pathname === "/dashboard/")
+      ) {
+        console.log("Redirecting to step 5");
+        return NextResponse.redirect(
+          new URL("/onboarding/step/5", request.url)
+        );
+      }
       // If not verified and trying to access dashboard, redirect to onboarding
-      // if (
-      //   !user?.verified &&
-      //   (pathname === "/dashboard" || pathname === "/dashboard/")
-      // ) {
-      //   return NextResponse.redirect(
-      //     new URL("/onboarding/step/1", request.url)
-      //   );
-      // }
-
-      // Handle onboarding step validation
-      // if (pathname.startsWith("/dashboard/onboarding/step/")) {
-      //   const stepMatch = pathname.match(/\/step\/(\d+)/);
-      //   if (stepMatch) {
-      //     const requestedStep = parseInt(stepMatch[1]);
-
-      //     // If trying to access step 4 or beyond, allow it
-      //     if (requestedStep >= 4) {
-      //       return NextResponse.next();
-      //     }
-
-      //     // Get onboarding data from cookie
-      //     const onboardingData = request.cookies.get("onboardingData")?.value;
-      //     let data;
-      //     try {
-      //       data = onboardingData ? JSON.parse(onboardingData) : {};
-      //     } catch {
-      //       data = {};
-      //     }
-
-      //     // Check which step they should be on
-      //     let currentStep = 1;
-      //     if (data.name) currentStep = 2;
-      //     if (data.phone) currentStep = 3;
-
-      //     // If trying to access a step beyond their progress, redirect to current step
-      //     if (requestedStep > currentStep) {
-      //       return NextResponse.redirect(
-      //         new URL(`/dashboard/onboarding/step/${currentStep}`, request.url)
-      //       );
-      //     }
-      //   }
-      // }
+      if (
+        !user?.subscribed &&
+        !user?.phone_number &&
+        (pathname === "/dashboard" || pathname === "/dashboard/")
+      ) {
+        console.log(
+          "Redirecting to step 1 because user is not subscribed and has no phone number"
+        );
+        return NextResponse.redirect(
+          new URL("/onboarding/step/1", request.url)
+        );
+      }
     } catch (error) {
       console.error("Error in middleware:", error);
     }
   }
+  // Lemon Squeezy integration
+  if (request.nextUrl.pathname.startsWith("/api/webhooks/lemonsqueezy")) {
+    // Verify content-type is application/json
+    const contentType = request.headers.get("content-type");
+    if (contentType !== "application/json") {
+      return new NextResponse("Invalid content type", { status: 400 });
+    }
 
+    // We'll do the actual signature verification in the route handler
+    // since we need access to the raw body
+  }
   return NextResponse.next();
 }
 

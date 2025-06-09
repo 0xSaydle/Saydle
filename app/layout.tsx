@@ -1,24 +1,29 @@
-import { GeneralSans } from "./fonts";
-import { Provider } from "@/components/ui/provider";
+import type { ReactNode } from "react";
+import React from "react";
+import { ChakraProvider } from "@chakra-ui/react";
 import { SessionProvider } from "next-auth/react";
 import theme from "../theme";
 import { Toaster } from "@/components/ui/toaster";
+import { Provider } from "@/components/ui/provider";
+import { GeneralSans } from "./fonts";
+import "./globals.css";
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${GeneralSans.className} antialiased`}>
-        
-        <SessionProvider>
-          <Provider>
-            {children}
-            <Toaster />
-          </Provider>
-        </SessionProvider>
+        <ChakraProvider value={theme}>
+          <SessionProvider>
+            <Provider>
+              {children}
+              <Toaster />
+            </Provider>
+          </SessionProvider>
+        </ChakraProvider>
       </body>
     </html>
   );

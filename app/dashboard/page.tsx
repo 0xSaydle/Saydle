@@ -3,25 +3,50 @@ import { Box, Flex, Link, Text } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import Headphone from "@/public/icons/headphone.svg";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+
+interface SubscriptionDetails {
+  status_formatted?: string;
+  renews_at?: string;
+}
 
 export default function Dashboard() {
-  const { data: session } = useSession();
-  
+  const { data: session, status } = useSession();
+  const [isLoading, setIsLoading] = useState(true);
+  const [subDetails, setSubDetails] = useState<SubscriptionDetails | null>(null);
+
   useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const res = await fetch("/api/affirmation");
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to fetch profile");
-        console.log(data)
-        
-      } catch (error: any) {
-        console.log(error);
+    const fetchSubscriptionDetails = async () => {
+      if (status !== "authenticated") {
+        setIsLoading(false);
+        return;
       }
-    }
-    fetchProfile();
-  }, []);
+
+      try {
+        const response = await fetch('/api/subscription');
+        if (!response.ok) {
+          throw new Error('Failed to fetch subscription details');
+        }
+        const data = await response.json();
+        setSubDetails(data);
+      } catch (error) {
+        console.error('Error fetching subscription details:', error);
+        setSubDetails(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSubscriptionDetails();
+  }, [status]);
+
+  if (status === "loading") {
+    return (
+      <Box p={4}>
+        <Text>Loading...</Text>
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -82,14 +107,12 @@ export default function Dashboard() {
               w={2}
               h={2}
               borderRadius="full"
-              bg={session?.user?.plan === "BASIC" ? "red.400" : "green.400"}
+              bg={session?.user?.subscribed ? "green.400" : "red.400"}
             />
             <Box fontWeight="bold" color="dark.500">
-              {session?.user?.plan === "BASIC" ? "Inactive" : "Active"} -{" "}
-              {session?.user?.plan && typeof session.user.plan === "string"
-                ? session.user.plan.charAt(0) +
-                  session.user.plan.slice(1).toLowerCase()
-                : "No plan"}
+              {isLoading
+                ? "Loading..."
+                : subDetails?.status_formatted || "No subscription"}
             </Box>
           </Flex>
         </Box>
@@ -107,15 +130,14 @@ export default function Dashboard() {
             NEXT BILLING DATE
           </Box>
           <Box fontWeight="bold" fontSize="lg">
-            {session?.user?.nextBillingDate
-              ? new Date(session.user.nextBillingDate).toLocaleDateString(
-                  "en-US",
-                  {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  }
-                )
+            {isLoading
+              ? "Loading..."
+              : subDetails?.renews_at
+              ? new Date(subDetails.renews_at).toLocaleDateString("en-US", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })
               : "Not set"}
           </Box>
         </Box>
