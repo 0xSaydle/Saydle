@@ -78,11 +78,13 @@ const config = {
           .single();
 
         if (error || !userOtp) {
-          throw new Error("Otp not found");
+          console.error("OTP not found:", error);
+          return null;
         }
 
         if (new Date(userOtp.expires_at) < new Date()) {
-          throw new Error("Invalid OTP");
+          console.error("Invalid OTP:", error);
+          return null;
         }
 
         const { data: userData, error: fetchError } = await supabaseAdmin
@@ -91,8 +93,8 @@ const config = {
           .eq("phone_number", phone)
           .single();
 
-        if (fetchError) {
-          console.error("Error fetching user data:", fetchError);
+        if (fetchError || !userData) {
+          console.error("Error fetching user found with phone number:", phone, + "Error:", fetchError);
           return null;
         }
 
@@ -111,8 +113,13 @@ const config = {
           .eq("phone_number", phone);
 
         if (otpError) {
-          throw new Error("Failed to clear OTP");
+          console.warn("Failed to clear OTP:", otpError);
         }
+
+        console.log("Returning user from authorize:", {
+          id: userData.id,
+          phone_number: userData.phone_number,
+        });
 
         return {
           id: userData.id,

@@ -77,8 +77,8 @@ export async function POST(req: NextRequest) {
       // Check if user exists in our users table
       const { data: existingUser } = await supabase
         .from("users")
-        .select("id, phone")
-        .eq("phone", formattedPhone)
+        .select("id, phone_number")
+        .eq("phone_number", formattedPhone)
         .single();
 
       if (!existingUser) {
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
 
         const { error: userError } = await supabaseAdmin.from("users").insert({
           id: userId,
-          phone: formattedPhone,
+          phone_number: formattedPhone,
           verified: false,
         });
 

@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     const { data: userData, error: userError } = await supabase
       .from("users")
       .select("*")
-      .eq("phone", formattedPhone)
+      .eq("phone_number", formattedPhone)
       .single();
 
     if (userError && userError.code !== "PGRST116") {
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
 
       const { error: createError } = await supabaseAdmin.from("users").insert({
         id: userId,
-        phone: formattedPhone,
+        phone_number: formattedPhone,
         verified: true,
       });
 
@@ -106,7 +106,6 @@ export async function POST(req: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
     });
 
     return NextResponse.json(
@@ -115,7 +114,7 @@ export async function POST(req: NextRequest) {
         message: "OTP verified successfully",
         user: {
           id: userId,
-          phone: formattedPhone,
+          phone_number: formattedPhone,
           verified: true,
         },
       },
