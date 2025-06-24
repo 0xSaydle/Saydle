@@ -92,11 +92,23 @@ export default function Login() {
           type: "success",
           duration: 3000,
         });
-        await signIn("credentials", {
+        const signInResult = await signIn("credentials", {
           redirect: false,
           phone,
           otp,
         });
+
+        if (signInResult?.ok) {
+        // Redirect to dashboard
+          window.location.href = "/dashboard";
+        } else {
+          toaster.create({
+            title: "Login Failed",
+            description: "Unable to sign in with credentials",
+            type: "error",
+            duration: 3000,
+          });
+        }
       } else {
         toaster.create({
           title: "Error",

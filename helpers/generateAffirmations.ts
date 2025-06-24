@@ -29,8 +29,12 @@ export async function generateAffirmation(prompt: string): Promise<string> {
   }
 
   const data = (await res.json()) as HFResponse[];
-  // console.log(data)
-  return data?.[0]?.generated_text || "You are doing great today!";
+
+  const generatedtext = data?.[0]?.generated_text
+
+  const formattedAffirmation = generatedtext.trim().split("+")[-1] || "";
+  console.log(formattedAffirmation)
+  return  formattedAffirmation || "You are doing great today!";
 }
 
 

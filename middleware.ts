@@ -20,9 +20,9 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // If not authenticated and trying to access protected routes
-  if (!isAuth && pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
+  // if (!isAuth && pathname.startsWith("/dashboard")) {
+  //   return NextResponse.redirect(new URL("/login", request.url));
+  // }
 
   // If authenticated
   if (isAuth) {
@@ -64,18 +64,18 @@ export async function middleware(request: NextRequest) {
         );
       }
       // If not verified and trying to access dashboard, redirect to onboarding
-      if (
-        !user?.subscribed &&
-        !user?.phone_number &&
-        (pathname === "/dashboard" || pathname === "/dashboard/")
-      ) {
-        console.log(
-          "Redirecting to step 1 because user is not subscribed and has no phone number"
-        );
-        return NextResponse.redirect(
-          new URL("/onboarding/step/1", request.url)
-        );
-      }
+      // if (
+      //   !user?.subscribed &&
+      //   !user?.phone_number &&
+      //   (pathname === "/dashboard" || pathname === "/dashboard/")
+      // ) {
+      //   console.log(
+      //     "Redirecting to step 1 because user is not subscribed and has no phone number"
+      //   );
+      //   return NextResponse.redirect(
+      //     new URL("/onboarding/step/1", request.url)
+      //   );
+      // }
     } catch (error) {
       console.error("Error in middleware:", error);
     }

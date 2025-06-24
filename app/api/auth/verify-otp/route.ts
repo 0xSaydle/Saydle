@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get or create user in our database
-    const { data: userData, error: userError } = await supabase
+    const { data: userData, error: userError } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("phone_number", formattedPhone)
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       console.error("Error fetching user:", userError);
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-
+    console.log(userData)
     let userId;
 
     if (userData) {
@@ -86,16 +86,16 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const { error: createError } = await supabaseAdmin.from("users").insert({
-        id: userId,
-        phone_number: formattedPhone,
-        verified: true,
-      });
+      // const { error: createError } = await supabaseAdmin.from("users").insert({
+      //   id: userId,
+      //   phone_number: formattedPhone,
+      //   verified: true,
+      // });
 
-      if (createError) {
-        console.error("Error creating user:", createError);
-        // Continue anyway as authentication was successful
-      }
+      // if (createError) {
+      //   console.error("Error creating user:", createError);
+      //   // Continue anyway as authentication was successful
+      // }
     }
 
     // Set session cookie

@@ -19,6 +19,19 @@ export const updateUser = async (
     throw new Error("No session found");
   }
 
+  if (!session.user.email){
+    const { data, error } = await supabaseAdmin
+      .from("users")
+      .update(updateData)
+      .eq("phone_number", session.user.phone)
+      .select();
+
+      if (error) {
+        throw new Error((error.message));
+      }
+
+      return { data: data };
+  }
   const { data, error } = await supabaseAdmin
     .from("users")
     .update(updateData)

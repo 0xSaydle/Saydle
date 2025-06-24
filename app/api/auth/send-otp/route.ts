@@ -75,12 +75,13 @@ export async function POST(req: NextRequest) {
       }
 
       // Check if user exists in our users table
-      const { data: existingUser } = await supabase
+      const { data: existingUser } = await supabaseAdmin
         .from("users")
-        .select("id, phone_number")
+        .select("phone_number")
         .eq("phone_number", formattedPhone)
         .single();
 
+        console.log(existingUser)
       if (!existingUser) {
         // Create a new user with the phone number
         const userId = randomUUID();

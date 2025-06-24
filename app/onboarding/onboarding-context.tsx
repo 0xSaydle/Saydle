@@ -99,10 +99,10 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   };
 
   const completeOnboarding = async () => {
-    if (!session?.user?.email) {
-      throw new Error("No user email found in session");
+    if (!session?.user?.email && !session?.user.phone) {
+      throw new Error("No user email or phone number found in session");
     }
-    console.log(session.user.email);
+    console.log(session.user.email, session.user.phone);
 
     try {
       const updateData = {

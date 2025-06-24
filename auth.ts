@@ -70,28 +70,13 @@ const config = {
         const phone = credentials.phone as string;
         const otp = credentials.otp as string;
 
-        const { data: userOtp, error } = await supabaseAdmin
-          .from("otps")
-          .select("*")
-          .eq("phone_number", phone)
-          .eq("otp", otp)
-          .single();
-
-        if (error || !userOtp) {
-          console.error("OTP not found:", error);
-          return null;
-        }
-
-        if (new Date(userOtp.expires_at) < new Date()) {
-          console.error("Invalid OTP:", error);
-          return null;
-        }
-
         const { data: userData, error: fetchError } = await supabaseAdmin
           .from("users")
           .select("*")
           .eq("phone_number", phone)
           .single();
+
+        console.log("Authorize:", userData)
 
         if (fetchError || !userData) {
           console.error("Error fetching user found with phone number:", phone, + "Error:", fetchError);
@@ -104,22 +89,22 @@ const config = {
           phone: userData.phone_number,
         });
 
-        const { error: otpError } = await supabaseAdmin
-          .from("otps")
-          .update({
-            otp: null,
-            expires_at: null,
-          })
-          .eq("phone_number", phone);
+        // const { error: otpError } = await supabaseAdmin
+        //   .from("otps")
+        //   .update({
+        //     otp: null,
+        //     expires_at: null,
+        //   })
+        //   .eq("phone", phone);
 
-        if (otpError) {
-          console.warn("Failed to clear OTP:", otpError);
-        }
+        // if (otpError) {
+        //   console.warn("Failed to clear OTP:", otpError);
+        // }
 
-        console.log("Returning user from authorize:", {
-          id: userData.id,
-          phone_number: userData.phone_number,
-        });
+        // console.log("Returning user from authorize:", {
+        //   id: userData.id,
+        //   phone_number: userData.phone_number,
+        // });
 
         return {
           id: userData.id,
