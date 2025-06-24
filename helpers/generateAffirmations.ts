@@ -14,6 +14,8 @@ export async function generateAffirmation(prompt: string): Promise<string> {
     body: JSON.stringify({ inputs: prompt }),
   });
 
+  // console.log("Ai res", res)
+
   const contentType = res.headers.get("content-type");
 
   if (!res.ok) {
@@ -30,11 +32,19 @@ export async function generateAffirmation(prompt: string): Promise<string> {
 
   const data = (await res.json()) as HFResponse[];
 
-  const generatedtext = data?.[0]?.generated_text
+  const generatedText = data?.[0]?.generated_text || "";
+  // console.log(generatedText)
+  const instructionLine = "Only respond with the affirmation text. Do NOT include the prompt or any additional explanation.";
+  const splitText = generatedText.split(instructionLine);
 
-  const formattedAffirmation = generatedtext.trim().split("+")[-1] || "";
-  console.log(formattedAffirmation)
-  return  formattedAffirmation || "You are doing great today!";
+  // Get the part after the instruction line
+  let affirmation = splitText[1]?.trim() || "You're doing amazing!";
+  // Step 2: Remove surrounding quotes if present
+  if (affirmation.startsWith('"') && affirmation.endsWith('"')) {
+    affirmation = affirmation.slice(1, -1).trim();
+  }
+  // console.log("formattedText", affirmation)
+  return  affirmation;
 }
 
 
@@ -85,7 +95,7 @@ export interface AffirmationInput {
 //   ];
   
 
-export function buildAffirmationPrompt(input: AffirmationInput): string {
+export async function buildAffirmationPrompt(input: AffirmationInput): Promise<string> {
   const {
     name,
     personalityType,

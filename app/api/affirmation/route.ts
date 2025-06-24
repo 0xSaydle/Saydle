@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { AffirmationInput, buildAffirmationPrompt, generateAffirmation } from "@/helpers/generateAffirmations";
 import { supabaseAdmin } from "@/supabase/supabase_client";
 import { NextRequest, NextResponse } from "next/server";
-import { sendViaTwilio } from "../actions/twilio_sms";
+import { sendViaTwilio } from "@/helpers/twilio_sms";
 
 
 export async function GET(req: NextRequest) {
@@ -20,20 +20,30 @@ export async function GET(req: NextRequest) {
             weekday: 'long'
         });
 
-        // Get the current time in UTC, rounded to the hour (e.g., "14:00")
-        // Note: Store user times in UTC to avoid timezone headaches!
-        const currentHour = new Date().getUTCHours();
-        const currentTimeSlot = `${String(currentHour).padStart(2, '0')}:00`; // "09:00", "17:00"
+        const now = new Date(); // in UTC
+        const windowMinutes = 10;
         
-        console.log(`Cron job running for: ${currentDay} at ${currentTimeSlot} UTC`);
+        const lowerTime = new Date(now.getTime() - windowMinutes * 60 * 1000);
+        const upperTime = new Date(now.getTime() + windowMinutes * 60 * 1000);
+
+        // Format as "HH:MM"
+        const formatTime = (date: Date) =>
+        `${String(date.getUTCHours()).padStart(2, '0')}:${String(date.getUTCMinutes()).padStart(2, '0')}`;
+
+        const currentTime = formatTime(now)
+        const lowerBound = formatTime(lowerTime);
+        const upperBound = formatTime(upperTime);
+        
+        console.log(`Cron job running for: ${currentDay} at ${formatTime(now)} UTC`);
 
         // Find users who have preferences matching today and this hour
         const { data: usersToSend, error }  = await supabaseAdmin
             .from("user_preferences")
             .select("*, users(*)")
-            .eq("days_of_week", [currentDay])
-            .eq("time_of_day", currentHour)
-            .eq("is_active", true)
+            .contains("days_of_week", [currentDay])
+            .gte("time_of_day", lowerBound)
+            .lte("time_of_day", upperBound)
+            .eq("active", true)
 
         if (usersToSend != null && usersToSend.length === 0) {
             console.log('No users to send affirmations to at this time.');
@@ -62,7 +72,7 @@ export async function GET(req: NextRequest) {
                 personalityType: userPref.users?.personally_type,
                 locale: locale,
             };
-            const prompt = buildAffirmationPrompt(input);
+            const prompt = await buildAffirmationPrompt(input);
             const res = await generateAffirmation(prompt);
 
             //Send affirmation via twilio

@@ -5,6 +5,7 @@ import DashboardSidebar from "@/components/custom/DashboardSidebar";
 import { DashboardProvider } from "../contexts/dashboard-context";
 import { Avatar } from "@/components/ui/avatar";
 import { useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
 import { Logo } from "@/components/custom/logo";
 import theme from "@/theme";
 
@@ -14,6 +15,22 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { data: session } = useSession();
+  
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const res = await fetch("/api/affirmation");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to generate affirmations");   
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.log(error.message);
+        }
+      }
+    }
+    fetchProfile();
+  }, []);
+  
 
   return (
     <ChakraProvider value={theme}>
