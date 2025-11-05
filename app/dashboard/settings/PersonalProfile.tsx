@@ -12,6 +12,7 @@ import {
 import { Avatar } from "@/components/ui/avatar";
 
 export default function PersonalProfile() {
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   const [image, setProfilePic] = useState<string>("");
   const [uploading, setUploading] = useState<boolean>(false);
   const [dob, setDob] = useState("");
@@ -29,19 +30,22 @@ export default function PersonalProfile() {
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const res = await fetch("/api/setting/profile");
+        const res = await fetch("/api/setting/profile", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+      });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Failed to fetch profile");
-
         setFormData({
-          name: data.name,
-          email: data.email,
-          phone_number: data.phone_number,
-          date_of_birth: data.date_of_birth,
-          address: data.address,
-          gender: data.gender,
+        
+          name: data.name || "", // Ensure it's never null/undefined
+          email: data.email || "", // Ensure it's never null/undefined
+          phone_number: data.phone_number || "", // Ensure it's never null/undefined
+          date_of_birth: data.date_of_birth || "", // Ensure it's never null/undefined
+          address: data.address || "", // Ensure it's never null/undefined
+          gender: data.gender || "", // Ensure it's never null/undefined
         });
-        setProfilePic(data.image);
+        setProfilePic(data.image || ""); // Also for image if it can be null
       } catch (error: unknown) {
         if (error instanceof Error) {
           setError(error.message);
@@ -80,7 +84,7 @@ export default function PersonalProfile() {
     if (dob !== "") {
       setFormData({
         ...formData,
-        date_of_birth: dob,
+        date_of_birth: value,
       });
     }
     setError(validateDob(value));
@@ -105,7 +109,7 @@ export default function PersonalProfile() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Upload failed");
 
-      setProfilePic(data.imageUrl);
+      setProfilePic(data.image);
     } catch (error: unknown) {
       if (error instanceof Error) {
         setError(error.message);
@@ -116,6 +120,7 @@ export default function PersonalProfile() {
   };
 
   const handleUpdateProfile = async () => {
+    setIsSaving(true);
     try {
       const res = await fetch("/api/setting/profile", {
         method: "PUT",
@@ -242,7 +247,7 @@ export default function PersonalProfile() {
             <Text mb={2}>Phone</Text>
             <Input
               name="phone_number"
-              value={formData.phone_number}
+              value={formData.phone_number || ""}
               onChange={handleChange}
               placeholder="Enter phone number"
             />
@@ -253,7 +258,7 @@ export default function PersonalProfile() {
             <Input
               type="date"
               name="date_of_birth"
-              value={formData.date_of_birth}
+              value={formData.date_of_birth || ""}
               onChange={handleDOBChange}
               max={new Date().toISOString().split("T")[0]}
             />
@@ -263,7 +268,7 @@ export default function PersonalProfile() {
             <Text mb={2}>Address</Text>
             <Input
               name="address"
-              value={formData.address}
+              value={formData.address || ""}
               onChange={handleChange}
               placeholder="Enter address"
             />
@@ -272,10 +277,10 @@ export default function PersonalProfile() {
           <Box>
             <Text mb={2}>Gender</Text>
             <Select.Root
-              value={[formData.gender]}
-              onValueChange={(value) => {
-                const newValue = (value as unknown as { value: string }).value;
-                setFormData({ ...formData, gender: newValue });
+              value={formData.gender ? [formData.gender] : []}
+              onValueChange={(details) => {
+                const selectedValue = details.items[0]?.value || "";
+                setFormData({ ...formData, gender: selectedValue });
               }}
               collection={createListCollection({
                 items: [
@@ -319,7 +324,8 @@ export default function PersonalProfile() {
             colorScheme="green"
             w="full"
             onClick={handleUpdateProfile}
-            loading={uploading}
+            // loading={uploading}
+            loading={isSaving}
           >
             Save Changes
           </Button>

@@ -1,37 +1,54 @@
-"use server";
-
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/supabase/supabase_client";
+import { getSupabaseAdminClient } from "../../../../supabase/supabase_client"; 
 
-import { auth } from "../../../../auth" 
+import { auth } from "../../../../auth2" 
+
+const supabaseAdmin = getSupabaseAdminClient();
 
 // GET: Fetch user profile
-export async function GET(res: NextResponse) {
+export async function GET() {
+  console.log("--- API /api/setting/profile: Request received ---");
+
   const session = await auth();
+
+  console.log("API /api/setting/profile: Session result from auth():", session);
+
   if (!session) {
+    console.log("API /api/setting/profile: Session is null or undefined. Returning 401.");
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const { data: profile, error } = await supabaseAdmin
-    .from("users")
-    .select("name, email, phone_number, date_of_birth, address, gender, image")
-    .eq("email", session?.user.email)
-    .single();
+  console.log("API /api/setting/profile: Session exists. User ID:", session.user.id);
 
+  try {
+    const { data: profile, error } = await supabaseAdmin
+      .from("users")
+      .select(`
+        id, email, name, image, address, date_of_birth, gender, phone_number, subscribed, created_at, updated_at, verified
+      `)
+      .eq("id", session.user.id)
+      .single();
 
-  if (error || !profile) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    console.log("API /api/setting/profile: Supabase query result for user ID", session.user.id);
+    console.log("API /api/setting/profile: Profile data:", profile);
+    console.log("API /api/setting/profile: Supabase error:", error);
+
+    if (error || !profile) {
+      if (error && error.code === 'PGRST116') { // No rows found
+        console.log("API /api/setting/profile: User profile not found in Supabase.");
+        return NextResponse.json({ message: "Profile not found" }, { status: 404 });
+      }
+      console.error("API /api/setting/profile: Error fetching profile or profile not found:", error);
+      return NextResponse.json({ message: "Failed to fetch profile" }, { status: 500 }); // Or a more specific error
+    }
+
+    console.log("API /api/setting/profile: Successfully fetched profile.");
+    return NextResponse.json(profile, { status: 200 });
+
+  } catch (e) {
+    console.error("API /api/setting/profile: Exception caught:", e);
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
-
-  return NextResponse.json({
-    name: profile.name,
-    email: profile.email,
-    phone_number: profile.phone_number,
-    date_of_birth: profile.date_of_birth,
-    address: profile.address,
-    gender: profile.gender,
-    image: profile.image,
-  });
 }
 
 // PUT: Update user profile
@@ -67,6 +84,7 @@ export async function PUT(req: NextRequest) {
 
 
   if (error) {
+    console.error("Supabase PUT profile error details:", error);
     return NextResponse.json({ message: "Error updating profile" }, { status: 500 });
   }
 

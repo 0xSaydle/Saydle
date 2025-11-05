@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 // import { cookies } from "next/headers";
 import { supabaseAdmin } from "@/supabase/supabase_client";
 import { v4 as uuidv4 } from "uuid";
-import { auth } from "../../../../auth" 
+import { auth } from "../../../../auth2" 
 
 
 export async function POST(req: NextRequest) {

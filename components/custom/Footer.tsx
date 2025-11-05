@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Text, Flex, Icon } from "@chakra-ui/react";
 import Link from "next/link";
 import { IoMailOutline } from "react-icons/io5";

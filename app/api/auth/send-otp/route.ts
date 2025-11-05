@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase, supabaseAdmin } from "@/middleware";
+import { getSupabaseAdminClient, getSupabaseBrowserClient } from "../../../../supabase/supabase_client"; 
+
+const supabaseAdmin = getSupabaseAdminClient();
+const supabase = getSupabaseBrowserClient();
+
 import { randomUUID } from "crypto";
 
 export async function POST(req: NextRequest) {
@@ -45,7 +49,7 @@ export async function POST(req: NextRequest) {
         phone: formattedPhone,
         options: {
           // Make sure to create the user if they don't exist
-          shouldCreateUser: true,
+          // shouldCreateUser: true,
           // You can add channel here if you want to use WhatsApp instead of SMS
           // channel: 'whatsapp',
         },
@@ -75,10 +79,10 @@ export async function POST(req: NextRequest) {
       }
 
       // Check if user exists in our users table
-      const { data: existingUser } = await supabase
+      const { data: existingUser } = await supabaseAdmin
         .from("users")
-        .select("id, phone")
-        .eq("phone", formattedPhone)
+        .select("id, phone_number")
+        .eq("phone_number", formattedPhone)
         .single();
 
       if (!existingUser) {
@@ -87,7 +91,7 @@ export async function POST(req: NextRequest) {
 
         const { error: userError } = await supabaseAdmin.from("users").insert({
           id: userId,
-          phone: formattedPhone,
+          phone_number: formattedPhone,
           verified: false,
         });
 

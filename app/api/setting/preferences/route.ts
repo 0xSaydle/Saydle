@@ -1,7 +1,10 @@
 // pages/api/preferences.ts
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin }  from '../../../../supabase/supabase_client'
-import { auth } from "../../../../auth" 
+import { auth } from "../../../../auth2" 
+
+import { getSupabaseAdminClient } from "../../../../supabase/supabase_client"; 
+
+const supabaseAdmin = getSupabaseAdminClient();
 
 
 type Preference = {

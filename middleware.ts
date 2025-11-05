@@ -1,44 +1,54 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { createClient } from "@supabase/supabase-js";
+import { getSupabaseAdminClient } from "./supabase/supabase_client";
 
-export const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL as string,
-  process.env.SUPABASE_SERVICE_ROLE_KEY as string
-);
-export const supabase = createClient(
-  process.env.SUPABASE_URL as string,
-  process.env.SUPABASE_ANON_KEY as string
-);
+export const supabaseAdmin = getSupabaseAdminClient()
+
 export async function middleware(request: NextRequest) {
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
     secureCookie: process.env.NODE_ENV === "production",
   });
-  const isAuth = !!token;
+  const isAuth = !!token; // Will be true if a valid session token is found
   const pathname = request.nextUrl.pathname;
 
+  // Define protected API routes and UI routes
+  const isProtectedApiRoute = pathname.startsWith("/api/setting/profile");
+  const isProtectedUIRoute = pathname.startsWith("/dashboard") || pathname.startsWith("/onboarding");
+  
   // If not authenticated and trying to access protected routes
-  if (!isAuth && pathname.startsWith("/dashboard")) {
+  if (!isAuth && (isProtectedUIRoute || isProtectedApiRoute)) {
+    if (isProtectedApiRoute) {
+      console.log("Middleware: Unauthorized access to API route:", pathname);
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    console.log("Middleware: Unauthorized access to UI route, redirecting to login:", pathname);
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // If authenticated
   if (isAuth) {
-    console.log(token);
+    console.log("Middleware: User is authenticated. Token:", token); // Log the token here to see if it's correct
     try {
       // Get user from Supabase using the token
-      const { data: user } = await supabaseAdmin
+      const { data: user, error: userError } = await supabaseAdmin
         .from("users")
         .select("phone_number, subscribed")
-        .eq("email  ", token.email)
+        .eq("email", token.email) // Ensure this is 'email' not 'email  '
         .single();
-      console.log("User: ", user);
 
+      if (userError && userError.code !== "PGRST116") { // PGRST116 means "no rows found"
+        console.error("Middleware: Error fetching user from Supabase:", userError);
+        // Depending on your error handling, you might want to stop the request
+        // return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+      }
+
+      console.log("Middleware: Supabase User data:", user);
       // If user has completed verification and tries to access onboarding steps 1-4, redirect to dashboard
       // But allow access to step 5 (plan selection) even after completing the basic onboarding
       if (user?.subscribed && pathname.startsWith("/onboarding")) {
+        console.log("Middleware: User subscribed, redirecting from onboarding to dashboard.");
         return NextResponse.redirect(new URL("/dashboard", request.url));
       }
       if (
@@ -48,52 +58,46 @@ export async function middleware(request: NextRequest) {
         !pathname.includes("/step/5") &&
         !pathname.includes("/step/6")
       ) {
+        console.log("Middleware: User not subscribed but has phone, redirecting to step 5.");
         return NextResponse.redirect(new URL("/onboarding/step/5", request.url));
       }
-
-      // If not subscribed but completed onboarding and trying to access dashboard, redirect to step 5 so they can subscribe
-
       if (
         !user?.subscribed &&
         user?.phone_number &&
         (pathname === "/dashboard" || pathname === "/dashboard/")
       ) {
-        console.log("Redirecting to step 5");
+        console.log("Middleware: User not subscribed but has phone, redirecting dashboard to step 5.");
         return NextResponse.redirect(
           new URL("/onboarding/step/5", request.url)
         );
       }
-      // If not verified and trying to access dashboard, redirect to onboarding
       if (
         !user?.subscribed &&
         !user?.phone_number &&
         (pathname === "/dashboard" || pathname === "/dashboard/")
       ) {
-        console.log(
-          "Redirecting to step 1 because user is not subscribed and has no phone number"
-        );
+        console.log("Middleware: User not subscribed and no phone, redirecting dashboard to step 1.");
         return NextResponse.redirect(
           new URL("/onboarding/step/1", request.url)
         );
       }
     } catch (error) {
-      console.error("Error in middleware:", error);
+      console.error("Middleware: Unhandled error in authenticated user logic:", error);
     }
   }
-  // Lemon Squeezy integration
+
+  // Lemon Squeezy integration (no change needed here)
   if (request.nextUrl.pathname.startsWith("/api/webhooks/lemonsqueezy")) {
-    // Verify content-type is application/json
     const contentType = request.headers.get("content-type");
     if (contentType !== "application/json") {
       return new NextResponse("Invalid content type", { status: 400 });
     }
-
-    // We'll do the actual signature verification in the route handler
-    // since we need access to the raw body
   }
+
+  console.log("Middleware: Allowing request to proceed:", pathname);
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/onboarding/step/:path*"],
+  matcher: ["/dashboard/:path*", "/onboarding/step/:path*", "/api/setting/profile", "/api/webhooks/lemonsqueezy"],
 };

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "node:crypto";
-import { supabaseAdmin } from "@/middleware";
+import { getSupabaseAdminClient } from "../../../../supabase/supabase_client"; 
+
+const supabaseAdmin = getSupabaseAdminClient();
 
 type WebhookMeta = {
   test_mode: boolean;

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase, supabaseAdmin } from "@/middleware";
 import { cookies } from "next/headers";
+import { getSupabaseAdminClient, getSupabaseBrowserClient } from "../../../../supabase/supabase_client"; 
+
+const supabaseAdmin = getSupabaseAdminClient();
+const supabase = getSupabaseBrowserClient();
 
 // Handle POST requests
 export async function POST(req: NextRequest) {
@@ -106,7 +109,6 @@ export async function POST(req: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
     });
 
     return NextResponse.json(
