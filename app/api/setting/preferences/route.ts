@@ -1,6 +1,6 @@
 // pages/api/preferences.ts
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "../../../../auth2" 
+import { auth } from "../../../../auth" 
 
 import { getSupabaseAdminClient } from "../../../../supabase/supabase_client"; 
 

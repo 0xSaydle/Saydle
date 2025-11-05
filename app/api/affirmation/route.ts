@@ -1,4 +1,4 @@
-import { auth } from "@/auth2";
+import { auth } from "@/auth";
 import { AffirmationInput, buildAffirmationPrompt, generateAffirmation } from "@/helpers/generateAffirmations";
 import { NextRequest, NextResponse } from "next/server";
 

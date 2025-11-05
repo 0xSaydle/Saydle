@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "../../../../supabase/supabase_client"; 
 
-import { auth } from "../../../../auth2" 
+import { auth } from "../../../../auth" 
 
 const supabaseAdmin = getSupabaseAdminClient();
 

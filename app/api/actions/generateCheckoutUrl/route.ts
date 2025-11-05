@@ -1,5 +1,5 @@
 "use server";
-import { auth } from "@/auth2";
+import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 
 interface CheckoutResponse {

@@ -1,6 +1,6 @@
 // app/api/setting/personality/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth2";  // your auth util
+import { auth } from "@/auth";  // your auth util
 import { getSupabaseAdminClient } from "../../../../supabase/supabase_client"; 
 
 const supabaseAdmin = getSupabaseAdminClient();
