@@ -38,6 +38,27 @@ export default function Dashboard() {
     };
 
     fetchSubscriptionDetails();
+
+   const fetchAffirmations = async () => {
+      if (status !== "authenticated") {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/scheduler');
+        if (!response.ok) {
+          throw new Error('Failed to fetch affirmations');
+        }
+        const data = await response.json();
+      } catch (error) {
+        console.error('Error fetching subscription details:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAffirmations();
   }, [status]);
 
   if (status === "loading") {
