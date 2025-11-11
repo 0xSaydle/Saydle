@@ -34,7 +34,7 @@ export function getSupabaseServerClient() {
 // For server-side API routes, NextAuth.js (auth.ts), and Server Components
 // Needs NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY
 export function getSupabaseAdminClient() {
- // For maximum clarity and safety on server-side, I'd suggest using SUPABASE_URL
+  // For maximum clarity and safety on server-side, I'd suggest using SUPABASE_URL
   // without NEXT_PUBLIC_ for the server admin client.
   const supabaseUrl = requireEnv("SERVER_SUPABASE_URL"); // It's generally fine for this one
   const supabaseServiceKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");

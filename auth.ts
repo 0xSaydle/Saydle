@@ -19,16 +19,16 @@ import { signJwt } from "./lib/jwt";
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
-        id: string;
-        name: string;
-        email: string;
-        phone_number?: string;
-        accessToken: string;
-        plan?: string;
-        dateOfSubscription?: string;
-        nextBillingDate?: string;
-        planDuration?: number;
-        subscribed?: boolean;
+      id: string;
+      name: string;
+      email: string;
+      phone_number?: string;
+      accessToken: string;
+      plan?: string;
+      dateOfSubscription?: string;
+      nextBillingDate?: string;
+      planDuration?: number;
+      subscribed?: boolean;
     } & DefaultSession["user"];
   }
 }
@@ -88,7 +88,7 @@ const config = {
         }
 
         if (new Date(userOtp.expires_at) < new Date()) {
-           console.error("Expired OTP");
+          console.error("Expired OTP");
           // throw new Error("Invalid OTP"); // <-- REMOVE THIS
           return null;
         }
@@ -150,7 +150,8 @@ const config = {
     }) {
       const { token, user } = params;
       if (user) {
-        token.accessToken = (user as CustomUser).accessToken ?? token.accessToken; // Keep existing if new is null
+        token.accessToken =
+          (user as CustomUser).accessToken ?? token.accessToken; // Keep existing if new is null
         token.id = (user as CustomUser).id;
         token.phone_number = (user as CustomUser).phone_number;
         token.email = (user as CustomUser).email;
@@ -167,7 +168,8 @@ const config = {
       token: CustomToken;
     }) {
       session.user.accessToken = token.accessToken ?? session.user.accessToken;
-      session.user.phone_number = token.phone_number ?? session.user.phone_number;
+      session.user.phone_number =
+        token.phone_number ?? session.user.phone_number;
       session.user.subscribed = token.subscribed ?? session.user.subscribed;
       session.user.id = (token.id as string) ?? session.user.id; // <--- IMPORTANT: Ensure session.user.id is always there
       session.user.email = (token.email as string) ?? session.user.email; // <--- IMPORTANT: Ensure session.user.email is always there
@@ -178,7 +180,8 @@ const config = {
         console.log("No email found in session, skipping update");
         return session;
       }
-      if (!token.id) { // Use token.id as the primary identifier
+      if (!token.id) {
+        // Use token.id as the primary identifier
         console.log("No ID found in token, skipping user data fetch.");
         return session;
       }
@@ -246,7 +249,7 @@ const config = {
       if (account?.provider === "google" && user.email) {
         try {
           console.log("Attempting to create/update user:", user.email);
-          
+
           let userIdToReturn: string;
           // Check if user exists
           const { data: existingUser, error: fetchError } = await supabaseAdmin
@@ -264,20 +267,21 @@ const config = {
             console.log("Creating new user with email:", user.email);
             // Create new user
             const newUuid = randomUUID(); // Generate UUID once
-            const { data: insertedUser, error: insertError } = await supabaseAdmin
-              .from("users")
-              .insert([
-                {
-                  id: newUuid,
-                  email: user.email,
-                  name: user.name || "Saydle User",
-                  created_at: new Date().toISOString(),
-                  updated_at: new Date().toISOString(),
-                  verified: false,
-                },
-              ])
-              .select("id") // Select the ID to ensure we get it back
-              .single();;
+            const { data: insertedUser, error: insertError } =
+              await supabaseAdmin
+                .from("users")
+                .insert([
+                  {
+                    id: newUuid,
+                    email: user.email,
+                    name: user.name || "Saydle User",
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    verified: false,
+                  },
+                ])
+                .select("id") // Select the ID to ensure we get it back
+                .single();
 
             if (insertError) {
               console.error("Error creating user:", insertError);

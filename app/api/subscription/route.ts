@@ -23,6 +23,9 @@ export async function GET() {
     return NextResponse.json(data ?? null);
   } catch (e) {
     console.error("/api/subscription unexpected error:", e);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
