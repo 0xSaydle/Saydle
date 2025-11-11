@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { getServerSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 // import AppleProvider from "next-auth/providers/apple";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -311,8 +311,24 @@ const config = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-export const { handlers, auth, signIn, signOut } = NextAuth(config);
+// Create the NextAuth handler for the App Router and export GET/POST handlers
+const handler = NextAuth(config);
 
-console.log("auth.ts: Handlers object after NextAuth initialization:", handlers);
-console.log("auth.ts: Handlers.GET:", handlers.GET);
-console.log("auth.ts: Handlers.POST:", handlers.POST);
+// Export named route handlers expected by the App Router.
+// Exporting `GET` and `POST` directly avoids consumers having to access a `handlers` object
+// and prevents "reading properties of undefined" if a module expects named exports.
+export const GET = handler;
+export const POST = handler;
+
+// Helper: return the current server session for API routes and server components
+export async function auth(): Promise<Session | null> {
+  // getServerSession accepts the auth options used by NextAuth
+  try {
+    return (await getServerSession(config as any)) as Session | null;
+  } catch (e) {
+    console.error("auth.ts: getServerSession error:", e);
+    return null;
+  }
+}
+
+console.log("auth.ts: NextAuth handler created. handlers exported.");
