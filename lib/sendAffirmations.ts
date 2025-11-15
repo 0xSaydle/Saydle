@@ -7,6 +7,8 @@ import { DateTime } from "luxon";
 // Make sure this path is correct relative to lib/sendAffirmations.ts
 import { AffirmationInput, generateAffirmation, buildAffirmationPrompt } from "../helpers/gemini";
 import twilio from 'twilio';
+import { ContentContextImpl } from 'twilio/lib/rest/content/v1/content';
+import { ConversationRelaySession } from 'twilio/lib/twiml/VoiceResponse';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -22,15 +24,17 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
 // Initialize Twilio client using environment variables
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 // Corrected environment variable names for consistency
-const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
+const TWILIO_ACCOUNT_AUTH_TOKEN = process.env.TWILIO_ACCOUNT_AUTH_TOKEN;
+const TWILIO_ACCOUNT_PHONE_NUMBER = process.env.TWILIO_ACCOUNT_PHONE_NUMBER;
+console.log("Twilio Config - SID:", TWILIO_ACCOUNT_SID, "Token:", TWILIO_ACCOUNT_AUTH_TOKEN)
+console.log("Twilio Phone Number:", TWILIO_ACCOUNT_PHONE_NUMBER);
 
-if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER) {
+if (!TWILIO_ACCOUNT_SID || !TWILIO_ACCOUNT_AUTH_TOKEN || !TWILIO_ACCOUNT_PHONE_NUMBER) {
     console.error("Missing Twilio environment variables. Ensure TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER are set.");
     throw new Error("Missing Twilio environment variables.");
 }
 
-const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_ACCOUNT_AUTH_TOKEN);
 
 // A list of generic "I am..." affirmations for fallback
 const genericAffirmations: string[] = [
@@ -57,7 +61,7 @@ async function sendAffirmation(user_id: string, affirmation: string, to_phone: s
       // Send SMS using Twilio
       const message = await twilioClient.messages.create({
         body: affirmation,
-        from: TWILIO_PHONE_NUMBER, // Your Twilio phone number
+        from: TWILIO_ACCOUNT_PHONE_NUMBER, // Your Twilio phone number
         to: to_phone, // User's phone number
       });
       console.log(`SMS sent successfully to ${to_phone}, Message SID: ${message.sid}`);
