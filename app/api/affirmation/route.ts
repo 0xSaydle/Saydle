@@ -5,9 +5,9 @@ import {
     generateAffirmation,
 } from "@/app/api/actions/generateCheckoutUrl/generateAffirmations";
 import { supabaseAdmin } from "@/supabase/supabase_client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         const session = await auth();
         if (!session || !session.user) {
