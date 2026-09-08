@@ -28,10 +28,10 @@ const Footer = () => {
             p={"16px 20px"}
             asChild
           >
-            <a href="mailto:support@saydle.app">
+            <a href="mailto:support@saydle.com">
               <Icon asChild fontSize={"25px"}>
                 <IoMailOutline />
-              </Icon> support@saydle.app
+              </Icon> support@saydle.com
             </a>
           </Flex>
           <Flex

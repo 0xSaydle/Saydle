@@ -69,7 +69,7 @@ const FAQ = () => {
         >
           {/* The full FAQ page is parked with the web app.
           <Link href="/faq">Check all common questions</Link> */}
-          <Link href="mailto:support@saydle.app">Ask us anything</Link>
+          <Link href="mailto:support@saydle.com">Ask us anything</Link>
         </Text>
 
           </div>

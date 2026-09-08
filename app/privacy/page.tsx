@@ -100,7 +100,7 @@ const Privacy = () => {
       <LegalSection title="Changes and contact">
         <Text pt={"8px"}>
           If this policy changes materially, the app will say so. Questions and
-          requests: <a href="mailto:support@saydle.app">support@saydle.app</a>.
+          requests: <a href="mailto:support@saydle.com">support@saydle.com</a>.
         </Text>
       </LegalSection>
     </LegalPage>

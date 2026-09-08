@@ -79,7 +79,7 @@ const Terms = () => {
         <Text pt={"8px"}>
           If these terms change materially, the app will say so before the
           change applies to you. Questions:{" "}
-          <a href="mailto:support@saydle.app">support@saydle.app</a>.
+          <a href="mailto:support@saydle.com">support@saydle.com</a>.
         </Text>
       </LegalSection>
     </LegalPage>
