@@ -2,7 +2,8 @@
 
 import type { GroupProps, SlotRecipeProps } from "@chakra-ui/react"
 import { Avatar as ChakraAvatar, Group } from "@chakra-ui/react"
-import * as React from "react"
+import * as React from "react";
+import  { useState } from "react";
 
 type ImageProps = React.ImgHTMLAttributes<HTMLImageElement>
 
@@ -19,12 +20,28 @@ export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
   function Avatar(props, ref) {
     const { name, src, srcSet, loading, icon, fallback, children, ...rest } =
       props
-    return (
+
+      // Generate AI avatar fallback using Dicebear or similar
+    const [imgError, setImgError] = useState(false);
+
+    // AI-generated fallback avatar URL (Dicebear example)
+    const fallbackSrc = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name || "default")}`;
+
+    // Use fallbackSrc if src is empty or image failed to load
+    const activeSrc = !src || imgError ? fallbackSrc : src;
+
+      return (
       <ChakraAvatar.Root ref={ref} {...rest}>
         <AvatarFallback name={name} icon={icon}>
           {fallback}
         </AvatarFallback>
-        <ChakraAvatar.Image src={src} srcSet={srcSet} loading={loading} />
+        <ChakraAvatar.Image 
+          src={activeSrc}
+          srcSet={!imgError ? srcSet : undefined}
+          loading={loading}
+          alt={name}
+          onError={() => setImgError(true)} // Switch to fallback on error
+          />
         {children}
       </ChakraAvatar.Root>
     )
