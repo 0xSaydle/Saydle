@@ -1,5 +1,5 @@
 "use server";
-import { supabaseAdmin } from "@/middleware";
+import { supabaseAdmin } from "@/supabase/supabase_client";
 import { Session } from "next-auth";
 
 type UserUpdateData = {

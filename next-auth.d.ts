@@ -6,6 +6,7 @@ declare module 'next-auth' {
     email?: string;
     accessToken?: string;
     plan?: string;
+    subscribed?: boolean;
     dateOfSubscription?: string;
     nextBillingDate?: string;
     planDuration?: number;
@@ -19,6 +20,7 @@ declare module 'next-auth' {
       phone_number?: string;
       accessToken: string;
       plan?: string;
+      subscribed?: boolean;
       dateOfSubscription?: string;
       nextBillingDate?: string;
       planDuration?: number;

@@ -32,11 +32,18 @@ const Navbar = () => {
               <Link href="/">Home</Link>
             </Text>
             <Text asChild>
+              <Link href="/privacy">Privacy</Link>
+            </Text>
+            <Text asChild>
+              <Link href="/terms">Terms</Link>
+            </Text>
+            {/* Parked with their pages:
+            <Text asChild>
               <Link href="/about">About</Link>
             </Text>
             <Text asChild>
               <Link href="/faq">{"FAQ's"}</Link>
-            </Text>
+            </Text> */}
           </div>
         </Flex>
         <Flex
@@ -48,9 +55,11 @@ const Navbar = () => {
           alignItems={"center"}
           textStyle={"button_lg"}
         >
+            {/* Log In / Register parked with the web app; Saydle lives on
+                your phone now.
             <Text p={"12px 24px"} asChild>
               <Link href="/login">Log In</Link>
-            </Text>
+            </Text> */}
             <Text
               bgColor={"primary.20"}
               color={"white"}
@@ -58,7 +67,7 @@ const Navbar = () => {
               p={"12px 24px"}
               asChild
             >
-              <Link href="/register">Register</Link>
+              <Link href="/#get-the-app">Get the app</Link>
             </Text>
         </Flex>
         <Icon
@@ -122,10 +131,13 @@ const Navbar = () => {
               <Link href="/">Home</Link>
             </Text>
             <Text asChild>
-              <Link href="/about">About</Link>
+              <Link href="/#get-the-app">Get the app</Link>
             </Text>
             <Text asChild>
-              <Link href="/faq">{"FAQ's"}</Link>
+              <Link href="/privacy">Privacy</Link>
+            </Text>
+            <Text asChild>
+              <Link href="/terms">Terms</Link>
             </Text>
         </Flex>
     </Flex>

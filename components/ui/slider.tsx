@@ -1,3 +1,5 @@
+"use client";
+
 import { Slider as ChakraSlider, For, HStack } from "@chakra-ui/react"
 import * as React from "react"
 

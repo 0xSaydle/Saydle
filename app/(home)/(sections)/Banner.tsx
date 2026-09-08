@@ -92,9 +92,9 @@ const Banner = () => {
             </Heading>
           </Box>
           <Text color="gray.600" mb={6}>
-            Discover the power of daily affirmations crafted uniquely for
-            you—providing personalized encouragement to help you navigate
-            life&apos;s challenges.
+            The Saydle app writes a new affirmation for you every morning:
+            personal encouragement, a calm voice to read it aloud, and a
+            widget that keeps it close all day.
           </Text>
           <Flex
             gap={"10px"}
@@ -102,7 +102,7 @@ const Banner = () => {
             borderRadius={"24px"}
             pt={"24px"}
           >
-              <Button bg={"primary.20"} text="Subscribe" path="/login" />
+              <Button bg={"primary.20"} text="Get the app" path="/#get-the-app" />
               <Box
     p={"12px 24px"}
     borderRadius={"24px"}
@@ -114,7 +114,7 @@ const Banner = () => {
     alignItems={"center"}
     asChild
   >
-    <Link href={"/about"}>
+    <Link href={"/#how-it-works"}>
       Learn more
       <Icon fontSize={"24px"} asChild>
                   <Image src={"icons/receive-square.svg"} width={24} height={24} alt="icon"/>
@@ -183,7 +183,7 @@ const Banner = () => {
             </Text>
             <Flex align="center" gap={2} mt={2}>
               <Text fontSize="xs" width="90%" fontWeight="500" color="gray.500">
-                Small words, big impact—crafted for you to tackle challenges.
+                Small words, big impact: written for you, every morning.
               </Text>
               {/* <Box
                 height={"24px"} asChild> */}

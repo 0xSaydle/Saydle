@@ -1,3 +1,5 @@
+"use client";
+
 import { RadioGroup as ChakraRadioGroup } from "@chakra-ui/react"
 import * as React from "react"
 

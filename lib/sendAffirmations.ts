@@ -7,7 +7,7 @@ import {
   AffirmationInput,
   generateAffirmation,
   buildAffirmationPrompt,
-} from "@/app/api/actions/generateCheckoutUrl/generateAffirmations";
+} from "@/app/_api/actions/generateCheckoutUrl/generateAffirmations";
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

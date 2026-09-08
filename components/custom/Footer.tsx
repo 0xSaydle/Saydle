@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Text, Flex, Icon } from "@chakra-ui/react";
 import Link from "next/link";
 import { IoMailOutline } from "react-icons/io5";
@@ -26,10 +28,10 @@ const Footer = () => {
             p={"16px 20px"}
             asChild
           >
-            <a href="mailto:support@rareblocks.xyz">
+            <a href="mailto:support@saydle.com">
               <Icon asChild fontSize={"25px"}>
                 <IoMailOutline />
-              </Icon> support@rareblocks.xyz
+              </Icon> support@saydle.com
             </a>
           </Flex>
           <Flex
@@ -37,9 +39,9 @@ const Footer = () => {
             justifyContent={"center"}
             alignItems={"center"}
           >
-              <Link href={"/about"}>About</Link>
-              <Link href={"/api"}>How it works</Link>
-              <Link href={"/faq"}>FAQs</Link>
+              <Link href={"/privacy"}>Privacy</Link>
+              <Link href={"/terms"}>Terms</Link>
+              <Link href={"/#get-the-app"}>Get the app</Link>
           </Flex>
         </Flex>
 
@@ -55,7 +57,7 @@ const Footer = () => {
             Saydle
           </Text>
           <Text color={"dark.100"} textAlign={"center"} textStyle={"body_sm"}>
-            © Copyright 2021, All Rights Reserved
+            © 2026 Saydle. All rights reserved.
           </Text>
         </Flex>
       </Flex>

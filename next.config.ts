@@ -10,6 +10,10 @@ const nextConfig: import("next").NextConfig = {
 
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
+    // turbopack: {
+    //   // Set the correct root for Turbopack
+    //   root: '/home/jotham/Templates/Saydle',
+    // },
   },
 };
 
