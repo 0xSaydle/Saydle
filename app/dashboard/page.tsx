@@ -3,11 +3,50 @@ import { Box, Flex, Link, Text } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import Headphone from "@/public/icons/headphone.svg";
 import Image from "next/image";
-import { useDashboard } from "../contexts/dashboard-context";
+import { useState, useEffect } from "react";
+
+interface SubscriptionDetails {
+  status_formatted?: string;
+  renews_at?: string;
+}
 
 export default function Dashboard() {
-  const { data: session } = useSession();
-  const { subDetails, isLoading } = useDashboard();
+  const { data: session, status } = useSession();
+  const [isLoading, setIsLoading] = useState(true);
+  const [subDetails, setSubDetails] = useState<SubscriptionDetails | null>(null);
+
+  useEffect(() => {
+    const fetchSubscriptionDetails = async () => {
+      if (status !== "authenticated") {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/subscription');
+        if (!response.ok) {
+          throw new Error('Failed to fetch subscription details');
+        }
+        const data = await response.json();
+        setSubDetails(data);
+      } catch (error) {
+        console.error('Error fetching subscription details:', error);
+        setSubDetails(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSubscriptionDetails();
+  }, [status]);
+
+  if (status === "loading") {
+    return (
+      <Box p={4}>
+        <Text>Loading...</Text>
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -73,9 +112,7 @@ export default function Dashboard() {
             <Box fontWeight="bold" color="dark.500">
             {isLoading
               ? "Loading..."
-              : subDetails?.status_formatted
-              }
-              
+                : subDetails?.status_formatted || "No subscription"}
             </Box>
           </Flex>
         </Box>
