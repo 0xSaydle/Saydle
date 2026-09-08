@@ -3,7 +3,11 @@ dotenv.config();
 
 import { createClient } from "@supabase/supabase-js";
 import { DateTime } from "luxon";
-import { AffirmationInput, generateAffirmation, buildAffirmationPrompt } from "../helpers/generateAffirmations";
+import {
+  AffirmationInput,
+  generateAffirmation,
+  buildAffirmationPrompt,
+} from "@/app/_api/actions/generateCheckoutUrl/generateAffirmations";
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

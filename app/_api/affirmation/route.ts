@@ -1,12 +1,13 @@
 import { auth } from "@/auth";
-import { AffirmationInput, buildAffirmationPrompt, generateAffirmation } from "@/helpers/generateAffirmations";
-import { NextRequest, NextResponse } from "next/server";
+import {
+    AffirmationInput,
+    buildAffirmationPrompt,
+    generateAffirmation,
+} from "@/app/_api/actions/generateCheckoutUrl/generateAffirmations";
+import { supabaseAdmin } from "@/supabase/supabase_client";
+import { NextResponse } from "next/server";
 
-import { getSupabaseAdminClient } from "../../../supabase/supabase_client"; 
-
-const supabaseAdmin = getSupabaseAdminClient();
-
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         const session = await auth();
         if (!session || !session.user) {
