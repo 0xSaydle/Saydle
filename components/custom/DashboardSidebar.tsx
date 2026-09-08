@@ -9,7 +9,9 @@ import {
   MdLogout,
   MdSubscriptions,
 } from "react-icons/md";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { Avatar } from "@/components/ui/avatar";
+import { Logo } from "./logo";
 
 const menuItems = [
   { name: "Dashboard", icon: MdDashboard, path: "/dashboard" },
@@ -55,9 +57,9 @@ const SidebarContent = ({ isMobile }: { isMobile: boolean }) => {
                 color={isActive ? "#FF6F61" : "gray.700"}
                 bg={isActive && !isMobile ? "#FFF3F0" : "transparent"}
                 borderRadius={isMobile ? "none" : "md"}
-                _hover={{ bg: isMobile ? "gray.100" : "gray.100" }}
+                _hover={{  bg: isMobile ? "gray.100" : "gray.100" }}
                 mb={isMobile ? 0 : 1}
-                fontSize={isMobile ? "xs" : "15px"}
+               fontSize={isMobile ? "xs" : "15px"}
               >
                 <Icon as={item.icon} boxSize={5} mb={isMobile ? 0 : 1} />
                 {!isMobile && <Text fontSize="15px">{item.name}</Text>}
@@ -107,6 +109,8 @@ const SidebarContent = ({ isMobile }: { isMobile: boolean }) => {
 };
 
 export default function DashboardSidebar() {
+  const { data: session } = useSession();
+
   return (
     <>
       {/* Desktop Sidebar */}
@@ -118,10 +122,21 @@ export default function DashboardSidebar() {
         position="fixed"
         left={0}
         top={0}
-        pt="60px"
+        pt="140px"
         display={{ base: "none", md: "block" }}
         zIndex={1100}
       >
+        {/* Desktop Logo and Avatar */}
+        <Box position="absolute" top={4} left={0} right={0} px={6}>
+          <Flex direction="column" align="center" gap={4}>
+            <Logo />
+            <Avatar
+              name={session?.user?.name || ""}
+              src={session?.user?.image || undefined}
+              size="lg"
+            />
+          </Flex>
+        </Box>
         <SidebarContent isMobile={false} />
       </Box>
       {/* Mobile Bottom Bar */}

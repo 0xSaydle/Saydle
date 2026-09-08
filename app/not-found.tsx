@@ -3,7 +3,7 @@
 import { Box, Flex, Text, Button } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { GeneralSans } from "./fonts";
-import Image from "next/image";
+
 import React from "react";
 
 const NotFound: React.FC = () => {
@@ -47,7 +47,7 @@ const NotFound: React.FC = () => {
           Oops! Page Not Found
         </Text>
         <Text fontSize="18px" color="gray.500" mb={8} maxW="400px">
-          The page you're looking for doesn't exist or has been moved. Let's get
+          The page you&apos;re looking for doesn&apos;t exist or has been moved. Let&apos;s get
           you back on track.
         </Text>
 

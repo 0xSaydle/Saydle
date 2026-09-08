@@ -1,4 +1,4 @@
-import { Box, Text, Flex, Icon } from "@chakra-ui/react";
+import { Box, Text, Flex } from "@chakra-ui/react";
 import Link from "next/link";
 
 const FaqData = [
@@ -67,7 +67,7 @@ const FAQ = () => {
           p={"4px 8px"}
               width={"max-content"}
         >
-          <Link href="/contact">Check all common questions</Link>
+          <Link href="/faq">Check all common questions</Link>
         </Text>
 
           </div>

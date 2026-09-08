@@ -20,15 +20,15 @@ export default function OnboardingStep4() {
     if (feelings.trim().length > 0) {
       setError("");
       setIsValid(true);
+      setOnboardingData((prev) => ({ ...prev, feelings }));
     } else {
       setError("Please share how these struggles make you feel");
       setIsValid(false);
     }
-  }, [feelings, touched]);
+  }, [feelings, touched, setOnboardingData]);
 
   const handleComplete = async () => {
     if (!isValid) return;
-
     setIsLoading(true);
     try {
       // Update feelings in context

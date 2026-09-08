@@ -1,7 +1,10 @@
-import { generateCheckoutUrl } from "@/helpers/generateCheckoutUrl";
+"use client";
 import { Text, Link } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 
-export const SubscribeBtn = async ({
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+export const SubscribeBtn = ({
   title,
   special,
   productId,
@@ -10,15 +13,27 @@ export const SubscribeBtn = async ({
   special?: string;
   productId?: string;
 }) => {
-  const checkoutUrl = productId
-    ? await generateCheckoutUrl(productId)
-    : "/login";
+  const [checkoutUrl, setCheckoutUrl] = useState("/login");
+
+  useEffect(() => {
+    if (productId) {
+      console.log("productId: ", productId);
+      fetch(`${baseUrl}/api/actions/generateCheckoutUrl`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productId }),
+      })
+        .then((res) => res.json())
+        .then((data) => setCheckoutUrl(data.url))
+        .catch(() => setCheckoutUrl("/login"));
+    }
+  }, [productId]);
+
   return (
     <Text
       data-state={special}
-      _on={{
-        background: "primary.20",
-      }}
       color={"light.400"}
       display={"block"}
       textStyle={"button_lg"}

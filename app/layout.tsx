@@ -1,8 +1,10 @@
-import { GeneralSans } from "./fonts";
-import { Provider } from "@/components/ui/provider";
+import { ChakraProvider } from "@chakra-ui/react";
 import { SessionProvider } from "next-auth/react";
-import theme from "../theme";
 import { Toaster } from "@/components/ui/toaster";
+import { Provider } from "@/components/ui/provider";
+import { GeneralSans } from "./fonts";
+import theme from "../theme";
+import "./globals.css";
 
 export default function RootLayout({
   children,
@@ -12,13 +14,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${GeneralSans.className} antialiased`}>
-        
-        <SessionProvider>
+        <ChakraProvider value={theme}>
           <Provider>
-            {children}
+            <SessionProvider>{children}</SessionProvider>
             <Toaster />
           </Provider>
-        </SessionProvider>
+        </ChakraProvider>
       </body>
     </html>
   );

@@ -9,19 +9,16 @@ import { Logo } from "./logo";
 const Navbar = () => {
   const [menu, setMenu] = useState("off");
   const toggleMenu = () => {
-    menu === "on" ? setMenu("off") : setMenu("on");
-
-    console.log(menu);
+    setMenu(menu === "on" ? "off" : "on");
   };
   return (
     <Flex
       justifyContent={"space-between"}
       alignItems={"center"}
       direction={"row"}
-      p={{ lg: "0px", md: "0px", }}
-      asChild
+      p={{ lg: "0px", md: "0px" }}
     >
-      <div>
+  
         <Logo />
         <Flex
           hideBelow={"md"}
@@ -42,9 +39,7 @@ const Navbar = () => {
             </Text>
           </div>
         </Flex>
-        {/* Loigin & Signup */}
         <Flex
-          asChild
           hideBelow={"md"}
           bgColor={"light.400"}
           p={"8px"}
@@ -53,7 +48,6 @@ const Navbar = () => {
           alignItems={"center"}
           textStyle={"button_lg"}
         >
-          <div>
             <Text p={"12px 24px"} asChild>
               <Link href="/login">Log In</Link>
             </Text>
@@ -66,9 +60,7 @@ const Navbar = () => {
             >
               <Link href="/register">Register</Link>
             </Text>
-          </div>
         </Flex>
-        {/* Hamburger menu icon */}
         <Icon
           hideFrom={"md"}
           cursor={"pointer"}
@@ -78,7 +70,6 @@ const Navbar = () => {
         >
           <IoMenu />
         </Icon>
-        {/* Menu List */}
         <Flex
           padding={{ base: "15px", sm: "40px" }}
           zIndex={"20000"}
@@ -89,21 +80,14 @@ const Navbar = () => {
           width="100vw"
           height={"100vh"}
           backgroundColor={"#f0f0f0"}
-          _off={{
-            display: "none",
-            visibility: "hidden",
-          }}
-          _on={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "30px",
-            textStyle: "menu_lg",
-            alignItems: "start",
-            visibility: "visible",
-          }}
-          asChild
+          display={menu === "on" ? "flex" : "none"}
+          visibility={menu === "on" ? "visible" : "hidden"}
+          flexDirection={menu === "on" ? "column" : undefined}
+          gap={menu === "on" ? "30px" : undefined}
+          textStyle={menu === "on" ? "menu_lg" : undefined}
+          alignItems={menu === "on" ? "start" : undefined}
         >
-          <div>
+        
             <Flex
               justifyContent={"space-between"}
               alignItems={"center"}
@@ -113,28 +97,25 @@ const Navbar = () => {
               css={{
                 justifyContent: "space-between",
               }}
-              asChild
             >
-              <div>
-                <Logo
-                  css={{
-                    "&:hover": {
-                      color: "red.400",
-                    },
-                  }}
-                />
-                <Icon
-                  onClick={toggleMenu}
-                  cursor={"pointer"}
-                  fontSize={"23px"}
-                  _hover={{
+              <Logo
+                css={{
+                  "&:hover": {
                     color: "red.400",
-                  }}
-                  asChild
-                >
-                  <IoClose />
-                </Icon>
-              </div>
+                  },
+                }}
+              />
+              <Icon
+                onClick={toggleMenu}
+                cursor={"pointer"}
+                fontSize={"23px"}
+                _hover={{
+                  color: "red.400",
+                }}
+                asChild
+              >
+                <IoClose />
+              </Icon>
             </Flex>
 
             <Text asChild>
@@ -146,9 +127,7 @@ const Navbar = () => {
             <Text asChild>
               <Link href="/faq">{"FAQ's"}</Link>
             </Text>
-          </div>
         </Flex>
-      </div>
     </Flex>
   );
 };

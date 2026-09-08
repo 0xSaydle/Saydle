@@ -6,7 +6,7 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import { supabaseAdmin } from "@/supabase/supabase_client";
+import { updateUser } from "@/supabase/actions";
 import { useSession } from "next-auth/react";
 import { z } from "zod";
 
@@ -31,7 +31,6 @@ export interface OnboardingData {
   phone: string;
   weaknesses: string;
   feelings: string;
-  plan: string;
 }
 
 interface OnboardingContextType {
@@ -60,7 +59,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     phone: "",
     weaknesses: "",
     feelings: "",
-    plan: "basic",
   });
 
   const { data: session } = useSession();
@@ -87,14 +85,14 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
           onboardingData.weaknesses.trim().length > 0 &&
           onboardingData.feelings.trim().length > 0
         );
-      case 5:
-        return (
-          nameSchema.safeParse(onboardingData.name).success &&
-          phoneSchema.safeParse(onboardingData.phone).success &&
-          onboardingData.weaknesses.trim().length > 0 &&
-          onboardingData.feelings.trim().length > 0 &&
-          onboardingData.plan !== ""
-        );
+      // case 5:
+      //   return (
+      //     nameSchema.safeParse(onboardingData.name).success &&
+      //     phoneSchema.safeParse(onboardingData.phone).success &&
+      //     onboardingData.weaknesses.trim().length > 0 &&
+      //     onboardingData.feelings.trim().length > 0 &&
+      //     onboardingData.plan !== ""
+      //   );
       default:
         return false;
     }
@@ -116,15 +114,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         updated_at: new Date().toISOString(),
       };
 
-      const { error } = await supabaseAdmin
-        .from("users")
-        .update(updateData)
-        .eq("email", session.user.email);
-
-      if (error) {
-        console.error("Error updating user data:", error);
-        throw error;
-      }
+      const { data } = await updateUser(updateData, session);
+      console.log("data", data);
+    
     } catch (error) {
       console.error("Failed to update user data:", error);
       throw error;

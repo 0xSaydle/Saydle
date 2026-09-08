@@ -1,5 +1,5 @@
 "use client";
-import { Box, Flex, Text, Input, Button, Textarea } from "@chakra-ui/react";
+import { Box, Flex, Text, Button, Textarea } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useOnboarding } from "../../onboarding-context";

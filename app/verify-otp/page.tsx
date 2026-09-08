@@ -1,10 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Box, Flex, Heading, Text, Button, Link } from "@chakra-ui/react";
 import { toaster } from "@/components/ui/toaster";
 
-export default function VerifyOTP() {
+function VerifyOTPContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const phone = searchParams.get("phone");
@@ -231,5 +231,34 @@ export default function VerifyOTP() {
         </Text>
       </Box>
     </Flex>
+  );
+}
+
+export default function VerifyOTP() {
+  return (
+    <Suspense
+      fallback={
+        <Flex
+          minHeight="100vh"
+          align="center"
+          justify="center"
+          bg="#F5F7F9"
+          p={4}
+        >
+          <Box
+            p={8}
+            maxWidth="500px"
+            width="100%"
+            borderRadius="lg"
+            bg="white"
+            boxShadow="md"
+          >
+            <Text textAlign="center">Loading...</Text>
+          </Box>
+        </Flex>
+      }
+    >
+      <VerifyOTPContent />
+    </Suspense>
   );
 }

@@ -1,27 +1,13 @@
 "use client";
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex, Link, Text } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import Headphone from "@/public/icons/headphone.svg";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useDashboard } from "../contexts/dashboard-context";
 
 export default function Dashboard() {
   const { data: session } = useSession();
-  
-  useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const res = await fetch("/api/affirmation");
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to fetch profile");
-        console.log(data)
-        
-      } catch (error: any) {
-        console.log(error);
-      }
-    }
-    fetchProfile();
-  }, []);
+  const { subDetails, isLoading } = useDashboard();
 
   return (
     <>
@@ -82,12 +68,14 @@ export default function Dashboard() {
               w={2}
               h={2}
               borderRadius="full"
-              bg={session?.user?.plan === "BASIC" ? "red.400" : "green.400"}
+              bg={session?.user?.subscribed ? "green.400" : "red.400"}
             />
             <Box fontWeight="bold" color="dark.500">
-              {session?.user?.plan === "BASIC" ? "Inactive" : "Active"} -{" "}
-              {session?.user?.plan?.charAt(0) +
-                session?.user?.plan?.slice(1).toLowerCase() || "Basic"}
+            {isLoading
+              ? "Loading..."
+              : subDetails?.status_formatted
+              }
+              
             </Box>
           </Flex>
         </Box>
@@ -105,15 +93,14 @@ export default function Dashboard() {
             NEXT BILLING DATE
           </Box>
           <Box fontWeight="bold" fontSize="lg">
-            {session?.user?.nextBillingDate
-              ? new Date(session.user.nextBillingDate).toLocaleDateString(
-                  "en-US",
-                  {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  }
-                )
+            {isLoading
+              ? "Loading..."
+              : subDetails?.renews_at
+              ? new Date(subDetails.renews_at).toLocaleDateString("en-US", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })
               : "Not set"}
           </Box>
         </Box>
@@ -138,8 +125,7 @@ export default function Dashboard() {
             <Image src={Headphone} alt="Headphone" />
           </Box>
           <Box
-            as="a"
-            href="mailto:support@saydle.com"
+            asChild
             color="#fff"
             bg="#FF6F61"
             borderRadius="full"
@@ -154,7 +140,7 @@ export default function Dashboard() {
               textDecoration: "none",
             }}
           >
-            Contact
+            <Link href="mailto:support@saydle.com">Contact</Link>
           </Box>
         </Flex>
       </Box>

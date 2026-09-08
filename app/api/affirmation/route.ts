@@ -1,5 +1,9 @@
 import { auth } from "@/auth";
-import { AffirmationInput, buildAffirmationPrompt, generateAffirmation } from "@/helpers/generateAffirmations";
+import {
+  AffirmationInput,
+  buildAffirmationPrompt,
+  generateAffirmation,
+} from "@/app/api/actions/generateCheckoutUrl/generateAffirmations";
 import { supabaseAdmin } from "@/supabase/supabase_client";
 import { NextRequest, NextResponse } from "next/server";
 
