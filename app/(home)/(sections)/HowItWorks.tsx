@@ -24,8 +24,8 @@ const HowItWorksItems = [
   },
   {
     image: two,
-    title: "Subscribe Securely",
-    text: "Sign up with ease using our trusted, secure payment process.",
+    title: "Listen, or Read",
+    text: "Read your line, or let a calm voice read today's seven to you, one at a time.",
     style: {
       transform: "translate(20% ,-46%)",
       height: "200%",
@@ -54,6 +54,7 @@ const HowItWorksItem = ({
 }) => {
   return (
     <Box
+      id="how-it-works"
       mt={{ base: "150px" }}
       boxShadow={"xs"}
       gap={"100px"}

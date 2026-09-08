@@ -10,6 +10,8 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  // Parked app surfaces: kept in the repo, out of the lint.
+  { ignores: ["app/_*/**", "_parked/**"] },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 ];
 

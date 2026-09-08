@@ -9,9 +9,9 @@ const HeroSubText = () => {
       asChild
     >
       <p>
-      Discover the power of daily affirmations crafted uniquely for
-      you—providing personalized encouragement to help you navigate life’s
-      challenges.
+      The Saydle app writes a new affirmation for you every morning:
+      personal encouragement, a calm voice to read it aloud, and a home
+      screen widget that keeps it close all day.
   </p>
     </Text>
   );

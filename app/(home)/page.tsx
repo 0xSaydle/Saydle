@@ -9,9 +9,12 @@ import Button from "@/components/custom/button";
 import { Poppins } from "../fonts";
 import WhySadle from "./(sections)/WhySadle";
 import HowItWorks from "./(sections)/HowItWorks";
-import Subscriptions from "./(sections)/Subscriptions";
-import Reviews from "./(sections)/Reviews";
+// Parked: pricing lives in the app stores now, and reviews return when there
+// are real ones to show.
+// import Subscriptions from "./(sections)/Subscriptions";
+// import Reviews from "./(sections)/Reviews";
 import FAQ from "./(sections)/FAQ";
+import GetTheApp from "./(sections)/GetTheApp";
 import Banner from "./(sections)/Banner";
 import Footer from "@/components/custom/Footer";
 import Link from "next/link";
@@ -41,7 +44,7 @@ const Home = () => {
           borderRadius={"24px"}
           pt={"24px"}
         >
-          <Button bg={"primary.20"} text="Subscribe" path="/login" />
+          <Button bg={"primary.20"} text="Get the app" path="/#get-the-app" />
           <Box
     p={"12px 24px"}
     borderRadius={"24px"}
@@ -53,7 +56,7 @@ const Home = () => {
     alignItems={"center"}
     asChild
   >
-    <Link href={"/about"}>
+    <Link href={"/#how-it-works"}>
       Learn more
       <Icon fontSize={"24px"} asChild>
       
@@ -94,8 +97,10 @@ const Home = () => {
 
         <WhySadle />
         <HowItWorks />
+        <GetTheApp />
+        {/* Parked with their imports:
         <Subscriptions />
-        <Reviews />
+        <Reviews /> */}
         <FAQ />
       </Box>
       <Footer />
