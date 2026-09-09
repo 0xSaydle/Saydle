@@ -1,87 +1,50 @@
 "use client";
 
-import { Box, Flex, Text, Button } from "@chakra-ui/react";
+import { Box, Flex, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { GeneralSans } from "./fonts";
+import { Logo } from "@/components/custom/logo";
+import Button from "@/components/custom/button";
 
-import React from "react";
-
-const NotFound: React.FC = () => {
+const NotFound = () => {
   const router = useRouter();
 
   return (
     <Box
       minH="100vh"
-      bg="#F5F7F9"
+      bg="light.bg"
       display="flex"
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
+      px={5}
       className={GeneralSans.className}
     >
-      {/* Logo */}
-      <Box mb={8}>
-        <Text fontSize="32px" fontWeight="bold" color="#FF6F61">
-          Saydle
-        </Text>
+      <Box mb={8} color="primary.20">
+        <Logo />
       </Box>
-
-      {/* Main Content */}
-      <Flex
-        direction="column"
-        align="center"
-        textAlign="center"
-        maxW="600px"
-        px={4}
-      >
-        <Text
-          fontSize="120px"
-          fontWeight="bold"
-          color="#FF6F61"
-          lineHeight="1"
-          mb={4}
-        >
+      <Flex direction="column" align="center" textAlign="center" maxW="480px">
+        <Text textStyle="d1" color="primary.20" lineHeight="1" mb={4}>
           404
         </Text>
-        <Text fontSize="32px" fontWeight="bold" color="dark.500" mb={4}>
-          Oops! Page Not Found
+        <Text textStyle="h4" color="dark.500" mb={3}>
+          This page isn’t here
         </Text>
-        <Text fontSize="18px" color="gray.500" mb={8} maxW="400px">
-          The page you&apos;re looking for doesn&apos;t exist or has been moved. Let&apos;s get
-          you back on track.
+        <Text textStyle="body_lg" color="dark.300" mb={8}>
+          The page you’re looking for doesn’t exist, or it moved when Saydle
+          became a mobile app.
         </Text>
-
-        {/* Action Buttons */}
-        <Flex gap={4}>
-          <Button
-            bg="#FF6F61"
-            color="white"
-            _hover={{ bg: "#A76D99" }}
-            size="lg"
-            onClick={() => router.push("/dashboard")}
-          >
-            Go to Dashboard
-          </Button>
-          <Button
-            variant="outline"
-            borderColor="#FF6F61"
-            color="#FF6F61"
-            _hover={{ bg: "#FF6F6110" }}
-            size="lg"
+        <Flex gap={3} flexWrap="wrap" justify="center">
+          <Button text="Go home" path="/" />
+          <Box
+            layerStyle="pill.outline"
+            cursor="pointer"
             onClick={() => router.back()}
           >
-            Go Back
-          </Button>
+            Go back
+          </Box>
         </Flex>
       </Flex>
-
-      {/* Decorative Elements */}
-      <Box position="absolute" bottom={8} left={0} right={0} textAlign="center">
-        <Text fontSize="sm" color="gray.400">
-          Remember, every small step you take is progress. You are doing
-          wonderfully.
-        </Text>
-      </Box>
     </Box>
   );
 };

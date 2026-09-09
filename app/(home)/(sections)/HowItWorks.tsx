@@ -1,118 +1,125 @@
-import {
-  Box,
-  Flex,
-  Text,
-  Image as ChakraImage,
-  SystemStyleObject,
-} from "@chakra-ui/react";
+import { Box, Flex, Text, Image as ChakraImage } from "@chakra-ui/react";
 import Image, { StaticImageData } from "next/image";
 import one from "@/public/images/unsplash_girl-book1.png";
 import two from "@/public/images/girl_phone.png";
 import three from "@/public/images/hand_phone.png";
 
+const PANEL_HEIGHT = 188;
+const FIGURE_HEIGHT = 250;
+
 const HowItWorksItems = [
   {
     image: one,
-    title: "Share Your Story",
-    text: "Tell us about the areas where you need support, and we’ll craft affirmations just for you.",
-    style: {
-      transform: "translate(0% ,-40%)",
-      height: "170%",
-      width: "auto",
-      borderBottomLeftRadius: "5%",
-    },
+    step: "01",
+    title: "Share your story",
+    text: "Tell us where you need support. We write affirmations that fit that life.",
+    align: "18%",
   },
   {
     image: two,
-    title: "Listen, or Read",
-    text: "Read your line, or let a calm voice read today's seven to you, one at a time.",
-    style: {
-      transform: "translate(20% ,-46%)",
-      height: "200%",
-    },
+    step: "02",
+    title: "Listen, or read",
+    text: "Read today’s line, or let a calm voice read the seven to you, one at a time.",
+    align: "50%",
   },
   {
     image: three,
-    title: "Receive Daily Encouragement",
-    text: "Start your day with uplifting, personalized affirmations delivered right to your phone.",
-    style: {
-      transform: "translate(0% ,-50%)",
-      height: "200%",
-    },
+    step: "03",
+    title: "Keep it close",
+    text: "A widget on your home screen holds the line — even when you are offline.",
+    align: "50%",
   },
 ];
+
 const HowItWorksItem = ({
   image,
+  step,
   title,
   text,
-  style,
+  align,
 }: {
   image: StaticImageData;
+  step: string;
   title: string;
   text: string;
-  style: SystemStyleObject;
+  align: string;
 }) => {
   return (
     <Box
-      id="how-it-works"
-      mt={{ base: "150px" }}
-      boxShadow={"xs"}
-      gap={"100px"}
-      p={"20px"}
-      bg={"white"}
-      borderRadius={"24px"}
-      minWidth={{md: "300px" }}
-      maxWidth={{ base: "100%", md: "33%" }}
-      asChild
+      layerStyle={"surface.card"}
+      pt={"88px"}
+      px={"28px"}
+      pb={"36px"}
+      minW={{ md: "220px", lg: "280px" }}
+      maxW={{ base: "100%", md: "33%" }}
+      flex={{ md: 1 }}
     >
-      <div>
-        <Box
-          bg="linear-gradient(102deg, #C49EBB 40.11%, #FF6F61 109.93%)"
-          height={"150px"}
-          borderRadius={"10.398px"}
+      <Box
+        bgGradient="brandSoft"
+        height={`${PANEL_HEIGHT}px`}
+        borderRadius={"media"}
+        position={"relative"}
+      >
+        <ChakraImage
+          position={"absolute"}
+          bottom={0}
+          left={align}
+          transform={align === "50%" ? "translateX(-50%)" : undefined}
+          h={`${FIGURE_HEIGHT}px`}
+          w={"auto"}
+          objectFit={"contain"}
+          asChild
         >
-          <ChakraImage css={style} objectFit={"contain"} asChild>
-            <Image src={image} alt={title} />
-          </ChakraImage>
-        </Box>
-        <Text
-          mt={"10px"}
-          color={"dark.600"}
-          textAlign={"center"}
-          fontSize={{ base: "17.329px", sm: "20px" }}
-        >
-          {title}
-        </Text>
-        <Text
-          color={"dark.300"}
-          fontSize={{ base: "13.863px;", sm: "16px" }}
-          textAlign={"center"}
-        >
-          {text}
-        </Text>
-      </div>
+          <Image src={image} alt="" />
+        </ChakraImage>
+      </Box>
+      <Text
+        pt={"24px"}
+        textStyle={"caption"}
+        color={"secondary.20"}
+        letterSpacing={"0.14em"}
+        fontWeight={700}
+      >
+        {step}
+      </Text>
+      <Text color={"dark.500"} textStyle={"h6"} pt={"6px"} asChild>
+        <h3>{title}</h3>
+      </Text>
+      <Text color={"dark.300"} textStyle={"body_lg"} pt={"8px"} maxW={"32ch"}>
+        {text}
+      </Text>
     </Box>
   );
 };
 
 const HowItWorks = () => {
   return (
-    <Box>
-      <Text textAlign={"center"} textStyle={{ base: "h5", sm: "h3" }}>
-        How It Works
+    <Box id="how-it-works" pt={{ base: "80px", md: "140px" }}>
+      <Text textAlign={"center"} textStyle={{ base: "h4", md: "h2" }} asChild>
+        <h2>How it works</h2>
+      </Text>
+      <Text
+        textAlign={"center"}
+        textStyle={"body_lg"}
+        color={"dark.300"}
+        maxW={"42ch"}
+        mx={"auto"}
+        pt={"12px"}
+      >
+        Three quiet steps. No account on the web — this lives on your phone.
       </Text>
       <Flex
-        flexDirection={{ base: "column", md: "row" }}
-        flexWrap={"wrap"} 
-        justifyContent={"center"}
-        gap={"5px"}
-        asChild
+        direction={{ base: "column", md: "row" }}
+        wrap={"wrap"}
+        align={{ md: "stretch" }}
+        justify={"center"}
+        columnGap={{ md: "24px" }}
+        rowGap={"32px"}
+        pt={"40px"}
       >
-        <div>
-          {HowItWorksItems.map((item, index) => (
-            <HowItWorksItem key={index} {...item} />
-          ))}
-        </div>
+        {HowItWorksItems.map((item) => (
+          <HowItWorksItem key={item.step} {...item} />
+        ))}
       </Flex>
     </Box>
   );

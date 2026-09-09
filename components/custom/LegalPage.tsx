@@ -35,13 +35,18 @@ const LegalPage = ({
 }) => {
   return (
     <>
-      <Box padding={{ base: "15px", sm: "30px 40px", md: "3%" }}>
+      <Box
+        maxW={"1360px"}
+        mx={"auto"}
+        px={{ base: "20px", md: "40px" }}
+        py={{ base: "16px", md: "24px" }}
+      >
         <Navbar />
         <Box maxW={"720px"} mx={"auto"} pt={{ base: "32px", md: "56px" }} pb={"64px"}>
           <Text textStyle={"h4"} asChild>
             <h1>{title}</h1>
           </Text>
-          <Text pt={"8px"} color={"dark.200"} textStyle={"body_sm"}>
+          <Text pt={"8px"} color={"dark.300"} textStyle={"body_sm"}>
             Last updated: {updated}
           </Text>
           {children}

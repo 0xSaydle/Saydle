@@ -1,16 +1,39 @@
-*{
+/* Font family, size and line-height are deliberately not set on `*`. The
+   universal selector applies to every element rather than being inherited, so
+   setting them here overrode the GeneralSans class on <body>, pinned any
+   element without an explicit size to 16px, and forced 1.5 leading onto
+   headings that need to be tighter than body text. Typography comes from the
+   layout font and the theme's textStyles instead. */
+* {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
-  font-size: 16px;
   list-style: none;
   text-decoration: none;
+}
+
+html {
   scroll-behavior: smooth;
-  /* scroll-padding-top: 100px;
-  scroll-padding-bottom: 100px;
-  scroll-padding-left: 100px;
-  scroll-padding-right: 100px;
-  scroll-padding-top: 100px; */
+  /* Anchored sections would otherwise land under the header. */
+  scroll-padding-top: 96px;
+}
+
+body {
   line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

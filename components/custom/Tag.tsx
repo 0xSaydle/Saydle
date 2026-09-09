@@ -4,29 +4,35 @@ import Image from "next/image";
 interface TagProps {
   icon: string;
   text: string;
-  color?: string;
+  /** Chips sitting over photography need a dark scrim to stay readable. */
+  onImage?: boolean;
+  /** Hero uses a larger chip so it reads at fold scale. */
+  size?: "sm" | "lg";
 }
 
-const Tag = ({ icon, text, color }: TagProps) => {
+const Tag = ({ icon, text, onImage = false, size = "sm" }: TagProps) => {
+  const large = size === "lg";
+  const iconPx = large ? 22 : 16;
+
   return (
     <Flex
-      padding={"4px 8px"}
-      alignItems={"center"}
-      gap={"2px"}
-      borderRadius={"12px"}
-      border={"1px solid"}
-      borderColor={"dark.50"}
-      width={"max-content"}
-      textStyle={"caption"}
-       bg="whiteAlpha.100"
-              backdropFilter="blur(18px)"
+      layerStyle={onImage ? "tag.onImage" : "tag.base"}
+      px={large ? { base: "14px", md: "18px", lg: "20px" } : "12px"}
+      py={large ? { base: "9px", md: "11px", lg: "13px" } : "6px"}
+      gap={large ? "10px" : "6px"}
+      borderRadius={large ? "pill" : "tag"}
     >
-        <Icon asChild>
-          <Image src={icon} alt="icon" width={16} height={16} />
-        </Icon>
-        <Text fontSize="10px" fontWeight="normal" color={color}>
-          {text}
-        </Text>
+      <Icon asChild flexShrink={0} boxSize={`${iconPx}px`}>
+        <Image src={icon} alt="" width={iconPx} height={iconPx} />
+      </Icon>
+      <Text
+        as="span"
+        fontSize={large ? { base: "15px", md: "16px", lg: "17px" } : "13px"}
+        fontWeight={500}
+        lineHeight={1.35}
+      >
+        {text}
+      </Text>
     </Flex>
   );
 };

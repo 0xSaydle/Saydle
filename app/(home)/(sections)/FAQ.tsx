@@ -4,7 +4,7 @@ import Link from "next/link";
 const FaqData = [
 
   {
-    Q: " How are the affirmations personalized?",
+    Q: "How are the affirmations personalized?",
     A: "During the sign-up process, you’ll share areas where you’d like support. Using this information, we craft affirmations that resonate with your specific needs and goals.",
   },
   {
@@ -17,12 +17,12 @@ const FaqData = [
   },
 ];
 const Faq = ({ Q, A }: { Q: string; A: string }) => (
-  <Box  backgroundColor={"white"} borderRadius={"20px"} p={"16px 20px"} asChild>
+  <Box layerStyle={"surface.panel"} p={"20px 24px"} asChild>
     <div>
-      <Text textStyle={"title"} color={"dark.20"}>
+      <Text textStyle={"title"} color={"dark.500"}>
         {Q}
       </Text>
-      <Text textStyle={"body_sm"} color={"dark.300"}>
+      <Text textStyle={"body_lg"} color={"dark.300"} pt={"6px"}>
         {A}
       </Text>
     </div>
@@ -31,14 +31,13 @@ const Faq = ({ Q, A }: { Q: string; A: string }) => (
 const FAQ = () => {
   return (
     <Flex
-      my={"60px"}
+      mt={{ base: "80px", md: "140px" }}
+      mb={{ base: "64px", md: "88px" }}
       flexDirection={{ base: "column", md: "row" }}
       gap={"6%"}
-      background={
-        "linear-gradient(102deg, #A76D99 40.11%, #FF6F61 109.93%), #FFF;"
-      }
-      p={{ base: "20px", sm: "40px" }}
-      borderRadius={"24px"}
+      bgGradient={"brand"}
+      p={{ base: "28px 20px", sm: "48px", md: "64px" }}
+      borderRadius={"pill"}
       asChild
       >
       <div>
@@ -47,31 +46,45 @@ const FAQ = () => {
         >
           <div>
             <div>
-            <Text textStyle={"caption"} color={"light.600"} mt={"20px"}>
-          FAQ
-        </Text>
-        <Text textStyle={"h5"} color={"light.400"} mt={"20px"}>
-          Discover the most common questions.
-        </Text>
-        <Text textStyle={"body_lg"} color={"light.500"} mt={"10px"}>
-          Find answers to the questions we’re asked the most and learn how
-          Saydle can support your journey toward positivity and wellness.
-        </Text>
-     </div>
-        <Text
-          textStyle={"body_lg"}
-          color={"light.500"}
-          asChild
-          borderBottom={"1px solid"}
-          my={"20px"}
-          p={"4px 8px"}
-              width={"max-content"}
-        >
-          {/* The full FAQ page is parked with the web app.
-          <Link href="/faq">Check all common questions</Link> */}
-          <Link href="mailto:support@saydle.com">Ask us anything</Link>
-        </Text>
-
+              <Text
+                textStyle={"chip"}
+                color={"whiteAlpha.800"}
+                textTransform={"uppercase"}
+                letterSpacing={"0.14em"}
+              >
+                FAQ
+              </Text>
+              <Text
+                textStyle={{ base: "h5", md: "h4" }}
+                color={"white"}
+                mt={"12px"}
+                maxW={"18ch"}
+                asChild
+              >
+                <h2>Discover the most common questions.</h2>
+              </Text>
+              <Text
+                textStyle={"body_lg"}
+                color={"whiteAlpha.900"}
+                mt={"12px"}
+                maxW={"44ch"}
+              >
+                Find answers to the questions we’re asked the most and learn how
+                Saydle can support your journey toward positivity and wellness.
+              </Text>
+            </div>
+            {/* The full FAQ page is parked with the web app.
+            <Link href="/faq">Check all common questions</Link> */}
+            <Box
+              layerStyle={"pill.outline"}
+              borderColor={"whiteAlpha.700"}
+              color={"white"}
+              mt={"32px"}
+              _hover={{ bg: "whiteAlpha.200", borderColor: "white" }}
+              asChild
+            >
+              <Link href="mailto:support@saydle.com">Ask us anything</Link>
+            </Box>
           </div>
     </Flex>
         <Flex flexDirection={"column"} gap={"20px"} py={"20px"}  asChild>

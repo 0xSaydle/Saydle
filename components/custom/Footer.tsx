@@ -3,68 +3,61 @@
 import { Box, Text, Flex, Icon } from "@chakra-ui/react";
 import Link from "next/link";
 import { IoMailOutline } from "react-icons/io5";
+import { Logo } from "./logo";
 
 const Footer = () => {
   return (
-    <Box bg={"secondary.900"}
-    padding={{ base: "15px", sm: "30px 40px", md:"4%" }}>
+    <Box bg={"secondary.900"} px={{ base: "20px", md: "40px" }} py={{ base: "40px", md: "56px" }}>
       <Flex
-        color={"light.500"}
-        flexDir={{ base: "column", md: "row-reverse" }}
-        justifyContent={{ base: "center", md: "space-between" }}
-        gap={"20px"}
-
-            pb={"16px"}
+        maxW={"1240px"}
+        mx={"auto"}
+        color={"light.600"}
+        direction={{ base: "column", md: "row" }}
+        justify={"space-between"}
+        align={{ base: "center", md: "flex-end" }}
+        gap={"28px"}
       >
-        <Flex justifyContent={{md:"space-between"}} flexDir={"column"} gap={"20px"} textAlign={"center"}>
-          <Flex
-            my={"20px"}
-            gap={"20px"}
-            alignItems={"center"}
-            textAlign={"center"}
-            textStyle={"title"}
-            border={".5px solid #f8f8f8"}
-            borderRadius={"20px"}
-            p={"16px 20px"}
-            asChild
-          >
-            <a href="mailto:support@saydle.com">
-              <Icon asChild fontSize={"25px"}>
-                <IoMailOutline />
-              </Icon> support@saydle.com
-            </a>
-          </Flex>
-          <Flex
-            gap={"20px"}
-            justifyContent={"center"}
-            alignItems={"center"}
-          >
-              <Link href={"/privacy"}>Privacy</Link>
-              <Link href={"/terms"}>Terms</Link>
-              <Link href={"/#get-the-app"}>Get the app</Link>
-          </Flex>
-        </Flex>
-
-        <Flex justifyContent={{md:"space-between"}} alignItems={{md:"start"}} flexDir={"column"} gap={"20px"} textAlign={"center"}>
-          <Box hideFrom={"sm"} opacity={".5"} asChild>
-            <hr />
-          </Box>
-          <Text
-            textAlign={{ base: "center" }}
-            fontSize={{ base: "52px" }}
-            fontWeight={900}
-          >
-            Saydle
-          </Text>
-          <Text color={"dark.100"} textAlign={"center"} textStyle={"body_sm"}>
+        <Flex direction={"column"} align={{ base: "center", md: "flex-start" }} gap={"12px"}>
+          <Logo css={{ color: "white" }} />
+          <Text color={"dark.100"} textStyle={"body_sm"}>
             © 2026 Saydle. All rights reserved.
           </Text>
         </Flex>
+
+        <Flex direction={"column"} align={{ base: "center", md: "flex-end" }} gap={"16px"}>
+          <Flex
+            gap={"10px"}
+            align={"center"}
+            textStyle={"title"}
+            color={"white"}
+            border={"1px solid"}
+            borderColor={"whiteAlpha.400"}
+            borderRadius={"card"}
+            px={"20px"}
+            py={"12px"}
+            _hover={{ borderColor: "white", bg: "whiteAlpha.100" }}
+            asChild
+          >
+            <a href="mailto:support@saydle.com">
+              <Icon asChild fontSize={"22px"}>
+                <IoMailOutline />
+              </Icon>
+              support@saydle.com
+            </a>
+          </Flex>
+          <Flex gap={"20px"} textStyle={"body_sm"}>
+            <Box _hover={{ color: "white" }} asChild>
+              <Link href={"/privacy"}>Privacy</Link>
+            </Box>
+            <Box _hover={{ color: "white" }} asChild>
+              <Link href={"/terms"}>Terms</Link>
+            </Box>
+            <Box _hover={{ color: "white" }} asChild>
+              <Link href={"/#get-the-app"}>Get the app</Link>
+            </Box>
+          </Flex>
+        </Flex>
       </Flex>
-      <Box hideBelow={"sm"} opacity={".8"} asChild>
-        <hr />
-      </Box>
-      <br />
     </Box>
   );
 };

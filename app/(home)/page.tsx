@@ -1,106 +1,49 @@
-import { Box, Flex, Icon, Text } from "@chakra-ui/react";
-import Tag from "@/components/custom/Tag";
-import purple from "@/public/icons/vuesax/purple.svg";
-import pink from "@/public/icons/vuesax/pink.svg";
+import { Box, Text } from "@chakra-ui/react";
 import Navbar from "@/components/custom/Navbar";
-import HeadlinerText from "@/components/custom/HeadlinerText";
-import HeroSubText from "@/components/custom/HeroSubText";
-import Button from "@/components/custom/button";
 import { Poppins } from "../fonts";
 import WhySadle from "./(sections)/WhySadle";
 import HowItWorks from "./(sections)/HowItWorks";
-// Parked: pricing lives in the app stores now, and reviews return when there
-// are real ones to show.
-// import Subscriptions from "./(sections)/Subscriptions";
-// import Reviews from "./(sections)/Reviews";
 import FAQ from "./(sections)/FAQ";
 import GetTheApp from "./(sections)/GetTheApp";
 import Banner from "./(sections)/Banner";
 import Footer from "@/components/custom/Footer";
-import Link from "next/link";
-import Image from "next/image";
-import icons from "@/public/icons/receive-square.svg";
-// import LearnMore from "@/components/custom/LearnMore";
+
+const shellPx = { base: "20px", md: "24px", lg: "clamp(24px, 3vw, 48px)" };
+
 const Home = () => {
   return (
     <>
       <Box
-        padding={{ base: "15px", sm: "30px 40px", md: "3%" }}
-        position={"relative"}
+        px={shellPx}
+        pt={{ base: "16px", md: "20px" }}
+        minH={{ md: "100svh" }}
+        display={{ md: "flex" }}
+        flexDirection={{ md: "column" }}
       >
         <Navbar />
         <Banner />
-        <Flex hideFrom={"md"} pt={"24px"}>
-          <Tag icon={pink} text="Positivity" />
-          <Tag icon={purple} text="Wellness" />
-        </Flex>
-        <HeadlinerText />
-        <HeroSubText />
+      </Box>
 
-        <Flex
-          hideFrom={"md"}
-          gap={"10px"}
-          alignItems={"center"}
-          borderRadius={"24px"}
-          pt={"24px"}
-        >
-          <Button bg={"primary.20"} text="Get the app" path="/#get-the-app" />
-          <Box
-    p={"12px 24px"}
-    borderRadius={"24px"}
-    border={"1px solid"}
-    borderColor={"secondary.20"}
-    display={"flex"}
-    gap={"10px"}
-    textStyle={"button_lg"}
-    alignItems={"center"}
-    asChild
-  >
-    <Link href={"/#how-it-works"}>
-      Learn more
-      <Icon fontSize={"24px"} asChild>
-      
-        <Image src={icons} alt="icon"></Image>
-      </Icon>
-    </Link>
-  </Box>
-        </Flex>
-
+      <Box px={shellPx}>
         <Text
-          pt={"48px"}
+          pt={{ base: "64px", md: "88px" }}
           textAlign={"center"}
-          maxWidth={{ base: "347px", sm: "100%" }}
+          maxW={"48ch"}
           mx={"auto"}
-          textStyle={"body_lg"}
+          textStyle={{ base: "body_lg", md: "sub" }}
+          color={"dark.300"}
         >
           At{" "}
-          <Text
-            className={` ${Poppins.className}`}
-            asChild
-            textStyle={"title"}
-            fontWeight={"700"}
-          >
+          <Text className={Poppins.className} fontWeight={700} color={"dark.500"} asChild>
             <span>Saydle</span>
           </Text>
-          , we believe that everyone deserves a moment of positivity and
-          encouragement each day. Our mission is simple yet profound: to support
-          your{" "}
-          <Text color={"secondary.20"} asChild>
-            <span>mental well-being</span>
-          </Text>{" "}
-          with{" "}
-          <Text textStyle={"body_lg"} color={"primary.20"} asChild>
-            <span>affirmations</span>
-          </Text>{" "}
-          crafted uniquely for you.
+          , everyone deserves a quiet line of encouragement each day. We write
+          it for you.
         </Text>
 
         <WhySadle />
         <HowItWorks />
         <GetTheApp />
-        {/* Parked with their imports:
-        <Subscriptions />
-        <Reviews /> */}
         <FAQ />
       </Box>
       <Footer />

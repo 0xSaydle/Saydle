@@ -5,23 +5,20 @@ import Link from "next/link";
 
 const Button = ({
   bg,
-  path,
+  path = "/#get-the-app",
   text,
+  onClick,
 }: {
-  bg: string;
+  bg?: string;
   path?: string;
   text: string;
+  onClick?: () => void;
 }) => {
   return (
-    <Box
-      bg={bg}
-      color={"light.400"}
-      textStyle={"button_lg"}
-      p={"12px 24px"}
-      borderRadius={"24px"}
-      asChild
-    >
-      <Link href={path ? path : "/subscribe"}> {text}</Link>
+    <Box layerStyle={"pill.solid"} bg={bg} asChild>
+      <Link href={path} onClick={onClick}>
+        {text}
+      </Link>
     </Box>
   );
 };
