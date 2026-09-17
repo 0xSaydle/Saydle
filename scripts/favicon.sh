@@ -4,8 +4,16 @@
 # Headless Chrome rather than an image library, for the same reason the mobile
 # app does it this way: it is the only thing on a stock Mac that can set type in
 # our actual Poppins Black, which is the face the wordmark in the navbar uses.
-# An "S" drawn in a lookalike sans is the kind of thing nobody reports and
-# everybody registers.
+#
+# Two marks, on purpose, because these files are shown at very different sizes:
+#
+#   icon.png / apple-icon.png  the full wordmark. Bookmarks, the iOS home
+#                              screen, PWA installs, link previews - all big
+#                              enough to read six glyphs.
+#   favicon.ico                a single S. This file is only ever the browser
+#                              tab, which is 16 or 32 px. The wordmark there
+#                              renders as a coral smudge; it was checked on
+#                              device before being split out.
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
@@ -20,37 +28,30 @@ font="file://$root/app/fonts/Poppins/Poppins-Black.ttf"
 BG="#FF6F61"   # primary.20 - the coral the CTA uses
 FG="#FFFFFF"
 
-# The full wordmark rather than a single letter, per the brand. It is six
-# glyphs in a square canvas, so the type is necessarily small: at 16px each
-# stroke lands on roughly two pixels. Tuned to fill the width with a little air.
-MARK_TEXT="${MARK_TEXT:-Saydle}"
-FONT_SIZE="${FONT_SIZE:-118px}"
+render () { # <text> <font-size> <out>
+  sed -e "s|FONT_URL|$font|" -e "s|BG|$BG|" -e "s|FG|$FG|" \
+      -e "s|FONT_SIZE|$2|" -e "s|MARK_TEXT|$1|" \
+      "$root/scripts/favicon.html" > "$tmp/render.html"
+  "$chrome" --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 \
+    --screenshot="$3" --window-size=512,512 "file://$tmp/render.html" 2>/dev/null
+}
 
-sed -e "s|FONT_URL|$font|" -e "s|BG|$BG|" -e "s|FG|$FG|" \
-    -e "s|FONT_SIZE|$FONT_SIZE|" -e "s|MARK_TEXT|$MARK_TEXT|" \
-    "$root/scripts/favicon.html" > "$tmp/render.html"
+render "Saydle" "118px" "$tmp/wordmark.png"
+render "S"      "380px" "$tmp/letter.png"
 
-"$chrome" --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 \
-  --screenshot="$tmp/icon.png" --window-size=512,512 "file://$tmp/render.html" 2>/dev/null
-
-# icon.png and apple-icon.png are App Router conventions: Next emits the
-# <link rel="icon"> and <link rel="apple-touch-icon"> tags from those filenames.
-# favicon.ico is here too because /favicon.ico is still fetched directly by
-# crawlers and older clients that never read those tags.
-#
-# Everything is written RGBA on purpose. Turbopack decodes the ICO at build time
-# and rejects RGB payloads outright with "The PNG is not in RGBA format!", which
-# is what sips produces when it resizes.
-python3 - "$tmp/icon.png" "$root/app" <<'PY'
+# Written RGBA deliberately: Turbopack decodes the ICO at build time and rejects
+# RGB payloads outright with "The PNG is not in RGBA format!".
+python3 - "$tmp" "$root/app" <<'PY'
 import sys, pathlib
 from PIL import Image
 
-src, app = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
-base = Image.open(src).convert("RGBA")
+tmp, app = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+word = Image.open(tmp / "wordmark.png").convert("RGBA")
+letter = Image.open(tmp / "letter.png").convert("RGBA")
 
-base.save(app / "icon.png")
-base.resize((180, 180), Image.LANCZOS).save(app / "apple-icon.png")
-base.save(app / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)])
+word.save(app / "icon.png")
+word.resize((180, 180), Image.LANCZOS).save(app / "apple-icon.png")
+letter.save(app / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)])
 PY
 
-echo "wrote app/icon.png (512), app/apple-icon.png (180), app/favicon.ico (16/32/48)"
+echo "wrote app/icon.png + app/apple-icon.png (wordmark), app/favicon.ico (S)"
