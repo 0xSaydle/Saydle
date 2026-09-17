@@ -1,0 +1,30 @@
+<!doctype html>
+<meta charset="utf-8" />
+<style>
+  /* Absolute font URL: the rendered copy lives in a temp dir, so a relative
+     path resolves against *that* directory, fails, and Chrome quietly falls
+     back to a system sans - an icon that looks plausible and is not Poppins. */
+  @font-face {
+    font-family: "Poppins";
+    src: url("FONT_URL") format("truetype");
+    font-weight: 900;
+  }
+  html, body { margin: 0; padding: 0; }
+  body {
+    width: 512px; height: 512px;
+    display: flex; align-items: center; justify-content: center;
+    background: BG;
+  }
+  .mark {
+    font-family: "Poppins", sans-serif;
+    font-weight: 900;
+    font-size: 380px;
+    line-height: 1;
+    color: FG;
+    /* Poppins carries side bearings the glyph does not need when it is the
+       whole canvas, and its optical centre sits above the metric centre. */
+    transform: translateY(-14px);
+    letter-spacing: -0.02em;
+  }
+</style>
+<div class="mark">S</div>
