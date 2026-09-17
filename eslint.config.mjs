@@ -1,18 +1,14 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+// eslint-config-next 16 ships flat configs directly, so the old FlatCompat
+// wrapper is not only unnecessary, it crashes: compat tries to JSON.stringify a
+// config whose plugins reference each other ("Converting circular structure").
+import coreWebVitals from "eslint-config-next/core-web-vitals";
+import typescript from "eslint-config-next/typescript";
 
 const eslintConfig = [
   // Parked app surfaces: kept in the repo, out of the lint.
-  { ignores: ["app/_*/**", "_parked/**"] },
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  { ignores: ["app/_*/**", "_parked/**", ".next/**"] },
+  ...coreWebVitals,
+  ...typescript,
 ];
 
 export default eslintConfig;

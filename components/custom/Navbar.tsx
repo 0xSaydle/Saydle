@@ -1,5 +1,5 @@
 "use client";
-import { Box, Flex, Icon, Text } from "@chakra-ui/react";
+import { chakra, Flex, Icon, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { useState } from "react";
 import { IoClose, IoMenu } from "react-icons/io5";
@@ -48,9 +48,8 @@ const Navbar = () => {
         <Button text="Get the app" path="/#get-the-app" />
       </Flex>
 
-      <Box
+      <chakra.button
         hideFrom={"md"}
-        as="button"
         type="button"
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
@@ -63,7 +62,7 @@ const Navbar = () => {
         onClick={() => setOpen((value) => !value)}
       >
         <IoMenu />
-      </Box>
+      </chakra.button>
 
       <Flex
         display={open ? "flex" : "none"}

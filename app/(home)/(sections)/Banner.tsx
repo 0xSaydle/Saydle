@@ -140,12 +140,15 @@ const PhotoFrame = ({
   children,
   borderRadius = "section",
   objectPosition = "center 20%",
+  priority = false,
 }: {
   src: string;
   alt: string;
   children?: ReactNode;
   borderRadius?: string;
   objectPosition?: string;
+  /** Set on the hero, which is the LCP element. Leave off below the fold. */
+  priority?: boolean;
 }) => (
   <Box
     layerStyle="surface.media"
@@ -155,16 +158,13 @@ const PhotoFrame = ({
     h="100%"
     minH={0}
   >
-    <Box
-      as="img"
+    <Image
       src={src}
       alt={alt}
-      position="absolute"
-      inset={0}
-      w="100%"
-      h="100%"
-      objectFit="cover"
-      objectPosition={objectPosition}
+      fill
+      sizes="(max-width: 768px) 100vw, 50vw"
+      priority={priority}
+      style={{ objectFit: "cover", objectPosition }}
     />
     {children}
   </Box>
@@ -181,7 +181,7 @@ const Banner = () => {
         </Flex>
         <HeadlineCards />
         <Box h="340px" mt="18px">
-          <PhotoFrame src={HERO_MAIN} alt="Person smiling with calm confidence">
+          <PhotoFrame src={HERO_MAIN} alt="Person smiling with calm confidence" priority>
             <Box
               position="absolute"
               top="14px"
@@ -298,7 +298,7 @@ const Banner = () => {
           position="relative"
           zIndex={1}
         >
-          <PhotoFrame src={HERO_MAIN} alt="Person smiling with calm confidence">
+          <PhotoFrame src={HERO_MAIN} alt="Person smiling with calm confidence" priority>
             <Box
               position="absolute"
               top={{ md: "20px", lg: "24px" }}
