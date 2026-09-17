@@ -20,7 +20,14 @@ font="file://$root/app/fonts/Poppins/Poppins-Black.ttf"
 BG="#FF6F61"   # primary.20 - the coral the CTA uses
 FG="#FFFFFF"
 
+# The full wordmark rather than a single letter, per the brand. It is six
+# glyphs in a square canvas, so the type is necessarily small: at 16px each
+# stroke lands on roughly two pixels. Tuned to fill the width with a little air.
+MARK_TEXT="${MARK_TEXT:-Saydle}"
+FONT_SIZE="${FONT_SIZE:-118px}"
+
 sed -e "s|FONT_URL|$font|" -e "s|BG|$BG|" -e "s|FG|$FG|" \
+    -e "s|FONT_SIZE|$FONT_SIZE|" -e "s|MARK_TEXT|$MARK_TEXT|" \
     "$root/scripts/favicon.html" > "$tmp/render.html"
 
 "$chrome" --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 \

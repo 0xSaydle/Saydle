@@ -18,13 +18,13 @@
   .mark {
     font-family: "Poppins", sans-serif;
     font-weight: 900;
-    font-size: 380px;
+    font-size: FONT_SIZE;
     line-height: 1;
     color: FG;
-    /* Poppins carries side bearings the glyph does not need when it is the
-       whole canvas, and its optical centre sits above the metric centre. */
-    transform: translateY(-14px);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
+    /* Poppins sets its optical centre above the metric centre. */
+    transform: translateY(-0.04em);
+    white-space: nowrap;
   }
 </style>
-<div class="mark">S</div>
+<div class="mark">MARK_TEXT</div>
